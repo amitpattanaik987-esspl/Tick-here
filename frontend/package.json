@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "live-server src",
     "watch": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "dev:css": "tailwindcss -i ./src/styles/input.css -o ./dist/output.css --watch"
   },
   "keywords": [],
   "author": "",

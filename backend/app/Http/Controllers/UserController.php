@@ -57,12 +57,26 @@ class UserController extends Controller
 
         $user = User::create($data);
 
+        $user->sendEmailVerificationNotification(); //to send verification email
+
         return response()->json([
             'message' => 'User created successfully',
             'user' => $user,
             'token' => $user->createToken('user-token')->plainTextToken
         ], 201);
     }
+
+    //For Resending verification email
+    public function resendVerificationEmail(Request $request)
+{
+    if ($request->user()->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified.'], 400);
+    }
+
+    $request->user()->sendEmailVerificationNotification();
+
+    return response()->json(['message' => 'Verification email resent.']);
+}
 
     //For logging out a user
     public function logout(Request $request)
