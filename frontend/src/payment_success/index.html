@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Successful</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white rounded-2xl shadow-lg p-8 text-center max-w-md">
+        <div class="flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mx-auto mb-4">
+            <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" stroke-width="2"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800 mb-2">Payment Successful</h1>
+        <p class="text-gray-600 mb-6">Thank you for your purchase. Your payment has been processed successfully.</p>
+        <a href="/bookings"
+            class="inline-block px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">View
+            Ticket</a>
+        <a href="/" class="underline text-[#4da6fa] ml-[20px]">Continue Browsing</a>
+    </div>
+</body>
+
+<script type="module" src="../dist/payment_success/payment_success.js"></script>
+
+</html>

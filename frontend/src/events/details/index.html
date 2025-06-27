@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Details</title>
+  <link href="../../assets/styles/output.css" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/styles/global.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" />
+  <style>
+    .poppins-regular {
+      font-family: "Poppins", sans-serif;
+      font-weight: 400;
+    }
+
+    .selected {
+      background: linear-gradient(#0a0418, #45006e) !important;
+      color: white !important;
+      border: 1px solid #8d77b7;
+    }
+  </style>
+</head>
+
+<body class="poppins-regular overflow-x-hidden">
+  <!-- Navbar -->
+  <div id="navbar"></div>
+
+  <!-- Main Content -->
+  <div class="px-[140px] py-[20px] w-full">
+    <div class="flex gap-[40px] p-[5px] mb-6">
+      <img id="event-thumbnail" src="" alt="Event Thumbnail" class="w-[350px] h-[350px]" />
+      <div class="flex flex-col gap-[15px]">
+        <p id="event-title" class="font-[400] text-[36px]">Loading...</p>
+        <div class="flex gap-[20px]">
+          <div
+            class="bg-gradient-to-r from-[#0A0418] to-[#45006E] text-white rounded-[32px] px-[14px] py-[10px] flex justify-between items-center gap-2 text-xs">
+            <i class="fa-regular fa-clock"></i>
+            <p id="event-duration">loading...</p>
+          </div>
+          <p id="event_category"
+            class="bg-gradient-to-r from-[#0A0418] to-[#45006E] text-white rounded-[32px] px-[14px] py-[10px] text-xs">
+            loading...
+          </p>
+        </div>
+        <div>
+          <p class="text-[20px] font-[600] text-[#525252]">
+            Performer Spotlight:
+          </p>
+          <p id="event-description" class="text-[#525252] text-[16px]">
+            Loading...
+          </p>
+        </div>
+        <div
+          class="relative rounded-[10px] bg-[#eae2ff] border-[#462f7d] border-solid border-[1px] box-border h-[3rem] flex flex-row items-center justify-center py-[14px] px-[28px] text-center text-[1.5rem] text-[#3b015f] font-poppins mt-[22%] w-[50%]">
+          <div class="relative capitalize font-semibold text-[20px]">
+            RS. <span id="event-price">Loading...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Static content below (can be made dynamic later) -->
+    <div class="flex flex-col gap-[24px]">
+      <p class="font-[400] text-[24px]">Select Place</p>
+      <div class="flex flex-wrap gap-[8px]" id="Venues_div"></div>
+      <div class="flex flex-wrap gap-[8px]" id="date_div"></div>
+
+      <p class="text-[24px] font-[400]">Select Showtime</p>
+      <div class="flex flex-wrap gap-[8px]" id="show_time_div"></div>
+
+      <p class="text-[24px] font-[400]">Select Seats</p>
+      <div class="flex flex-col items-center gap-[20px] bg-[#F5F5F5] py-[20px]">
+        <p class="text-[#949292] bg-[#E5E7EB] w-[500px] h-[60px] flex justify-center items-center rounded-t-[24px]">
+          Stage
+        </p>
+        <div class="w-[1000%]">
+          <div class="seat-grid flex flex-col gap-[10px] items-center"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-between px-[20px] py-[10px] bg-[#FAFAFA]">
+        <div>
+          <p>
+            Selected Seats: <span id="selected_seats">No Seats Selected</span>
+          </p>
+          <p>Total: <span id="final_price">Rs.0.00</span></p>
+        </div>
+        <button id="payment-button"
+          class="bg-gradient-to-r from-[#0A0418] to-[#45006E] rounded-[10px] text-[white] py-[10px] px-[20px] cursor-pointer">
+          Book Now
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+
+  <div id="footer"></div>
+
+  <div id="contact-modal-container"></div>
+
+  <div id="location-modal-container"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script type="module" src="../../dist/events/details/Event_detail_page.js"></script>
+  <script src="https://js.stripe.com/v3/"></script>
+</body>
+
+</html>

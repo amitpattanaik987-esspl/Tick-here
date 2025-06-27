@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eventix</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
+    />
+    <link rel="stylesheet" href="./assets/styles/global.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap"
+    />
+    <link href="./assets/styles/output.css" rel="stylesheet" />
+  </head>
+
+  <body class="bg-gray-100 text-gray-900">
+    <!-- Include Navbar -->
+    <div id="navbar"></div>
+
+    <!-- Page Content -->
+    <main class="bg-ghostwhite" id="main-content">
+      <!-- Hero Section -->
+      <section class="w-full h-[350px] px-6 md:px-10 box-border mt-6">
+        <div class="swiper w-full h-full relative overflow-hidden">
+          <div class="swiper-wrapper h-full">
+            <div class="swiper-slide h-full">
+              <img
+                src="./assets/images/Story pin image.png"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="swiper-slide h-full">
+              <img
+                src="./assets/images/Story pin image (1).png"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div class="swiper-slide h-full">
+              <img
+                src="./assets/images/hero_section.png"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <!-- Navigation Buttons -->
+          <div class="swiper-button-next text-white"></div>
+          <div class="swiper-button-prev text-white"></div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </section>
+
+      <!-- Browse by Category -->
+      <section class="px-6 md:px-20 py-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-6">Browse By Category</h2>
+        <div
+          class="home-category-grid grid grid-cols-2 md:grid-cols-6 gap-20"
+        ></div>
+      </section>
+
+      <!-- Events Near You -->
+      <section class="px-6 md:px-20 pb-10">
+        <div class="flex justify-between items-center mb-6">
+          <h2
+            class="w-[23.438rem] relative text-xl tracking-[0.04em] leading-[3rem] font-bold font-inter text-gray text-left inline-block"
+          >
+            Events Near You
+          </h2>
+          <button
+            class="relative text-[1.25rem] font-afacad text-darkslateblue text-left inline-block h-[1.125rem] cursor-pointer"
+            id="all-events"
+          >
+            See More >
+          </button>
+        </div>
+        <!-- Event Card -->
+        <div
+          class="event-card-grid grid grid-cols-2 md:grid-cols-4 gap-24"
+        ></div>
+      </section>
+
+      <!-- Call to Action -->
+      <section
+        class="bg-[#e9ddfb] mt-22 py-10 px-6 md:px-20 flex flex-col md:flex-row items-center gap-6 h-[15rem]"
+      >
+        <img src="./assets/images/CTA.png" alt="CTA" class="w-60 md:w-160" />
+        <div class="flex flex-col items-start">
+          <b
+            class="w-[26.075rem] relative text-[2.125rem] inline-block font-dm-sans text-black text-left"
+          >
+            Make your own Event
+          </b>
+          <p
+            class="w-[23.875rem] relative text-[1.125rem] font-dm-sans text-gray text-left inline-block"
+          >
+            Your Crowd. Your Event. Let's Make It Happen. <br />
+            Book Your Stage – We'll Help You Fill the Seats.
+          </p>
+          <button
+            class="my-5 w-[18.5rem] relative shadow-[0px_10px_50px_rgba(61,_55,_241,_0.25)] rounded-[50px] bg-darkslateblue bg-[#462f7d] h-[3.75rem]"
+          >
+            <b
+              class="w-[8.813rem] relative text-[1.125rem] inline-block font-dm-sans text-white text-center contact-button cursor-pointer"
+              >Contact Us Now</b
+            >
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- Include Footer -->
+    <div id="footer"></div>
+
+    <!-- Include Contact Modal -->
+    <div id="contact-modal-container"></div>
+
+    <!-- Include Location Modal -->
+    <div id="location-modal-container"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="./dist/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  </body>
+</html>

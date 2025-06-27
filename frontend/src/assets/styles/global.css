@@ -1,0 +1,48 @@
+@config "../../../tailwind.config.js";
+body {
+  @apply leading-[normal] m-0;
+}
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-width: 0;
+  }
+}
+.popup-overlay {
+  @apply flex flex-col fixed inset-0;
+}
+
+.active {
+  background: linear-gradient(218.36deg, #46006e, #0a0417);
+  color: #f8f8ff;
+  box-shadow: 5px 5px 2px rgba(63, 1, 100, 0),
+    3px 3px 2px rgba(63, 1, 100, 0.03), 2px 2px 2px rgba(63, 1, 100, 0.1),
+    1px 1px 1px rgba(63, 1, 100, 0.17), 0px 0px 1px rgba(63, 1, 100, 0.2);
+  border-radius: 5px;
+}
+.swiper-button-next,
+.swiper-button-prev {
+  color: #f8f8ff;
+  top: 50%;
+  opacity: calc(0.7);
+  transform: translateY(-50%);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 30px !important; /* Shrink the arrow */
+  opacity: calc(0.5);
+}
+
+.swiper-pagination-bullet-active {
+  background: #f8f8ff;
+}
+
+.category-active {
+  background: linear-gradient(218.36deg, #46006e, #0a0417);
+  color: #f8f8ff;
+  box-shadow: 5px 5px 2px rgba(63, 1, 100, 0),
+    3px 3px 2px rgba(63, 1, 100, 0.03), 2px 2px 2px rgba(63, 1, 100, 0.1),
+    1px 1px 1px rgba(63, 1, 100, 0.17), 0px 0px 1px rgba(63, 1, 100, 0.2);
+}

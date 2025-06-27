@@ -1,0 +1,37 @@
+<!-- location modal -->
+<div
+  id="location-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/30 backdrop-blur-sm flex"
+>
+  <div class="bg-[#f6f6fc] shadow-xl p-8 w-11/12 max-w-4xl relative">
+    <!-- Close button -->
+    <div class="flex justify-end mb-4">
+      <button
+        id="close-location-modal"
+        class="text-gray-500 hover:text-red-500 text-2xl"
+      >
+        &times;
+      </button>
+    </div>
+
+    <!-- Search bar -->
+    <div class="relative w-full mb-6">
+      <input
+        type="text"
+        placeholder="Search Your City"
+        class="w-full pl-10 pr-4 py-2 rounded-lg border border-purple-900 outline-none text-gray-700 placeholder-gray-500"
+      />
+      <span
+        class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg"
+      >
+        <i class="fas fa-search"></i>
+      </span>
+    </div>
+
+    <!-- City grid -->
+    <div
+      id="city-list"
+      class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 text-sm text-[#1e1e1e]"
+    ></div>
+  </div>
+</div>

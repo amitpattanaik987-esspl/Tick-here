@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tick Here</title>
+  <link href="../assets/styles/output.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet" />
+</head>
+<style>
+  .signin {
+    width: 260px;
+    top: 100px;
+    left: 95px;
+  }
+
+  .poppins-regular {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+  }
+</style>
+
+<body>
+  <div class="bg-gradient-to-b from-[#C9B9E9] to-[#E0CFFF] w-full h-screen flex poppins-regular">
+    <div class="w-2/6 relative overflow-hidden">
+      <img src="../assets/images/Frame 33517.png" alt="" class="w-full" />
+      <img src="../assets/images/signin.png" class="absolute z-30 signin" />
+    </div>
+
+    <div class="w-4/6 bg-white rounded-l-2xl flex items-center justify-center">
+      <div class="flex flex-col gap-[10px] items-center w-1/2">
+        <p class="text-[26px] font-[600]">Create your Free Account</p>
+        <div class="flex flex-col w-full">
+          <label for="name" class="text-[#7C838A]">Name</label>
+          <input type="text" id="name" class="h-[50px] bg-[#B0BAC366] rounded-[20px] p-[16px] text-[18px]"
+            placeholder="Enter Your Name Here" />
+        </div>
+        <div class="flex flex-col w-full">
+          <label for="email" class="text-[#7C838A]">Email</label>
+          <input type="email" id="email" class="h-[50px] bg-[#B0BAC366] rounded-[20px] p-[16px] text-[18px]"
+            placeholder="Enter Your Email Here" />
+        </div>
+        <div class="flex flex-col w-full">
+          <label for="password" class="text-[#7C838A]">Password</label>
+          <input type="password" id="password" class="h-[50px] bg-[#B0BAC366] rounded-[20px] p-[16px] text-[18px]"
+            placeholder="Enter Your Password Here" />
+        </div>
+        <button id="sign_up"
+          class="w-full p-[16px] bg-gradient-to-tr from-[#1E0E44] to-[#3B016E] h-[50px] rounded-2xl text-white font-[500] text-[22px] active:scale-95 transition-transform duration-150 cursor-pointer flex justify-center items-center">
+          Get Started !
+        </button>
+
+        <p class="w-full text-[18px] text-[#7C838A]">
+          Already have an account?
+          <a href="../login" class="text-[#9A47E3]">Sign in</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../dist/sign_up/Sign_up.js"></script>
+</body>
+
+</html>

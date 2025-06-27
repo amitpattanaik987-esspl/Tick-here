@@ -1,0 +1,695 @@
+openapi: 3.0.0
+info:
+  title: Event Ticketing API
+  version: 1.0.0
+  description: API for managing users, events, locations, seats, and tickets.
+
+servers:
+  - url: http://localhost:8000/
+
+paths:
+  # authentication
+  /auth/admin/login:
+    post:
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Admin"
+      responses:
+        "200":
+          description: Login successful
+
+  /admins:
+    post:
+      summary: Register a new admin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Admin"
+      responses:
+        "201":
+          description: Admin created
+
+  /auth/admin/logout:
+    post:
+      summary: Logout the current admin
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: admin logged out successfully
+
+  /auth/admin/profile:
+    get:
+      summary: Get current admin profile
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: admin profile retrieved successfully
+
+    put:
+      summary: Update current admin profile
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Admin"
+      responses:
+        "200":
+          description: admin profile updated successfully
+
+  /users:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "201":
+          description: User registered successfully
+
+  /auth/user/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: User logged in successfully
+
+  /auth/user/logout:
+    post:
+      summary: Logout the current user
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: User logged out successfully
+
+  /auth/user/profile:
+    get:
+      summary: Get current user profile
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: User profile retrieved successfully
+
+    put:
+      summary: Update current user profile
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: User profile updated successfully
+
+  # events
+  /events:
+    get:
+      tags:
+        - Admin - Events
+      summary: Get all events with optional filters (Admin)
+      description: |
+        Fetch a list of events with optional filters like category and location. 
+        Supports multiple categories.
+      parameters:
+        - name: category
+          in: query
+          description: Filter by one or more category names (comma-separated)
+          required: false
+          schema:
+            type: string
+            example: music,drama
+        - name: location
+          in: query
+          description: Filter events by location name
+          required: false
+          schema:
+            type: string
+            example: delhi
+      responses:
+        "200":
+          description: List of filtered events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+        "401":
+          description: Unauthorized
+
+  /events/{event}/venues:
+    get:
+      summary: Get all venues for a specific event
+      tags: [Events, User, Admin]
+      parameters:
+        - name: event
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: venues list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Venue"
+
+  /events/{eventId}/tickets:
+    get:
+      summary: Get all tickets for a specific event(Admin)
+      parameters:
+        - name: eventId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Tickets list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+
+  /admin/events:
+    post:
+      summary: Create event
+      tags: [Admin, Events]
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Event" }
+      responses:
+        "201": { description: Created }
+
+  /events/{event}:
+    get:
+      summary: Get event
+      tags: [Admin, User, Events]
+      security:
+        - sanctum: []
+      parameters:
+        - name: event
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event details
+
+    put:
+      summary: Update an event
+      tags: [Admin, Events]
+      security:
+        - sanctum: []
+      parameters:
+        - name: event
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Event"
+      responses:
+        "200":
+          description: Event updated successfully
+
+    delete:
+      summary: Delete an event(Admin)
+      security:
+        - sanctum: []
+      parameters:
+        - name: event
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Event deleted successfully
+
+  /events/locations/{location}:
+    get:
+      tags:
+        - User - Events
+      summary: Get events in a specific location, with optional category filters
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema:
+            type: string
+            example: mumbai
+        - name: categories
+          in: query
+          required: false
+          schema:
+            type: string
+            example: music,drama
+      responses:
+        "200":
+          description: Filtered event list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
+  # categories
+  /admin/categories:
+    post:
+      summary: Create a new category
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventCategory"
+      responses:
+        "201":
+          description: Category created successfully
+
+  /categories:
+    get:
+      summary: Get all categories
+      tags: [Admin, User]
+      responses:
+        "200": { description: Categories listed }
+
+  /admin/categories/{category}:
+    put:
+      summary: Update a category
+      security:
+        - sanctum: []
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventCategory"
+      responses:
+        "200":
+          description: Category updated successfully
+
+    delete:
+      summary: Delete a category
+      security:
+        - sanctum: []
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Category deleted successfully
+
+  # locations
+  /admin/locations:
+    post:
+      summary: Create a new location
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+      responses:
+        "201":
+          description: Location created successfully
+
+    get:
+      summary: List all locations
+      security:
+        - sanctum: []
+      tags: [Admin]
+      responses:
+        "200":
+          description: List of locations
+
+  /locations:
+    get:
+      summary: List all locations
+      tags: [User]
+      responses:
+        "200":
+          description: List of locations
+
+  /admin/locations/{location}:
+    put:
+      summary: Update a location
+      security:
+        - sanctum: []
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Location"
+      responses:
+        "200":
+          description: Location updated successfully
+
+    delete:
+      summary: Delete a location
+      security:
+        - sanctum: []
+      parameters:
+        - name: location
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Location deleted successfully
+
+  # venues
+  /admin/venues:
+    get:
+      summary: List all venues
+      security:
+        - sanctum: []
+      responses:
+        "200":
+          description: List of venues
+
+    post:
+      summary: Create a new venue
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Venue"
+      responses:
+        "201":
+          description: Venue created successfully
+
+  /admin/venues/{venue}:
+    put:
+      summary: Update a venue
+      security:
+        - sanctum: []
+      parameters:
+        - name: venue
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Venue"
+      responses:
+        "200":
+          description: Venue updated successfully
+
+    delete:
+      summary: Delete a venue
+      security:
+        - sanctum: []
+      parameters:
+        - name: venue
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Venue deleted successfully
+
+  # seats
+  /seats/{event_venue_id}:
+    get:
+      summary: Get available seats for an event in a venue
+      tags: [User, Booking]
+      parameters:
+        - name: event_venue_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: Seat list }
+
+  # tickets
+  /tickets:
+    post:
+      summary: Book a ticket
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Ticket"
+      responses:
+        "201": { description: Ticket created }
+
+    get:
+      summary: Get user's tickets
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      responses:
+        "200": { description: List of tickets }
+
+  /tickets/payment:
+    post:
+      summary: Make a payment
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Payment"
+      responses:
+        "200": { description: Payment successful }
+
+  /tickets/{ticket_id}:
+    delete:
+      summary: Cancel ticket
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: Cancelled }
+
+    get:
+      summary: Download ticket as PDF
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { description: PDF generated }
+
+  # Waiting List
+  /waiting-list:
+    post:
+      summary: Join waiting list
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_venue_id: { type: integer }
+      responses:
+        "200": { description: Joined waiting list }
+
+    get:
+      summary: Get current waiting list of user
+      tags: [User, Booking]
+      security:
+        - sanctum: []
+      responses:
+        "200": { description: List returned }
+
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        password: { type: string, format: password }
+
+    Admin:
+      type: object
+      properties:
+        id: { type: integer }
+        username: { type: string }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        password: { type: string, format: password }
+
+    Event:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        description: { type: string }
+        thumbnail: { type: string, format: uri }
+        category_id: { type: integer }
+        admin_id: { type: integer }
+
+    Location:
+      type: object
+      properties:
+        id: { type: integer }
+        city: { type: string }
+        state: { type: string }
+        country: { type: string }
+
+    Venue:
+      type: object
+      properties:
+        id: { type: integer }
+        venue_name: { type: string }
+        location_id: { type: integer }
+
+    EventVenue:
+      type: object
+      properties:
+        id: { type: integer }
+        event_id: { type: integer }
+        location_id: { type: integer }
+        venue_id: { type: integer }
+        available_seats: { type: integer }
+        start_datetime: { type: string, format: date-time }
+        duration: { type: string, format: time }
+
+    Seat:
+      type: object
+      properties:
+        id: { type: integer }
+        event_vanue_id: { type: integer }
+        row_label: { type: string }
+        seat_no: { type: integer }
+        label: { type: string }
+        price: { type: number, format: float }
+        is_booked: { type: boolean }
+
+    Ticket:
+      type: object
+      properties:
+        id: { type: integer }
+        user_id: { type: integer }
+        event_vanue_id: { type: integer }
+        ticket_code: { type: string }
+        total_price: { type: number, format: float }
+        status:
+          type: string
+          enum: [booked, cancelled, waiting]
+
+    TicketSeat:
+      type: object
+      properties:
+        id: { type: integer }
+        ticket_id: { type: integer }
+        seat_id: { type: integer }
+
+    EventCategory:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }

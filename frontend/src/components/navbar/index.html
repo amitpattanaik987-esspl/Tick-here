@@ -1,0 +1,58 @@
+<nav>
+  <div
+    class="w-full relative bg-ghostwhite border-darkslateblue border-solid border-b-[1px] box-border h-[3.531rem] flex flex-row items-center justify-between py-[0rem] px-[1.5rem] gap-[0rem] text-left text-[1rem] text-gray-300 font-poppins">
+    <div id="navWrapper" class="relative flex-1 flex flex-row items-center justify-center gap-[1rem] z-[0]">
+      <div class="flex flex-row items-center justify-start py-[0.75rem] px-[0.5rem] text-stone-700 cursor-pointer">
+        <a class="relative leading-[100%] font-medium">Home</a>
+      </div>
+      <div class="flex flex-row items-center justify-start py-[0.75rem] px-[0.5rem] text-stone-700 cursor-pointer">
+        <a id="all-events" class="relative leading-[100%] font-medium">All Events</a>
+      </div>
+      <img class="w-[7.125rem] relative h-[2.313rem]" alt="" src="../../assets/images/eventix.png" />
+      <div class="flex flex-row items-center justify-start py-[0.75rem] px-[0.5rem] text-stone-700 cursor-pointer">
+        <a class="relative leading-[100%] font-medium">My Bookings</a>
+      </div>
+      <div
+        class="flex flex-row items-center justify-start py-[0.75rem] px-[0.5rem] text-stone-700 cursor-pointer contact-button">
+        <div class="relative leading-[100%] font-medium">Contact Us</div>
+      </div>
+
+      <span id="activeIndicator" class="absolute bottom-0 h-[3px] bg-darkorchid rounded"
+        style="width: 0px; left: 0px"></span>
+    </div>
+
+    <div
+      class="absolute top-[0.45rem] left-[66.563rem] flex flex-row items-center justify-start gap-[1.375rem] z-[1] text-[1.125rem] text-black font-roboto"
+    >
+      <div id="navbar-location-display" class="location-button"></div>
+
+      <div
+        class="w-[2.625rem] h-[2.5rem] cursor-pointer flex items-center justify-center overflow-hidden rounded-full bg-gray-100"
+      >
+        <img
+          class="w-full h-full object-cover"
+          alt=""
+          src="../../assets/images/userAvatar.png"
+          id="userAvatar"
+        />
+
+      </div>
+    </div>
+  </div>
+
+  <div id="frameContainer" class="popup-overlay rounded-[10px]" style="display: none">
+    <div
+      class="w-[7.5rem] relative rounded-[10px] bg-gray-100 border-darkorchid border-solid border-[1px] box-border flex flex-col items-start justify-start text-left text-[1rem] text-stone-700 font-inter cursor-pointer">
+      <div
+        class="self-stretch rounded-[10px] bg-gray-100 flex flex-row items-center justify-start py-[0.625rem] px-[1rem] gap-[0.5rem]">
+        <i class="fa-regular fa-user"></i>
+        <div class="relative font-semibold"><a href="/account">Account</a></div>
+      </div>
+      <div
+        class="self-stretch rounded-[10px] bg-gray-100 flex flex-row items-center justify-start py-[0.625rem] px-[1rem] gap-[0.5rem]">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        <div class="relative font-semibold" id="login_logout_toggle"></div>
+      </div>
+    </div>
+  </div>
+</nav>
