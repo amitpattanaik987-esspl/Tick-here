@@ -133,7 +133,7 @@ function openTicketDetailModal(data: any) {
             },
             body: JSON.stringify({ ticket_id: data.id })
         });
-
+        //
         const result = await res.json();
         if (result.success) {
             alert("Ticket cancelled successfully!");
