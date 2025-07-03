@@ -110,7 +110,7 @@ if (event_Id) {
 
       console.log(data);
 
-      const event = data.payload;
+      const event = data.data;
       event_detail = event;
 
       const userLocation = JSON.parse(
