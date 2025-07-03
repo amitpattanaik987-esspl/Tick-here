@@ -19,6 +19,17 @@ class LocationController extends Controller
         ]);
     }
 
+    // get all the locations (user)
+    public function show()
+    {
+        $location = Location::get();
+        return response()->json([
+            'success' => true,
+            'message' => "location fetched",
+            'data' => $location
+        ]);
+    }
+
     //create a location by admin
     public function create()
     {

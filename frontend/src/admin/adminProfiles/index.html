@@ -1,85 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Admin Profile</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Profile</title>
 
-<!-- Fonts & Styles -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Inter:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/styles/output.css" />
-</head>
-<body class="bg-white text-black">
+    <!-- Fonts & Styles -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto&family=Inter:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../../assets/styles/output.css" />
+  </head>
+  <body class="bg-white text-black">
+    <!-- Navbar -->
+    <div id="navbar"></div>
 
-<!-- Navbar -->
-<div id="navbar"></div>
+    <!-- Header Section -->
+    <main class="bg-[#f8f8ff]" id="main-content">
+      <div class="px-44 py-8">
+        <section>
+          <div
+            class="w-full relative rounded-t-lg rounded-b-none [background:linear-gradient(218.36deg,_#46006e,_#0a0417)] h-[4.688rem]"
+          ></div>
+          <div
+            class="flex justify-between items-center px-8 bg-white shadow-md mb-6 h-24"
+          >
+            <div class="flex items-center gap-5">
+              <div class="relative -mt-12">
+                <img
+                  src="https://i.pravatar.cc/100"
+                  class="w-28 h-28 rounded-full border-4 border-gray-200"
+                  alt="Admin Photo"
+                />
+                <span
+                  class="absolute bottom-1 right-0 bg-gray-200 h-8 w-8 p-1 rounded-full flex items-center justify-center"
+                >
+                  <i class="fas fa-camera fa-lg"></i>
+                </span>
+              </div>
+              <div class="ml-8">
+                <h2 class="text-2xl font-bold" id="adminName">Jitu Churan</h2>
+                <p id="adminUsername" class="text-gray-600">@imjituchauhan</p>
+              </div>
+            </div>
+            <button
+              class="border border-blue-800 px-4 py-2 rounded-md text-blue-800 font-semibold hover:[background:linear-gradient(218.36deg,_#46006e,_#0a0417)] hover:cursor-pointer hover:text-white transition duration-300 ease-in-out"
+            >
+              Edit Profile
+            </button>
+          </div>
+        </section>
 
-<!-- Header Section -->
-<main class="bg-[#f8f8ff]" id="main-content">
-<div class="px-4 py-8 sm:px-10">
-<section class="bg-gradient-to-r from-purple-800 to-purple-600 p-6 rounded-xl text-white shadow-lg flex justify-between items-center mb-10">
-<div class="flex items-center gap-5">
-<div class="relative">
-<img src="https://i.pravatar.cc/100" class="w-24 h-24 rounded-full border-4 border-white" alt="Admin Photo" />
-<span class="absolute bottom-0 right-0 bg-white p-1 rounded-full">
-<i class="fas fa-camera text-purple-700 text-xs"></i>
-</span>
-</div>
-<div>
-<h2 class="text-2xl font-semibold" id="adminName">Jitu Churan</h2>
-<p id="adminUsername">@imjituchauhan</p>
-</div>
-</div>
-<button class="border border-white px-4 py-2 rounded hover:bg-white hover:text-purple-800">Edit Profile</button>
-</section>
+        <!-- Grid Section -->
+        <div class="grid grid-cols-5 gap-5">
+          <!-- Active Admins -->
+          <div class="col-span-2 bg-white p-8 rounded-lg shadow">
+            <div class="flex justify-between">
+              <h3 class="text-xl font-semibold text-[#0f172a] mb-4">
+                Active Admins
+              </h3>
+              <i class="fa-regular fa-square-plus mt-4 fa-xl"></i>
+            </div>
+            <ul class="space-y-4" id="adminList">
+              <li>
+                <div class="flex animate-pulse items-center gap-4">
+                  <div class="size-12 rounded-full bg-gray-200"></div>
+                  <div class="h-4 w-32 rounded bg-gray-200"></div>
+                  <div class="flex gap-4 ml-14">
+                    <i class="fa-regular fa-pen-to-square fa-lg"></i>
+                    <i class="fa-solid fa-user-xmark fa-lg"></i>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
 
-<!-- Grid Section -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Personal Details -->
+          <div class="col-span-3 bg-white p-16 rounded-lg shadow">
+            <h3 class="text-2xl font-semibold text-[#0f172a] mb-4">
+              Personal Details
+            </h3>
+            <form class="space-y-4">
+              <div>
+                <label class="block mb-1 text-sm">Full Name</label>
+                <input
+                  id="adminFullName"
+                  type="text"
+                  readonly
+                  class="w-full p-2 bg-gray-100 border rounded"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm">Email</label>
+                <input
+                  id="adminEmail"
+                  type="email"
+                  readonly
+                  class="w-full p-2 bg-gray-100 border rounded"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm">Phone Number</label>
+                <input
+                  id="adminPhone"
+                  type="text"
+                  readonly
+                  class="w-full p-2 bg-gray-100 border rounded"
+                />
+              </div>
+              <div>
+                <label class="block mb-1 text-sm">Password</label>
+                <input
+                  type="password"
+                  value="************"
+                  readonly
+                  class="w-full p-2 bg-gray-100 border rounded"
+                />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
 
-<!-- Active Admins -->
-<div class="bg-white p-6 rounded-lg shadow">
-<h3 class="text-xl font-semibold mb-4">Active Admins</h3>
-<ul class="space-y-4" id="adminList">
-<!-- JS will populate -->
-</ul>
-</div>
-
-<!-- Personal Details -->
-<div class="bg-white p-6 rounded-lg shadow">
-<h3 class="text-xl font-semibold mb-4">Personal Details</h3>
-<form class="space-y-4">
-<div>
-<label class="block mb-1 text-sm">Full Name</label>
-<input id="adminFullName" type="text" readonly class="w-full p-2 bg-gray-100 border rounded" />
-</div>
-<div>
-<label class="block mb-1 text-sm">Email</label>
-<input id="adminEmail" type="email" readonly class="w-full p-2 bg-gray-100 border rounded" />
-</div>
-<div>
-<label class="block mb-1 text-sm">Phone Number</label>
-<input id="adminPhone" type="text" readonly class="w-full p-2 bg-gray-100 border rounded" />
-</div>
-<div>
-<label class="block mb-1 text-sm">Password</label>
-<input type="password" value="************" readonly class="w-full p-2 bg-gray-100 border rounded" />
-</div>
-</form>
-</div>
-</div>
-</div>
-</main>
-
-<!-- Footer -->
-<div id="footer"></div>
-
-<!-- Modals -->
-<div id="contact-modal-container"></div>
-<div id="location-modal-container"></div>
-
-<!-- Scripts -->
-<script type="module" src="../../dist/account/adminProfile.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</body>
+    <!-- Scripts -->
+    <script
+      type="module"
+      src="../../dist/Admin/adminProfiles/adminProfile.js"
+    ></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </body>
 </html>

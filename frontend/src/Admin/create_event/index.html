@@ -17,8 +17,31 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-
   </head>
+  <!-- Image Preview Modal -->
+  <div
+    id="imagePreviewModal"
+    class="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 hidden"
+  >
+    <div
+      class="border border-purple-950 bg-white p-4 rounded shadow-lg relative max-w-2xl max-h-[95vh] overflow-auto"
+    >
+      <button
+        id="closeImageModal"
+        class="absolute top-2 right-2 text-gray-600 hover:text-black text-lg"
+        title="Close"
+      >
+        ✕
+      </button>
+      <img
+        id="modalPreviewImage"
+        src=""
+        alt="Full Preview"
+        class="rounded max-w-full max-h-[80vh] object-contain"
+      />
+    </div>
+  </div>
+
   <body class="bg-[#F8F8FF] font-poppins">
     <div id="navbar"></div>
     <main class="px-[278px] py-6">
@@ -67,30 +90,29 @@
           <label class="block text-sm font-medium mb-1" for="category"
             >Category</label
           >
-
-          <div class="flex items-center justify-between relative border border-gray-300 rounded-md px-4 py-2 bg-white focus-within:ring-1 focus-within:ring-purple-500">
-            <select
-              id="category"
-              class="w-full  rounded-md bg-white
-         focus:outline-none appearance-none"
-            >
-              <option>Select Category</option>
-              <option>Comedy</option>
-              <option>Music</option>
-              <option>Sports</option>
-            </select>
-            <i class="fa-solid fa-chevron-down"></i>
+          <div
+            id="customCategoryDropdown"
+            class="relative border border-gray-300 rounded-md px-4 py-2 bg-white cursor-pointer"
+          >
+            <span id="selectedCategoryText">Select a category</span>
+            <i class="fa-solid fa-chevron-down absolute right-4 top-3"></i>
+            <div
+              id="categoryOptions"
+              class="absolute mt-2 z-10 hidden top-full left-0 w-full bg-white border border-gray-300 rounded-b-md shadow"
+            ></div>
           </div>
-
+          <!-- Hidden field to store selected category id -->
+          <input type="hidden" id="category" />
         </div>
 
         <!-- Duration -->
         <div>
           <label class="block text-sm font-medium mb-1" for="duration"
-            >Duration (Hrs)</label
+            >Duration (h:m:s)</label
           >
+
           <input
-            type="number"
+            type="text"
             id="duration"
             min="1"
             max="10"
@@ -99,15 +121,6 @@
           />
         </div>
 
-        <!-- Ticket Price
-      <div class="col-span-1">
-        <label class="block text-sm font-medium mb-1" for="ticket-price">Ticket Price</label>
-        <div class="relative">
-          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-          <input type="number" id="ticket-price" min="0" placeholder="Enter Price" class="w-full pl-8 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"/>
-        </div>
-      </div> -->
-
         <!-- Venue Block -->
         <div
           id="venueBlock"
@@ -115,9 +128,7 @@
         >
           <button
             id="closeVenueBtn"
-
             class="absolute top-2 right-2 text-gray-500 hover:text-gray-950 px-2"
-
             title="Close"
           >
             ✕
@@ -125,22 +136,37 @@
           <label class="block text-sm font-medium mb-1" for="venue"
             >Venue</label
           >
-          <select
-            id="venue"
-            class="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 bg-white focus:outline-none focus:ring-1 focus:ring-purple-500"
+
+          <div
+            id="customVenueDropdown"
+            class="relative border border-gray-300 rounded-md px-4 py-2 bg-white"
           >
-            <option>Select</option>
-            <option>Venue A</option>
-            <option>Venue B</option>
-          </select>
+            <input
+              type="text"
+              id="venueSearchInput"
+              placeholder="Search for a venue"
+              class="w-full focus:outline-none"
+            />
+            <i
+              class="fa-solid fa-chevron-down absolute right-4 top-3 pointer-events-none"
+            ></i>
+            <div
+              id="venueOptions"
+              class="absolute mt-2 z-10 hidden top-full left-0 w-full bg-white border border-gray-300 rounded-b-md shadow max-h-60 overflow-y-auto"
+            ></div>
+
+            <!-- hidden actual input to send to backend -->
+            <input type="hidden" id="venue" name="venue" />
+          </div>
+
           <div class="grid grid-cols-2 gap-x-4">
             <div>
-              <label class="block text-sm font-medium mb-1" for="to-date"
-                >To</label
+              <label class="block text-sm font-medium mb-1" for="on-date"
+                >On</label
               >
               <input
                 type="date"
-                id="to-date"
+                id="on-date"
                 class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
               />
             </div>
@@ -162,12 +188,10 @@
         <div class="col-span-2 mt-2 relative">
           <button
             id="toggleVenueBtn"
-
-            class="w-full flex items-center justify-between border border-purple-500 px-4 py-2 rounded-md hover:bg-purple-600 hover:text-white transition duration-200"
+            class="hover:bg-gradient-to-r hover:from-[#46006e] to-[#0a0417] w-full flex items-center justify-between border border-[#191970] px-4 py-2 rounded-md hover:text-white transition duration-200"
           >
             <span>Add Venue</span>
             <i class="fa-solid fa-plus"></i>
-
           </button>
         </div>
 
@@ -176,16 +200,15 @@
 
         <!-- Final Buttons -->
         <div class="col-span-2 flex justify-center gap-6 mt-">
-
-          <button class="border border-[#191970] px-6 py-2 rounded-md">
-
+          <button
+            id="cancelBtn"
+            class="border border-[#191970] px-6 py-2 rounded-md"
+          >
             Cancel
           </button>
           <button
             id="submitFormBtn"
-
             class="bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white px-6 py-2 rounded-md hover:cursor-pointer"
-
           >
             Create
           </button>

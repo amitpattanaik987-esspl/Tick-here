@@ -32,7 +32,7 @@ Route::post('/auth/admin/login', [AdminController::class, 'login']);
 // Public Data
 Route::get('/events/{event}', [EventController::class, 'getEvent']); // Get event details
 
-Route::get('/locations', [LocationController::class, 'index']); // Get all locations
+Route::get('/locations', [LocationController::class, 'show']); // Get all locations
 Route::get('/events/locations/{location}', [EventController::class, 'getEventsByLocation']); // all Events for a location
 Route::get('/categories', [EventCategoryController::class, 'index']);
 
@@ -141,6 +141,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/admin/events', [EventController::class, 'index']); // Get all events
     Route::post('/admin/create-event', [EventController::class, 'create']);
     Route::delete('/admin/events/{event}', [EventController::class, 'delete']);
+    Route::patch('/admin/events/{event}/cancel', [EventController::class, 'cancel']);
     Route::put('/admin/events/{event}', [EventController::class, 'update']);
     Route::get('/admin/events/{eventId}/venues', [EventVenuesController::class, 'getVenuesByEvent']); // Venues for an event
     Route::get('/admin/events/{eventVenueId}/tickets', [EventVenuesController::class, 'getTicketsByEventVenue']);
@@ -157,8 +158,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/admin/venues/{venue}', [VenueController::class, 'delete']);
     Route::put('/admin/venues/{venue}', [VenueController::class, 'update']);
 
-    //Categories
-    Route::post('/admin/categories', [EventCategoryController::class, 'create']);
-    Route::delete('/admin/categories/{category}', [EventCategoryController::class, 'delete']);
-    Route::put('/admin/categories/{category}', [EventCategoryController::class, 'update']);
 });
