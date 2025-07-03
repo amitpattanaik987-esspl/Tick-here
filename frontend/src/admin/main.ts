@@ -1,4 +1,4 @@
-import { loadNavbar } from "../Admin/components/admin_navbar/navbar.js";
+import { loadNavbar } from "./components/admin_navbar/navbar.js";
 declare var ApexCharts: any;
 
 function loadEventStats() {
@@ -71,6 +71,8 @@ function loadTicketStats() {
     },
     success: function (response) {
       if (response.success) {
+        console.log(response.data);
+
         renderCategoryChart(response.data);
       }
     },
