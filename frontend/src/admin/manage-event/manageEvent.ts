@@ -1,4 +1,3 @@
-
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
 
 interface Event {
@@ -92,6 +91,8 @@ function renderEventRow(event: Event, index: number, status: string): string {
         ${
           status === "Completed"
             ? `<span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">Details</span>`
+            : status === "Cancelled"
+            ? `<button class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn" > Delete </button>`
             : `<button class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn">Edit</button>
         <button class="deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>`
         }
@@ -416,7 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // add-event.ts
+  // create-event.ts
   const addEventBtn = document.getElementById("addEventBtn");
 
   addEventBtn?.addEventListener("click", () => {
@@ -424,4 +425,132 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "/admin/create_event/";
   });
 
+  $(document).on("click", ".editEventBtn", function (e) {
+    e.stopPropagation();
+
+    const eventCreatedBy = $(this).data("created-by");
+
+    // todo:
+    const loggedInAdmin = localStorage.getItem("admin_info");
+
+    if (eventCreatedBy !== loggedInAdmin) {
+      alert("You are not authorized to edit this event.");
+      return;
+    }
+
+    const eventRow = $(this).closest(".event-row");
+    const eventId = Number(eventRow.data("event-id"));
+    const eventStatus = String(eventRow.data("status"));
+
+    $.ajax({
+      url: `http://127.0.0.1:8000/api/events/${eventId}`,
+      method: "GET",
+      success: function (res) {
+        if (res.success && res.data) {
+          console.log(res.data);
+
+          const eventData = res.data;
+
+          // If event is Active and has tickets booked, restrict full editing
+          const hasTickets = eventData.event_venue?.some(
+            (venue: any) => venue.tickets_booked > 0
+          );
+
+          if (eventStatus === "Active" && hasTickets) {
+            // Limit editing fields — allow only basic info
+            eventData.__edit_mode = "partial";
+          } else {
+            eventData.__edit_mode = "full";
+          }
+
+          console.log(eventData);
+
+          localStorage.setItem("edit_event_data", JSON.stringify(eventData));
+          window.location.href = "/admin/create_event/";
+        }
+      },
+      error: function (err) {
+        console.error("Failed to fetch event:", err);
+        alert("Failed to load event for editing.");
+      },
+    });
+  });
+
+  $(document).on("click", ".deleteEventBtn", function (e) {
+    e.stopPropagation();
+
+    const token = localStorage.getItem("admin_token");
+    if (!token) {
+      alert("You are not authenticated.");
+      return;
+    }
+
+    const eventCreatedBy = $(this).data("created-by");
+
+    // todo:
+    const loggedInAdmin = localStorage.getItem("admin_info");
+
+    if (eventCreatedBy !== loggedInAdmin) {
+      alert("You are not authorized to delete this event.");
+      return;
+    }
+
+    const eventRow = $(this).closest(".event-row");
+    const eventId = Number(eventRow.data("event-id"));
+    const status = String(eventRow.data("status"));
+
+    if (status === "Completed") {
+      alert("Completed events cannot be deleted.");
+      return;
+    }
+
+    // open choice modal
+    $("#eventActionModal").removeClass("hidden");
+
+    $(".closeActionModal").on("click", function () {
+      $("#eventActionModal").addClass("hidden");
+    });
+
+    $("#cancelChoiceBtn").on("click", function () {
+      // CANCEL OPTION: unlink venues
+      $.ajax({
+        url: `http://127.0.0.1:8000/api/admin/events/${eventId}/cancel`,
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        success: function (res) {
+          alert("Event has been cancelled.");
+          fetchEvents(currentPageUrl);
+          $("#eventActionModal").addClass("hidden");
+        },
+        error: function (err) {
+          console.error("Cancellation error:", err);
+          alert("Failed to cancel event.");
+        },
+      });
+    });
+
+    $("#deleteChoiceBtn").on("click", function () {
+      // DELETE OPTION
+      $.ajax({
+        url: `http://127.0.0.1:8000/api/admin/events/${eventId}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        success: function (res) {
+          alert("Event deleted successfully.");
+          fetchEvents(currentPageUrl);
+          $("#eventActionModal").addClass("hidden");
+        },
+        error: function (xhr) {
+          alert("Failed to delete event.");
+          console.error(xhr.responseText);
+        },
+      });
+    });
+  });
 });

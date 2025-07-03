@@ -19,11 +19,6 @@ class Venue extends Model
         return $this->hasMany(EventVenue::class);
     }
 
-    public function location()
-    {
-        return $this->belongsTo(Location::class);
-    }
-
     // for getting price of a seat for an event (/events/locations/{location})
     public function seats()
     {

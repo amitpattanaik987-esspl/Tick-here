@@ -11,6 +11,8 @@ class Venue extends Model
 
     protected $fillable = ['vanue_name', 'location_id', 'max_seats'];
 
+    protected $with = ['location'];
+
     //this is used to establish the relationship between venue and event_venue table
     public function eventVenues()
     {

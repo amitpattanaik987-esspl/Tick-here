@@ -16,6 +16,7 @@
     />
     <link
       rel="stylesheet"
+
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
     />
     <link
@@ -27,145 +28,143 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap"
     />
     <link href="../assets/styles/output.css" rel="stylesheet" />
-  </head>
-  <body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
     <div id="navbar"></div>
 
-    <main>
-      <!-- Dashboard Cards -->
-      <div
-        class="max-w-6xl mx-auto mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
-        <!-- Single Card (Repeat this block 6 times or use a loop if using JS) -->
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
-          </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
-        </div>
+    <main class="px-[278px] py-6 space-y-[28px]">
 
-        <!-- Copy the card above 5 more times -->
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
-          </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
-        </div>
+      <div id="location-form"></div>
+      <!-- Cards Grid -->
 
-        <!-- Repeat until you have 6 cards -->
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
+      <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6 items-start justify-items-center">
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
           </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
-        </div>
-
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
           </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
+          <div class="bg-gray-200 h-2 rounded"></div>
         </div>
-
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
+        </div>
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
           </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
-        </div>
-
-        <div class="bg-white shadow-md rounded-2xl p-6 text-center">
-          <h2 class="text-lg font-semibold text-gray-700">Comedy</h2>
-          <p class="text-sm text-gray-500">3 Active Events</p>
-          <div class="mt-4 text-4xl font-bold text-gray-800">150</div>
-          <div
-            class="flex justify-center items-center gap-1 text-green-500 text-sm mt-1"
-          >
-            <span>30%</span>
-            <span>↑</span>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
           </div>
-          <p class="text-xs text-gray-500">Event Bookings</p>
+          <div class="bg-gray-200 h-2 rounded"></div>
         </div>
-      </div>
-
+        </div>
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
+          </div>
+          <div class="bg-gray-200 h-2 rounded"></div>
+        </div>
+        </div>
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
+          </div>
+          <div class="bg-gray-200 h-2 rounded"></div>
+        </div>
+        </div>
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
+          </div>
+          <div class="bg-gray-200 h-2 rounded"></div>
+        </div>
+        </div>
+        <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-4">
+          <div class="animate-pulse space-y-3">
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-3 rounded"></div>
+            <div class="bg-gray-200 h-2 col-span-2 rounded"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <div class="bg-gray-200 col-span-1 h-8 rounded"></div>
+            <div></div>
+            <div class="bg-gray-200 col-span-1 h-2 rounded"></div>
+          </div>
+          <div class="bg-gray-200 h-2 rounded"></div>
+        </div>
+        </div>
+      </section>
+      
       <!-- Buttons -->
-      <div class="mt-10 flex justify-center gap-6">
+      <div class="flex justify-center gap-[243px]">
         <button
-          class="px-6 py-2 border border-purple-300 rounded-xl text-purple-600 hover:bg-purple-100 transition"
+          class="border border-[#191970] rounded-lg hover:cursor-pointer hover:bg-gradient-to-r
+            hover:from-[#46006e]
+            hover:to-[#0a0417]
+            hover:text-white"
+
+          style="width: 150px; height: 42px;" id="addEventButton"
         >
           Add New Event
         </button>
         <button
-          class="px-6 py-2 border border-purple-300 rounded-xl text-purple-600 hover:bg-purple-100 transition"
+
+          class="border border-[#191970] rounded-lg hover:cursor-pointer hover:bg-gradient-to-r
+            hover:from-[#46006e]
+            hover:to-[#0a0417]
+            hover:text-white"
+
+          style="width: 150px; height: 42px;" id="manageEventButton"
         >
           Manage Event
         </button>
       </div>
-
-      <!-- Bar Chart (Dummy using divs) -->
-      <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
-        <div class="flex items-end justify-between h-48">
-          <!-- Bars -->
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-300 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm">Comedy</p>
-          </div>
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-400 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm">Kids</p>
-          </div>
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-500 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm">Music</p>
-          </div>
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-600 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm">Workshop</p>
-          </div>
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-700 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm">Performance</p>
-          </div>
-          <div class="flex flex-col items-center">
-            <div class="w-8 bg-purple-900 h-[150px] rounded-t-lg"></div>
-            <p class="mt-2 text-sm text-center">Sports Event</p>
+      <!-- Charts -->
+       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <h2 class="text-lg font-semibold text-gray-900 mb-6">
+            Event Categories Overview
+          </h2>
+          <div class="chart-container">
+             <div id="myChart" class="bg-white p-6 rounded-lg shadow w-full"></div>
           </div>
         </div>
       </div>
-    </main>
 
-    <div id="contact-modal"></div>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-    <script type="module" src="../dist/admin/main.js"></script>
-  </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script type="module" src="../dist/Admin/main.js"></script>
+    
+</body>
 </html>

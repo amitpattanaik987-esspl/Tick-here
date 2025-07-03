@@ -22,7 +22,7 @@ paths:
         "200":
           description: Login successful
 
-  /admins:
+  /admin:
     post:
       summary: Register a new admin
       requestBody:
@@ -137,14 +137,29 @@ paths:
         "200":
           description: User profile updated successfully
 
+  /auth/user/change-password:
+    post:
+      summary: Change user password
+      security:
+        - sanctum: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: Password changed successfully
+
   # events
-  /events:
+  /admin/events:
     get:
       tags:
         - Admin - Events
       summary: Get all events with optional filters (Admin)
       description: |
-        Fetch a list of events with optional filters like category and location. 
+        Fetch a list of events with optional filters like category and event title, duration. 
         Supports multiple categories.
       parameters:
         - name: category
@@ -154,13 +169,20 @@ paths:
           schema:
             type: string
             example: music,drama
-        - name: location
+        - name: event
           in: query
-          description: Filter events by location name
+          description: Filter events by event title
           required: false
           schema:
             type: string
-            example: delhi
+            example: Music show
+        - name: duration
+          in: query
+          description: Filter events by duration (in minutes)
+          required: false
+          schema:
+            type: integer
+
       responses:
         "200":
           description: List of filtered events
@@ -212,7 +234,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/Ticket"
 
-  /admin/events:
+  /admin/create-event:
     post:
       summary: Create event
       tags: [Admin, Events]
@@ -262,6 +284,21 @@ paths:
         "204":
           description: Event deleted successfully
 
+  /admin/events/{event}/cancel:
+    patch:
+      summary: Cancel an event(Admin)
+      security:
+        - sanctum: []
+      parameters:
+        - name: event
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event cancelled successfully
+
   /events/locations/{location}:
     get:
       tags:
@@ -304,22 +341,7 @@ paths:
         "200":
           description: Event details
 
-  # todo categories
-  /admin/categories:
-    post:
-      summary: Create a new category
-      security:
-        - sanctum: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/EventCategory"
-      responses:
-        "201":
-          description: Category created successfully
-
+  #  categories
   /categories:
     get:
       summary: Get all categories
@@ -503,7 +525,7 @@ paths:
         "200": { description: Seat list }
 
   # tickets
-  /tickets:
+  /create-ticket:
     post:
       summary: Book a ticket
       tags: [User, Booking]
@@ -518,6 +540,7 @@ paths:
       responses:
         "201": { description: Ticket created }
 
+  /gettickets:
     get:
       summary: Get user's tickets
       tags: [User, Booking]
@@ -526,22 +549,21 @@ paths:
       responses:
         "200": { description: List of tickets }
 
-  /tickets/payment:
-    post:
-      summary: Make a payment
+  /getEventsByTicketId:
+    get:
+      summary: Get events by ticket ID
       tags: [User, Booking]
       security:
         - sanctum: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Payment"
+      parameters:
+        - name: ticket_id
+          in: path
+          required: true
+          schema: { type: integer }
       responses:
-        "200": { description: Payment successful }
+        "200": { description: List of events }
 
-  /tickets/{ticket_id}:
+  /cancel-ticket:
     delete:
       summary: Cancel ticket
       tags: [User, Booking]
@@ -625,10 +647,10 @@ paths:
                         tickets_sold:
                           type: integer
 
-  # Waiting List
-  /waiting-list:
+  # payment
+  /create-checkout-session:
     post:
-      summary: Join waiting list
+      summary: Create a checkout session
       tags: [User, Booking]
       security:
         - sanctum: []
@@ -636,20 +658,8 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              type: object
-              properties:
-                event_venue_id: { type: integer }
       responses:
-        "200": { description: Joined waiting list }
-
-    get:
-      summary: Get current waiting list of user
-      tags: [User, Booking]
-      security:
-        - sanctum: []
-      responses:
-        "200": { description: List returned }
+        "200": { description: Checkout session created }
 
 components:
   securitySchemes:

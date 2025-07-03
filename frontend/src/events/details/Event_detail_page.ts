@@ -2,7 +2,11 @@ import { loadNavbar } from "../../components/navbar/navbar.js";
 import { loadFooter } from "../../components/footer/footer.js";
 import { loadContactModal } from "../../components/contact-modal/contactModal.js";
 import { loadLocationModal } from "../../components/location-modal/locationModal.js";
-import { initLoader, showLoader, hideLoader } from "../../components/loader/loader.js";
+import {
+  initLoader,
+  showLoader,
+  hideLoader,
+} from "../../components/loader/loader.js";
 
 initLoader();
 
@@ -104,10 +108,14 @@ if (event_Id) {
       hideLoader();
       if (!data.success) throw new Error("Event fetch unsuccessful");
 
-      const event = data.payload;
+      console.log(data);
+
+      const event = data.data;
       event_detail = event;
 
-      const userLocation = JSON.parse(sessionStorage.getItem("selectedLocation") || "{}");
+      const userLocation = JSON.parse(
+        sessionStorage.getItem("selectedLocation") || "{}"
+      );
       if (!userLocation || !userLocation.city) {
         alert("Please select a location before proceeding.");
         window.location.href = "/";
@@ -127,25 +135,29 @@ if (event_Id) {
 
       // DOM population
       document.getElementById("event-title")!.textContent = event.title;
-      document.getElementById("event-duration")!.textContent = formatDuration(event.duration);
-      document.getElementById("event-description")!.textContent = event.description;
-      document.getElementById("event_category")!.textContent = `${event.category.name} Show`;
+      document.getElementById("event-duration")!.textContent = formatDuration(
+        event.duration
+      );
+      document.getElementById("event-description")!.textContent =
+        event.description;
+      document.getElementById(
+        "event_category"
+      )!.textContent = `${event.category.name} Show`;
       document.getElementById("event-price")!.textContent = "400.00";
 
       const venue_div = document.getElementById("Venues_div");
       const date_div = document.getElementById("date_div");
       const show_time_div = document.getElementById("show_time_div");
 
-      filteredVenues.forEach((venueData) => {
-
+      filteredVenues.forEach((venueData: any) => {
         const venue = document.createElement("p");
         venue.className =
           "bg-[#EAE2FF] rounded-[10px] px-[30px] py-[10px] w-[377px] text-center border-[1px] cursor-pointer";
         venue.textContent = venueData.venue.venue_name;
         venue.addEventListener("click", function () {
-          document.querySelectorAll("#Venues_div .selected").forEach((el) =>
-            el.classList.remove("selected")
-          );
+          document
+            .querySelectorAll("#Venues_div .selected")
+            .forEach((el) => el.classList.remove("selected"));
           venue.classList.add("selected");
           fetchAndRenderSeats(venueData.venue.id);
         });
@@ -157,9 +169,9 @@ if (event_Id) {
           "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[200px] text-center border-[1px] cursor-pointer";
         date.textContent = extractDateLabel(venueData.start_datetime);
         date.addEventListener("click", function () {
-          document.querySelectorAll("#date_div .selected").forEach((el) =>
-            el.classList.remove("selected")
-          );
+          document
+            .querySelectorAll("#date_div .selected")
+            .forEach((el) => el.classList.remove("selected"));
           date.classList.add("selected");
         });
         date_div?.appendChild(date);
@@ -170,9 +182,9 @@ if (event_Id) {
           "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[320px] text-center border-[1px] cursor-pointer";
         time.textContent = extractTime(venueData.start_datetime);
         time.addEventListener("click", function () {
-          document.querySelectorAll("#show_time_div .selected").forEach((el) =>
-            el.classList.remove("selected")
-          );
+          document
+            .querySelectorAll("#show_time_div .selected")
+            .forEach((el) => el.classList.remove("selected"));
           time.classList.add("selected");
         });
         show_time_div?.appendChild(time);
@@ -180,12 +192,18 @@ if (event_Id) {
 
       (venue_div?.firstElementChild as HTMLElement)?.classList.add("selected");
       (date_div?.firstElementChild as HTMLElement)?.classList.add("selected");
-      (show_time_div?.firstElementChild as HTMLElement)?.classList.add("selected");
+      (show_time_div?.firstElementChild as HTMLElement)?.classList.add(
+        "selected"
+      );
 
       fetchAndRenderSeats(filteredVenues[0].venue.id);
 
-      const thumbnail = document.getElementById("event-thumbnail") as HTMLImageElement;
-      thumbnail.src = event.thumbnail;
+      const thumbnail = document.getElementById(
+        "event-thumbnail"
+      ) as HTMLImageElement;
+      thumbnail.src = event.thumbnail.startsWith("http")
+        ? event.thumbnail
+        : `http://127.0.0.1:8000/${event.thumbnail}`;
       thumbnail.alt = event.title;
     })
     .catch((err) => {
@@ -221,11 +239,12 @@ function extractDateLabel(datetimeStr: string): string {
 
   if (inputDate.getTime() === today.getTime()) return "Today";
   else if (inputDate.getTime() === tomorrow.getTime()) return "Tomorrow";
-  else return inputDate.toLocaleDateString("en-US", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-  });
+  else
+    return inputDate.toLocaleDateString("en-US", {
+      weekday: "short",
+      day: "2-digit",
+      month: "short",
+    });
 }
 
 function fetchAndRenderSeats(venueId: number) {
@@ -255,7 +274,8 @@ function fetchAndRenderSeats(venueId: number) {
 
       sortedRows.forEach((row) => {
         const rowDiv = document.createElement("div");
-        rowDiv.className = "flex gap-[10px] justify-center items-center mb-[10px]";
+        rowDiv.className =
+          "flex gap-[10px] justify-center items-center mb-[10px]";
 
         const rowLabel = document.createElement("span");
         rowLabel.className = "w-[40px] text-right mr-[10px] font-semibold";
@@ -275,20 +295,23 @@ function fetchAndRenderSeats(venueId: number) {
           el.textContent = seat.label;
 
           if (seat.is_booked) {
-            el.className = "flex justify-center items-center p-[5px] rounded-[6px] bg-[#CBBAEA] text-white cursor-not-allowed w-[40px] h-[35px]";
+            el.className =
+              "flex justify-center items-center p-[5px] rounded-[6px] bg-[#CBBAEA] text-white cursor-not-allowed w-[40px] h-[35px]";
           } else {
-            el.className = "flex justify-center items-center p-[5px] rounded-[6px] text-xs border hover:bg-purple-500 cursor-pointer w-[40px] h-[35px]";
+            el.className =
+              "flex justify-center items-center p-[5px] rounded-[6px] text-xs border hover:bg-purple-500 cursor-pointer w-[40px] h-[35px]";
             el.addEventListener("click", () => {
               el.classList.toggle("selected");
-              if (el.classList.contains("selected")) selectedSeats.add(seat.label);
+              if (el.classList.contains("selected"))
+                selectedSeats.add(seat.label);
               else selectedSeats.remove(seat.label);
 
               const selected = selectedSeats.toArray();
               selectedSeatsDisplay!.textContent = selected.join(", ");
               let total = 0;
-              selected.forEach(label => {
+              selected.forEach((label) => {
                 for (const row of Object.values(seatsByRow)) {
-                  const match = row.find(s => s.label === label);
+                  const match = row.find((s) => s.label === label);
                   if (match) {
                     total += parseFloat(match.price);
                     break;
@@ -305,7 +328,8 @@ function fetchAndRenderSeats(venueId: number) {
         rightSeats.forEach((seat) => rightDiv.appendChild(createSeat(seat)));
 
         rowDiv.appendChild(leftDiv);
-        rowDiv.appendChild(document.createElement("div")).className = "w-[20px]";
+        rowDiv.appendChild(document.createElement("div")).className =
+          "w-[20px]";
         rowDiv.appendChild(rightDiv);
         seatContainer.appendChild(rowDiv);
       });
@@ -361,18 +385,23 @@ payment_button?.addEventListener("click", async () => {
     object[key] = value;
   });
 
-  const new_price = document.getElementById("final_price")?.innerHTML.substring(3);
+  const new_price = document
+    .getElementById("final_price")
+    ?.innerHTML.substring(3);
   object = { ...object, price: new_price, eventID: event_Id };
   localStorage.setItem("ticket_data", JSON.stringify(object));
 
-  const response = await fetch("http://127.0.0.1:8000/api/create-checkout-session", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-    },
-    body: JSON.stringify({ amount: new_price, quantity: 1 }),
-  });
+  const response = await fetch(
+    "http://127.0.0.1:8000/api/create-checkout-session",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+      },
+      body: JSON.stringify({ amount: new_price, quantity: 1 }),
+    }
+  );
   hideLoader();
 
   const session = await response.json();

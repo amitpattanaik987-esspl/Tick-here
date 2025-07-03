@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Models\EventVenue;
 use App\Models\Location;
+use App\Models\Venue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -64,15 +65,36 @@ class EventController extends Controller
     //get an event
     public function getEvent(Event $event)
     {
+        $event = Event::with([
+            'category',
+            'admin',
+            'eventVenue.venue.location',
+            // Eager load ticket count per venue
+            'eventVenue' => function ($query) {
+                $query->withCount('tickets as tickets_booked');
+            }
+        ])->find($event->id);
+
+        if (!$event) {
+            return response()->json(['success' => false, 'message' => 'Event not found'], 404);
+        }
+
         return response()->json([
             'success' => true,
-            'payload' => $event
+            'data' => $event
         ]);
     }
 
     //Creates an event with multiple venues(admin)
     public function create()
     {
+        // Decode JSON string from form-data
+        $decodedVenues = json_decode(request()->input('venues'), true);
+
+        // Merge decoded venues into request for validation
+        request()->merge(['venues' => $decodedVenues]);
+
+        // Validate request
         try {
             $data = request()->validate([
                 'title' => 'required|string|max:255',
@@ -81,18 +103,18 @@ class EventController extends Controller
                 'duration' => 'required',
                 'category_id' => 'required|integer|exists:event_categories,id',
                 'venues' => 'required|array',
-                'venues.*.location_id' => 'required|exists:locations,id',
-                'venues.*.venue_id' => 'required|exists:venues,id',
-                'venues.*.start_datetime' => 'required|date',
+                'venues.*.venue' => 'required|exists:venues,id',
+                'venues.*.date' => 'required|date',
+                'venues.*.time' => 'required|date_format:H:i',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
 
-        // handle image upload and store
+        // Upload and store image
         $data['thumbnail'] = request()->file('thumbnail')->store('thumbnails', 'public');
 
-        // Save event
+        // Create event
         $event = Event::create([
             'title' => $data['title'],
             'description' => $data['description'],
@@ -102,27 +124,26 @@ class EventController extends Controller
             'admin_id' => auth('admin')->id(),
         ]);
 
-        // Save related venues
-        foreach ($data['venues'] as $venue) {
+        // Loop through each venue entry and fetch location_id from DB
+        foreach ($data['venues'] as $venueInput) {
+            $venueModel = Venue::find($venueInput['venue']);
+
+            if (!$venueModel) {
+                continue; // skip if venue not found (although validation already checked)
+            }
+
             EventVenue::create([
                 'event_id' => $event->id,
-                'location_id' => $venue['location_id'],
-                'venue_id' => $venue['venue_id'],
-                'start_datetime' => $venue['start_datetime'],
+                'venue_id' => $venueModel->id,
+                'location_id' => $venueModel->location_id,
+                'start_datetime' => $venueInput['date'] . ' ' . $venueInput['time'] . ':00',
             ]);
         }
 
-        if ($event) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Event created successfully.',
-            ], 201);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error while creating a event',
-            ], 404);
-        }
+        return response()->json([
+            'success' => true,
+            'message' => 'Event created successfully.',
+        ], 201);
     }
 
     //deletes an Event (admin)
@@ -143,9 +164,30 @@ class EventController extends Controller
         }
     }
 
+    // cancel an event (unlink from event_venue || delete row from event_venue table not event table)
+    public function cancel(Event $event)
+    {
+        // Ensure only Active or Inactive events are cancellable
+        $hasVenues = $event->eventVenues()->exists();
+        if (!$hasVenues) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Event already cancelled or has no venues.'
+            ], 400);
+        }
+
+        $event->eventVenues()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Event cancelled successfully.'
+        ]);
+    }
+
     //update an event (admin)
     public function update(Request $request, Event $event)
     {
+
         if (!$event) {
             return response()->json([
                 'success' => false,
@@ -153,29 +195,37 @@ class EventController extends Controller
             ], 404);
         }
 
-        $validated = $request->validate([
+        // Determine edit mode
+        $editMode = $request->input('__edit_mode', 'full');
+
+        // Base validation for both modes
+        $rules = [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png',
-            'duration' => 'required',
+            'duration' => 'required|regex:/^\d{1,2}:\d{1,2}:\d{1,2}$/',
             'category_id' => ['required', 'integer', Rule::exists('event_categories', 'id')],
-            'venues' => 'nullable|array',
-            'venues.*.location_id' => 'required_with:venues|exists:locations,id',
-            'venues.*.venue_id' => 'required_with:venues|exists:venues,id',
-            'venues.*.start_datetime' => 'required_with:venues|date',
-        ]);
+            'thumbnail' => 'nullable|image|mimes:jpg,jpeg,png',
+        ];
+
+        // Add venue validation only if full mode
+        if ($editMode === 'full') {
+            $rules['venues'] = 'required|array|min:1';
+            $rules['venues.*.location_id'] = 'required_with:venues|exists:locations,id';
+            $rules['venues.*.venue_id'] = 'required_with:venues|exists:venues,id';
+            $rules['venues.*.start_datetime'] = 'required_with:venues|date';
+        }
+
+        $validated = $request->validate($rules);
 
         // Handle thumbnail upload
         if ($request->hasFile('thumbnail')) {
-            // Delete old if exists
             if ($event->thumbnail && Storage::disk('public')->exists($event->thumbnail)) {
                 Storage::disk('public')->delete($event->thumbnail);
             }
-
             $validated['thumbnail'] = $request->file('thumbnail')->store('thumbnails', 'public');
         }
 
-        // Update event
+        // Update event main data
         $event->update([
             'title' => $validated['title'],
             'description' => $validated['description'],
@@ -184,9 +234,9 @@ class EventController extends Controller
             'category_id' => $validated['category_id'],
         ]);
 
-        // Update event venue(s) if provided
-        if ($request->has('venues')) {
-            // Optional: delete old event_venues and re-insert
+        // Only update venues if full mode
+        if ($editMode === 'full' && isset($validated['venues'])) {
+            // Remove old venues
             EventVenue::where('event_id', $event->id)->delete();
 
             foreach ($validated['venues'] as $venue) {
@@ -202,7 +252,7 @@ class EventController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Event updated successfully.',
-            'data' => $event->load('eventVenues')
+            'data' => $event->load(['eventVenues.venue.location'])
         ]);
     }
 

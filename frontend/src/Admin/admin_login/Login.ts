@@ -1,8 +1,6 @@
-
 let adminLoginButton = document.getElementById(
   "admin_sign_in"
 ) as HTMLButtonElement;
-
 
 adminLoginButton?.addEventListener("click", async function (e) {
   e.preventDefault();
@@ -19,8 +17,6 @@ adminLoginButton?.addEventListener("click", async function (e) {
   }
 
   try {
-
-
     await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
       method: "POST",
       headers: {
@@ -40,7 +36,6 @@ adminLoginButton?.addEventListener("click", async function (e) {
       .catch((err) => {
         console.error("Network or server error:", err);
       });
-
   } catch (error) {
     console.error("Network or server error:", error);
     alert("Something went wrong. Please try again.");
