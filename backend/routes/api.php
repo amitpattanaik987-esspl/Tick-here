@@ -26,7 +26,6 @@ Route::post('/auth/user/login', [UserController::class, 'login']);
 Route::post('/email/resend', [UserController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');
 
 // Admin registration & login
-Route::post('/admin', [AdminController::class, 'store']);
 Route::post('/auth/admin/login', [AdminController::class, 'login']);
 
 // Public Data
@@ -128,14 +127,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
  */
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/admin', [AdminController::class, 'store']);
     Route::post('/auth/admin/logout', [AdminController::class, 'logout']);
     Route::get('/auth/admin/profile', [AdminController::class, 'profile']);
     Route::put('/auth/admin/profile', [AdminController::class, 'update']);
+    Route::put('/auth/admin/profile/{adminId}', [AdminController::class, 'edit']);
+    Route::delete('/auth/admin/profile/{adminId}', [AdminController::class, 'delete']);
 
     Route::prefix('/admin')->group(function () {
         Route::get('/event-stats', [AdminController::class, 'getEventStats']);
         Route::get('/ticket-stats', [AdminController::class, 'getTicketStats']);
     });
+
+    Route::get('/admin/active/', [AdminController::class, 'getActiveUsers']);
 
     // Events
     Route::get('/admin/events', [EventController::class, 'index']); // Get all events

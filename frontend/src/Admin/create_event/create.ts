@@ -272,25 +272,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   submitFormBtn.addEventListener("click", async () => {
-    if (venueBlock && !venueBlock.classList.contains("hidden")) {
-      if (
+    // Auto-save venue if block is visible and partially filled
+    if (!venueBlock.classList.contains("hidden")) {
+      const hasSomeInput =
         venueInput.value !== "Select" ||
         dateInput.value ||
-        timeInput.value !== "09:00"
-      ) {
+        timeInput.value !== "09:00";
+
+      if (hasSomeInput) {
         if (
           !venueInput.value ||
           venueInput.value === "Select" ||
           !dateInput.value ||
           !timeInput.value
         ) {
-          alert(
-            "Venue block is open. Please complete venue details or close it."
-          );
+          alert("Please complete venue fields or close the venue form.");
           return;
-        } else {
-          trySaveVenue();
         }
+
+        trySaveVenue(); // Save the venue before proceeding
       }
     }
 
@@ -310,11 +310,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!selectedImage) {
       alert("Please attach an image.");
-      return;
-    }
-
-    if (savedVenues.length === 0) {
-      alert("Please add at least one venue.");
       return;
     }
 
@@ -338,6 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const token = localStorage.getItem("admin_token") || "";
 
+    formData.forEach((value, key) => {
+      console.log(key, value);
+    });
+
     try {
       const editDataRaw = localStorage.getItem("edit_event_data_backup");
       const isEditing = !!editDataRaw;
@@ -347,7 +346,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ? `http://127.0.0.1:8000/api/admin/events/${editData.id}`
         : "http://127.0.0.1:8000/api/admin/create-event";
 
-      const method = isEditing ? "PUT" : "POST"; // If Laravel uses POST for both create/update
       formData.append("_method", isEditing ? "PUT" : "POST"); // Laravel's method spoofing
 
       if (isEditing && editData.__edit_mode === "partial") {
@@ -355,8 +353,20 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.delete("venues"); // No venue updates
       }
 
+      if (isEditing) {
+        formData.append("__edit_mode", editData.__edit_mode); // Either 'partial' or 'full'
+      }
+
+      if (
+        (!isEditing || editData.__edit_mode !== "partial") &&
+        savedVenues.length === 0
+      ) {
+        alert("Please add at least one venue.");
+        return;
+      }
+
       const response = await fetch(endpoint, {
-        method,
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           Accept: "application/json",
@@ -371,8 +381,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      alert("Event created successfully!");
-      window.location.href = "/admin/manage-events";
+      isEditing
+        ? alert("Event updated successfully!")
+        : alert("Event created successfully!");
+      window.location.href = "/admin/manage-event/";
     } catch (err) {
       console.error(err);
       alert("API error, check console.");
@@ -540,8 +552,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Set image preview
       if (eventData.thumbnail) {
-        previewImageDataUrl = eventData.thumbnail;
+        previewImageDataUrl = `http://127.0.0.1:8000/storage/${eventData.thumbnail}`;
         imageUploadArea.innerHTML = `<img src="${previewImageDataUrl}" alt="Preview" class="max-w-full max-h-full object-contain rounded cursor-pointer">`;
+
+        // Make modal work too
+        const previewImg = imageUploadArea.querySelector("img")!;
+        previewImg.addEventListener("click", () =>
+          showImageModal(previewImageDataUrl)
+        );
       }
 
       // Prefill venues only if full edit

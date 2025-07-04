@@ -6,6 +6,7 @@ interface Event {
   description: string;
   duration: string;
   category: { name: string };
+  admin_id: number;
   admin: { name: string };
   status: string;
   event_venue: Venue[];
@@ -92,9 +93,9 @@ function renderEventRow(event: Event, index: number, status: string): string {
           status === "Completed"
             ? `<span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">Details</span>`
             : status === "Cancelled"
-            ? `<button class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn" > Delete </button>`
-            : `<button class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn">Edit</button>
-        <button class="deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>`
+            ? `<button data-created-by="${event.admin_id}" class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn" > Delete </button>`
+            : `<button data-created-by="${event.admin_id}" class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn">Edit</button>
+        <button data-created-by="${event.admin_id}" class="deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>`
         }
       </div>
     </div>`;
@@ -401,6 +402,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
+    if (eventStatus === "Inactive") {
+      alert("Booking for this event has not started yet.");
+      return;
+    }
+
     if (expandedVenueId === venueId) {
       removeTicketRows();
       expandedVenueId = null;
@@ -430,10 +436,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const eventCreatedBy = $(this).data("created-by");
 
-    // todo:
     const loggedInAdmin = localStorage.getItem("admin_info");
+    console.log(loggedInAdmin, eventCreatedBy);
 
-    if (eventCreatedBy !== loggedInAdmin) {
+    if (eventCreatedBy.toString() !== loggedInAdmin) {
       alert("You are not authorized to edit this event.");
       return;
     }
@@ -487,10 +493,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const eventCreatedBy = $(this).data("created-by");
 
-    // todo:
     const loggedInAdmin = localStorage.getItem("admin_info");
 
-    if (eventCreatedBy !== loggedInAdmin) {
+    if (eventCreatedBy.toString() !== loggedInAdmin) {
       alert("You are not authorized to delete this event.");
       return;
     }
@@ -504,35 +509,58 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // open choice modal
-    $("#eventActionModal").removeClass("hidden");
+    if (status !== "Cancelled") {
+      // open choice modal
+      $("#eventActionModal").removeClass("hidden");
 
-    $(".closeActionModal").on("click", function () {
-      $("#eventActionModal").addClass("hidden");
-    });
-
-    $("#cancelChoiceBtn").on("click", function () {
-      // CANCEL OPTION: unlink venues
-      $.ajax({
-        url: `http://127.0.0.1:8000/api/admin/events/${eventId}/cancel`,
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        success: function (res) {
-          alert("Event has been cancelled.");
-          fetchEvents(currentPageUrl);
-          $("#eventActionModal").addClass("hidden");
-        },
-        error: function (err) {
-          console.error("Cancellation error:", err);
-          alert("Failed to cancel event.");
-        },
+      $(".closeActionModal").on("click", function () {
+        $("#eventActionModal").addClass("hidden");
       });
-    });
 
-    $("#deleteChoiceBtn").on("click", function () {
+      $("#cancelChoiceBtn").on("click", function () {
+        // CANCEL OPTION: unlink venues
+        $.ajax({
+          url: `http://127.0.0.1:8000/api/admin/events/${eventId}/cancel`,
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          success: function (res) {
+            alert("Event has been cancelled.");
+            fetchEvents(currentPageUrl);
+            $("#eventActionModal").addClass("hidden");
+          },
+          error: function (err) {
+            console.error("Cancellation error:", err);
+            alert("Failed to cancel event.");
+          },
+        });
+      });
+
+      $("#deleteChoiceBtn").on("click", function () {
+        // DELETE OPTION
+        $.ajax({
+          url: `http://127.0.0.1:8000/api/admin/events/${eventId}`,
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          success: function (res) {
+            alert("Event deleted successfully.");
+            fetchEvents(currentPageUrl);
+            $("#eventActionModal").addClass("hidden");
+          },
+          error: function (xhr) {
+            alert("Failed to delete event.");
+            console.error(xhr.responseText);
+          },
+        });
+      });
+    } else {
+      const confirmed = confirm("Are you sure you want to delete this event?");
+      if (!confirmed) return;
       // DELETE OPTION
       $.ajax({
         url: `http://127.0.0.1:8000/api/admin/events/${eventId}`,
@@ -544,13 +572,12 @@ document.addEventListener("DOMContentLoaded", () => {
         success: function (res) {
           alert("Event deleted successfully.");
           fetchEvents(currentPageUrl);
-          $("#eventActionModal").addClass("hidden");
         },
         error: function (xhr) {
           alert("Failed to delete event.");
           console.error(xhr.responseText);
         },
       });
-    });
+    }
   });
 });

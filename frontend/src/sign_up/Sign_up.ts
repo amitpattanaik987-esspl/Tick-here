@@ -1,4 +1,8 @@
-import { initLoader, showLoader, hideLoader } from "../components/loader/loader.js";
+import {
+  initLoader,
+  showLoader,
+  hideLoader,
+} from "../components/loader/loader.js";
 
 const sign_up_button = document.getElementById("sign_up") as HTMLButtonElement;
 
@@ -26,8 +30,15 @@ sign_up_button?.addEventListener("click", async function (e) {
   console.log(email);
   console.log(password);
 
+  const validateEmail = (email: string) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
+  };
 
-  if (!email.includes("@gmail.com")) {
+  if (!validateEmail(email)) {
     alert("Not a valid Email");
     return;
   }
@@ -54,8 +65,9 @@ sign_up_button?.addEventListener("click", async function (e) {
     if (!response.ok) {
       alert(`Signup failed: ${result.message || "Unknown error"}`);
     } else {
-      alert("Account created successfully!");
-      window.location.href = "/Login"
+      alert(
+        "Account created successfully! \nKindly check your mail for verification link!"
+      );
     }
   } catch (error) {
     console.error("Signup error:", error);

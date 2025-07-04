@@ -203,7 +203,7 @@ if (event_Id) {
       ) as HTMLImageElement;
       thumbnail.src = event.thumbnail.startsWith("http")
         ? event.thumbnail
-        : `http://127.0.0.1:8000/${event.thumbnail}`;
+        : `http://127.0.0.1:8000/storage/${event.thumbnail}`;
       thumbnail.alt = event.title;
     })
     .catch((err) => {

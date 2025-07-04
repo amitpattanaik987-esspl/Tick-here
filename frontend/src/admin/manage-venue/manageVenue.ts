@@ -1,4 +1,3 @@
-
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
 
 interface Venue {
@@ -54,6 +53,29 @@ function fetchVenues(url: string) {
           ? Object.values(errors).flat().join("\n")
           : "Failed to fetch venues."
       );
+    },
+  });
+}
+
+function loadLocationOptions(callback?: () => void) {
+  $.ajax({
+    url: "http://127.0.0.1:8000/api/locations",
+    method: "GET",
+    success: function (res) {
+      const locations = res.data;
+      const select = $("#venue-location");
+      select.empty();
+      select.append(`<option value="">Select Location</option>`);
+
+      locations.forEach((loc: { id: number; city: string }) => {
+        select.append(`<option value="${loc.id}">${loc.city}</option>`);
+      });
+
+      if (typeof callback === "function") callback(); // execute after options are loaded
+    },
+    error: function (xhr) {
+      console.error("Failed to load locations:", xhr.responseJSON || xhr);
+      alert("Could not load locations");
     },
   });
 }
@@ -120,6 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
           formLoaded = true;
           bindFormEvents(); // bind after load
           if (callback) callback();
+
+          loadLocationOptions();
         }
       );
     } else {
@@ -139,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const venueData = {
         venue_name: $("#venue-name").val(),
-        location_id: $("#venue-location").data("location-id"),
+        location_id: $("#venue-location").val(),
         price: $("#venue-cost").val(),
         max_seats: $("#venue-seats").val(),
       };
@@ -176,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Send POST to create
         $.ajax({
-          url: "`http://127.0.0.1:8000/api/admin/venues",
+          url: "http://127.0.0.1:8000/api/admin/venues",
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -227,17 +251,21 @@ document.addEventListener("DOMContentLoaded", () => {
     editingVenueId = row.data("venue-id");
 
     const name = row.find(".venue-name").text().trim();
-    const location = row.find(".venue-location").text().trim();
     const locationId = row.find(".venue-location").data("location-id");
     const cost = row.find(".venue-cost").text().trim();
     const seats = row.find(".venue-seats").text().trim();
 
     loadVenueForm(() => {
       editMode = true;
+
       $("#venue-name").val(name);
-      $("#venue-location").val(location).data("location-id", locationId);
       $("#venue-cost").val(cost);
       $("#venue-seats").val(seats);
+
+      // Load location options first, then set the selected value
+      loadLocationOptions(() => {
+        $("#venue-location").val(locationId).trigger("change");
+      });
 
       $("#createVenueBtn").text("Save");
       $("#venue-form-container").removeClass("hidden");
@@ -254,7 +282,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (confirm("Are you sure you want to delete this venue?")) {
       $.ajax({
-        url: `http://127.0.0.1:8000/api/admin/venues//${venueId}`,
+        url: `http://127.0.0.1:8000/api/admin/venues/${venueId}`,
         type: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -288,5 +316,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initial load
   fetchVenues(currentPageUrl);
-
 });

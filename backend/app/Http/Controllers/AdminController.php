@@ -8,6 +8,7 @@ use App\Models\EventCategory;
 use App\Models\EventVenue;
 use App\Models\Ticket;
 use Carbon\Carbon;
+use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -36,6 +37,7 @@ class AdminController extends Controller
         $admin = Admin::create($data);
 
         return response()->json([
+            'success' => true,
             'message' => 'Admin created successfully',
             'user' => $admin,
             'token' => $admin->createToken('admin-token')->plainTextToken
@@ -87,29 +89,62 @@ class AdminController extends Controller
     }
 
     //For updating user profile
+    public function edit(Request $request, $id)
+    {
+        $admin = Admin::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|unique:admins,username|max:255',
+            'email' => 'required|email|unique:admins,email,' . $admin->id,
+            'phone' => 'required|nullable|string|max:15',
+        ]);
+
+        $admin->name = $request->name;
+        $admin->username = $request->username;
+        $admin->email = $request->email;
+        $admin->phone = $request->phone;
+        $admin->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin profile updated successfully.',
+            'data' => $admin,
+        ]);
+    }
+
     public function update(Request $request)
     {
-        try {
-            $admin = $request->user();
+        $admin = auth()->user();
 
-            $data = request()->validate([
-                'name' => 'required|min:8',
-                'username' => ['required', 'min:8', Rule::unique('admins', 'username')->ignore($request->user()->id)],
-                'phone' => ['required', 'digits:10', Rule::unique('admins', 'phone')->ignore($request->user()->id)],
-                'email' => ['required', 'email', Rule::unique('admins', 'email')->ignore($request->user()->id)],
-                'password' => 'required|min:8',
-            ]);
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'username' => 'required|string|unique:admins,username|max:255',
+            'email' => 'required|email|unique:admins,email,' . $admin->id,
+            'phone' => 'required|nullable|string|max:15',
+        ]);
 
-            if (isset($data['password'])) {
-                $data['password'] = Hash::make($data['password']);
-            }
+        $admin->name = $request->full_name;
+        $admin->username = $request->username;
+        $admin->email = $request->email;
+        $admin->phone = $request->phone;
+        $admin->save();
 
-            $admin->update($data);
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin profile updated successfully.',
+            'data' => $admin,
+        ]);
+    }
 
-            return response()->json(['message' => 'Profile updated']);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->errors()], 422);
-        }
+    public function delete($id)
+    {
+        $admin = Admin::findOrFail($id);
+        $admin->delete();
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin deleted successfully.',
+        ]);
     }
 
     public function getEventStats(Request $request)
@@ -193,4 +228,14 @@ class AdminController extends Controller
             'data' => $result
         ]);
     }
+
+    public function getActiveUsers()
+    {
+        $admins = Admin::select('id', 'name', 'email', 'phone', 'username')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $admins
+        ]);
+    }
+
 }

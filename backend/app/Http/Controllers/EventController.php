@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Log;
 
 class EventController extends Controller
 {
@@ -168,7 +169,7 @@ class EventController extends Controller
     public function cancel(Event $event)
     {
         // Ensure only Active or Inactive events are cancellable
-        $hasVenues = $event->eventVenues()->exists();
+        $hasVenues = $event->eventVenue()->exists();
         if (!$hasVenues) {
             return response()->json([
                 'success' => false,
@@ -176,7 +177,7 @@ class EventController extends Controller
             ], 400);
         }
 
-        $event->eventVenues()->delete();
+        $event->eventVenue()->delete();
 
         return response()->json([
             'success' => true,
@@ -194,6 +195,8 @@ class EventController extends Controller
                 'message' => 'Event not found.'
             ], 404);
         }
+
+        Log::info($request->all());
 
         // Determine edit mode
         $editMode = $request->input('__edit_mode', 'full');
@@ -252,7 +255,7 @@ class EventController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Event updated successfully.',
-            'data' => $event->load(['eventVenues.venue.location'])
+            'data' => $event->load(['eventVenue.venue.location'])
         ]);
     }
 

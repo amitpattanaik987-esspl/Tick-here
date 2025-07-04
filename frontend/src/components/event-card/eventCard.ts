@@ -8,7 +8,9 @@ export async function createEventCard(
   const date = new Date(event.start_datetime);
   const day = date.getDate();
   const month = date.toLocaleString("default", { month: "short" });
-  const imagePath = event.thumbnail.startsWith("http") ? event.thumbnail : `http://127.0.0.1:8000/storage/thumbnails/${event.thumbnail}`;
+  const imagePath = event.thumbnail.startsWith("http")
+    ? event.thumbnail
+    : `http://127.0.0.1:8000/storage/${event.thumbnail}`;
 
   return template
     .replace(/{{EVENT_ID}}/g, event.id) // Inject ID for click handling

@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Send POST to create
         $.ajax({
-          url: "`http://127.0.0.1:8000/api/admin/locations",
+          url: "http://127.0.0.1:8000/api/admin/locations",
           method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -245,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (confirm("Are you sure you want to delete this location?")) {
       $.ajax({
-        url: `http://127.0.0.1:8000/api/admin/locations//${locationId}`,
+        url: `http://127.0.0.1:8000/api/admin/locations/${locationId}`,
         type: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

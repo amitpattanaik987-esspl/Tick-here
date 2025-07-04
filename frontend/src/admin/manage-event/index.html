@@ -328,9 +328,11 @@
       <!--choice prompt for cancel/delete event-->
       <div
         id="eventActionModal"
-        class="hidden fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center"
+        class="hidden fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center"
       >
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80">
+        <div
+          class="bg-white p-6 rounded-lg shadow-lg text-center w-80 border border-purple-950"
+        >
           <div class="flex justify-between">
             <p class="mb-4 font-medium">
               Do you want to Cancel or Delete this event?
@@ -340,13 +342,13 @@
           <div class="flex justify-center gap-4">
             <button
               id="cancelChoiceBtn"
-              class="bg-yellow-500 px-4 py-2 text-white rounded"
+              class="bg-yellow-500 px-4 py-2 text-white rounded font-semibold"
             >
               Cancel
             </button>
             <button
               id="deleteChoiceBtn"
-              class="bg-red-600 px-4 py-2 text-white rounded"
+              class="bg-red-600 px-4 py-2 text-white rounded font-semibold"
             >
               Delete
             </button>

@@ -1,5 +1,6 @@
-import { loadNavbar } from "./components/admin_navbar/navbar.js";
+import { loadNavbar } from "../Admin/components/admin_navbar/navbar.js";
 declare var ApexCharts: any;
+
 
 function loadEventStats() {
   const token = localStorage.getItem("admin_token");
@@ -86,6 +87,7 @@ function renderCategoryChart(data: any[]) {
   const categories = data.map((item) => item.category);
   const ticketCounts = data.map((item) => item.tickets_sold);
 
+
   const options = {
     chart: {
       type: "bar",
@@ -103,6 +105,7 @@ function renderCategoryChart(data: any[]) {
         columnWidth: "30%",
         distributed: true,
         dataLabels: {
+
           position: "middle",
         },
       },
@@ -129,12 +132,14 @@ function renderCategoryChart(data: any[]) {
     fill: {
       type: "solid",
       colors: [
+
         "#bcb1d5",
         "#8f7db9",
         "#685596",
         "#483672",
         "#271551",
         "#0c0420",
+
       ],
     },
     tooltip: {
@@ -149,10 +154,12 @@ function renderCategoryChart(data: any[]) {
         fontSize: "12px",
 
         colors: ["#45006E"],
+
       },
     },
     series: [
       {
+
         name: "Tickets Sold",
         data: ticketCounts,
       },
@@ -163,6 +170,7 @@ function renderCategoryChart(data: any[]) {
         style: {
           fontSize: "12px",
           colors: "#6B7280",
+
         },
       },
       axisTicks: { show: false },
@@ -171,10 +179,12 @@ function renderCategoryChart(data: any[]) {
     yaxis: {
       show: true,
     },
+
   };
 
   const chart = new ApexCharts(document.querySelector("#myChart"), options);
   chart.render();
+
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -206,6 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+
   // manage event page logic
   const manageEventButton = document.getElementById("manageEventButton");
   if (manageEventButton) {
@@ -213,4 +224,5 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "/admin/manage-event/";
     });
   }
+
 });
