@@ -20,7 +20,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $sortBy = $request->get('sort_by', 'id'); // default to 'id'
-        $sortOrder = $request->get('sort_order', 'asc');
+        $sortOrder = $request->get('sort_order', 'desc');
         $search = $request->get('search');
 
         $statusFilter = null;
