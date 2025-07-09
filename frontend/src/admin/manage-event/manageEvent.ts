@@ -371,11 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (status === "Inactive") {
-      alert("Booking for this event has not started yet.");
-      return;
-    }
-
     // Toggle venue display
     if (expandedEventId === eventId) {
       removeVenueRows();

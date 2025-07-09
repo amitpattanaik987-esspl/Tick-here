@@ -1,4 +1,11 @@
+import {
+  hideLoader,
+  initLoader,
+  showLoader,
+} from "../../components/loader/loader.js";
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
+
+initLoader();
 
 type VenueEntry = {
   id: number;
@@ -55,9 +62,15 @@ function fetchCategories() {
     });
 }
 
-let allVenues: { id: number; venue_name: string }[] = [];
+let allVenues: {
+  id: number;
+  venue_name: string;
+  location: { city: string };
+}[] = [];
 
-async function fetchVenues() {
+async function fetchVenues(onFinish?: () => void) {
+  showLoader();
+
   const token = localStorage.getItem("admin_token");
   if (!token) return;
 
@@ -84,18 +97,35 @@ async function fetchVenues() {
 
   allVenues = collected;
   renderVenueOptions(allVenues);
+
+  if (onFinish) onFinish(); // call callback if passed
+  hideLoader();
 }
 
-function renderVenueOptions(venues: { id: number; venue_name: string }[]) {
+function renderVenueOptions(
+  venues: { id: number; venue_name: string; location: { city: string } }[]
+) {
   const optionsContainer = document.getElementById("venueOptions")!;
   optionsContainer.innerHTML = "";
 
   venues.forEach((venue) => {
     const option = document.createElement("div");
     option.className =
-      "p-2 hover:bg-gradient-to-r hover:from-[#46006e] to-[#0a0417] hover:text-white cursor-pointer";
-    option.textContent = venue.venue_name;
+      "flex justify-between p-2 hover:bg-gradient-to-r hover:from-[#46006e] to-[#0a0417] hover:text-white cursor-pointer";
     option.dataset.id = venue.id.toString();
+
+    // Create first div (e.g., venue name)
+    const venueDiv = document.createElement("div");
+    venueDiv.textContent = venue.venue_name;
+
+    // Create second div (e.g., location name)
+    const cityDiv = document.createElement("div");
+    cityDiv.textContent = venue.location.city;
+    cityDiv.className = "text-sm text-gray-500";
+
+    // Append both divs to option
+    option.appendChild(venueDiv);
+    option.appendChild(cityDiv);
 
     option.addEventListener("click", () => {
       const input = document.getElementById(
@@ -119,8 +149,10 @@ function setupVenueSearch() {
 
   input.addEventListener("input", () => {
     const query = input.value.toLowerCase();
-    const filtered = allVenues.filter((v) =>
-      v.venue_name.toLowerCase().includes(query)
+    const filtered = allVenues.filter(
+      (v) =>
+        v.venue_name.toLowerCase().includes(query) ||
+        v.location.city.toLowerCase().includes(query)
     );
     renderVenueOptions(filtered);
   });
@@ -156,7 +188,78 @@ document.addEventListener("DOMContentLoaded", () => {
 
   fetchCategories();
 
-  fetchVenues();
+  fetchVenues(() => {
+    // load prefilled data in editing mode
+    const editDataRaw = localStorage.getItem("edit_event_data");
+
+    if (editDataRaw) {
+      showLoader();
+      const eventData = JSON.parse(editDataRaw);
+      localStorage.setItem("edit_event_data_backup", JSON.stringify(eventData));
+
+      const isPartial = eventData.__edit_mode === "partial";
+
+      // Prefill basic fields
+      (document.getElementById("title") as HTMLInputElement).value =
+        eventData.title;
+      (document.getElementById("description") as HTMLTextAreaElement).value =
+        eventData.description;
+      (document.getElementById("category") as HTMLSelectElement).value =
+        eventData.category_id.toString();
+      (document.getElementById("duration") as HTMLInputElement).value =
+        eventData.duration;
+
+      const selectedText = document.getElementById("selectedCategoryText")!;
+      selectedText.textContent = eventData.category?.name || "";
+
+      // Set image preview
+      if (eventData.thumbnail) {
+        previewImageDataUrl = `http://127.0.0.1:8000/storage/${eventData.thumbnail}`;
+        imageUploadArea.innerHTML = `<img src="${previewImageDataUrl}" alt="Preview" class="max-w-full max-h-full object-contain rounded cursor-pointer">`;
+
+        // Make modal work too
+        const previewImg = imageUploadArea.querySelector("img")!;
+        previewImg.addEventListener("click", () =>
+          showImageModal(previewImageDataUrl)
+        );
+      }
+
+      // Prefill venues only if full edit
+      if (!isPartial) {
+        savedVenues = eventData.event_venue.map((venue: any, index: number) => {
+          const dateTime = new Date(venue.start_datetime);
+          return {
+            id: index + 1,
+            venue: venue.venue_id.toString(),
+            date: dateTime.toISOString().slice(0, 10),
+            time: dateTime.toTimeString().slice(0, 5),
+          };
+        });
+
+        currentVenueId = savedVenues.length;
+        renderSavedVenues();
+      }
+
+      // Disable venue editing if partial mode
+      if (isPartial) {
+        const venueBlock = document.getElementById("venueBlock")!;
+        const toggleVenueBtn = document.getElementById("toggleVenueBtn")!;
+        venueBlock.classList.add("hidden");
+        toggleVenueBtn.classList.add("hidden");
+        savedVenuesList.innerHTML = `<div class="text-gray-500 p-3 italic">
+          Venue editing is disabled because tickets are already booked for this active event.
+        </div>`;
+      }
+
+      // Change submit button text
+      submitFormBtn.textContent = isPartial ? "Update Event Info" : "Update ";
+
+      // Remove the data after use
+      localStorage.removeItem("edit_event_data");
+    }
+
+    hideLoader();
+  });
 
   setupVenueSearch();
 
@@ -272,6 +375,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   submitFormBtn.addEventListener("click", async () => {
+    showLoader();
+
     // Auto-save venue if block is visible and partially filled
     if (!venueBlock.classList.contains("hidden")) {
       const hasSomeInput =
@@ -390,6 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("API error, check console.");
     } finally {
       localStorage.removeItem("edit_event_data_backup");
+      hideLoader();
     }
   });
 
@@ -416,7 +522,15 @@ document.addEventListener("DOMContentLoaded", () => {
     currentVenueId = 0;
     savedVenuesList.innerHTML = "";
 
-    window.location.href = "/admin/manage-event/";
+    const editDataRaw = localStorage.getItem("edit_event_data_backup");
+    const isEditing = !!editDataRaw;
+
+    if (isEditing) {
+      window.location.href = "/admin/manage-event/";
+      localStorage.removeItem("edit_event_data_backup");
+    } else {
+      window.location.href = "/admin/";
+    }
   });
 
   function trySaveVenue(): boolean {
@@ -472,6 +586,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderSavedVenues() {
     savedVenuesList.innerHTML = "";
 
+    console.log(savedVenues);
+
     savedVenues.forEach((entry) => {
       const venueName =
         allVenues.find((v) => v.id.toString() === entry.venue)?.venue_name ||
@@ -525,75 +641,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
       savedVenuesList.appendChild(container);
     });
-  }
-
-  // load prefilled data in editing mode
-  const editDataRaw = localStorage.getItem("edit_event_data");
-
-  if (editDataRaw) {
-    if (editDataRaw) {
-      const eventData = JSON.parse(editDataRaw);
-      localStorage.setItem("edit_event_data_backup", JSON.stringify(eventData));
-
-      const isPartial = eventData.__edit_mode === "partial";
-
-      // Prefill basic fields
-      (document.getElementById("title") as HTMLInputElement).value =
-        eventData.title;
-      (document.getElementById("description") as HTMLTextAreaElement).value =
-        eventData.description;
-      (document.getElementById("category") as HTMLSelectElement).value =
-        eventData.category_id.toString();
-      (document.getElementById("duration") as HTMLInputElement).value =
-        eventData.duration;
-
-      const selectedText = document.getElementById("selectedCategoryText")!;
-      selectedText.textContent = eventData.category?.name || "";
-
-      // Set image preview
-      if (eventData.thumbnail) {
-        previewImageDataUrl = `http://127.0.0.1:8000/storage/${eventData.thumbnail}`;
-        imageUploadArea.innerHTML = `<img src="${previewImageDataUrl}" alt="Preview" class="max-w-full max-h-full object-contain rounded cursor-pointer">`;
-
-        // Make modal work too
-        const previewImg = imageUploadArea.querySelector("img")!;
-        previewImg.addEventListener("click", () =>
-          showImageModal(previewImageDataUrl)
-        );
-      }
-
-      // Prefill venues only if full edit
-      if (!isPartial) {
-        savedVenues = eventData.event_venue.map((venue: any, index: number) => {
-          const dateTime = new Date(venue.start_datetime);
-          return {
-            id: index + 1,
-            venue: venue.venue_id.toString(),
-            date: dateTime.toISOString().slice(0, 10),
-            time: dateTime.toTimeString().slice(0, 5),
-          };
-        });
-
-        currentVenueId = savedVenues.length;
-        renderSavedVenues();
-      }
-
-      // Disable venue editing if partial mode
-      if (isPartial) {
-        const venueBlock = document.getElementById("venueBlock")!;
-        const toggleVenueBtn = document.getElementById("toggleVenueBtn")!;
-        venueBlock.classList.add("hidden");
-        toggleVenueBtn.classList.add("hidden");
-        savedVenuesList.innerHTML = `<div class="text-gray-500 p-3 italic">
-          Venue editing is disabled because tickets are already booked for this active event.
-        </div>`;
-      }
-
-      // Change submit button text
-      submitFormBtn.textContent = isPartial ? "Update Event Info" : "Update ";
-
-      // Remove the data after use
-      localStorage.removeItem("edit_event_data");
-    }
   }
 });
