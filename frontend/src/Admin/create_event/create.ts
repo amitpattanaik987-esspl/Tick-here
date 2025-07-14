@@ -5,8 +5,6 @@ import {
 } from "../../components/loader/loader.js";
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
 
-initLoader();
-
 type VenueEntry = {
   id: number;
   venue: string;
@@ -65,7 +63,7 @@ function fetchCategories() {
 let allVenues: {
   id: number;
   venue_name: string;
-  location: { city: string };
+  location: { id: number; city: string };
 }[] = [];
 
 async function fetchVenues(onFinish?: () => void) {
@@ -183,7 +181,9 @@ closeModalBtn.addEventListener("click", () => {
   document.getElementById("imagePreviewModal")!.classList.add("hidden");
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await initLoader();
+
   loadNavbar();
 
   fetchCategories();
@@ -410,17 +410,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!title || !description || !category || !duration) {
       alert("Please fill all required fields.");
-      return;
-    }
-
-    if (!selectedImage) {
-      alert("Please attach an image.");
+      hideLoader();
       return;
     }
 
     const isValid = /^\d{1,2}:\d{1,2}:\d{1,2}$/.test(duration);
     if (!isValid) {
       alert("Please enter duration in H:m:s format (e.g. 1:30:00)");
+      hideLoader();
       return;
     }
 
@@ -430,21 +427,44 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("category_id", category);
     formData.append("duration", duration);
 
-    if (selectedImage) {
-      formData.append("thumbnail", selectedImage);
+    const editDataRaw = localStorage.getItem("edit_event_data_backup");
+    const isEditing = !!editDataRaw;
+
+    if (!isEditing) {
+      if (selectedImage) {
+        formData.append("thumbnail", selectedImage);
+      } else {
+        alert("Please attach an image.");
+        hideLoader();
+        return;
+      }
+    } else {
+      if (selectedImage) {
+        formData.append("thumbnail", selectedImage);
+      }
     }
 
-    formData.append("venues", JSON.stringify(savedVenues));
+    savedVenues.forEach((venue, index) => {
+      formData.append(`venues[${index}][venue_id]`, venue.venue);
+
+      const found = allVenues.find((v) => v.id.toString() === venue.venue);
+      const locationId = found?.location?.id;
+
+      // Ensure locationId is either a string or an empty string (never number | "")
+      formData.append(
+        `venues[${index}][location_id]`,
+        locationId ? String(locationId) : ""
+      );
+
+      formData.append(
+        `venues[${index}][start_datetime]`,
+        `${venue.date} ${venue.time}`
+      );
+    });
 
     const token = localStorage.getItem("admin_token") || "";
 
-    formData.forEach((value, key) => {
-      console.log(key, value);
-    });
-
     try {
-      const editDataRaw = localStorage.getItem("edit_event_data_backup");
-      const isEditing = !!editDataRaw;
       const editData = isEditing ? JSON.parse(editDataRaw) : null;
 
       const endpoint = isEditing
@@ -469,6 +489,10 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Please add at least one venue.");
         return;
       }
+
+      formData.forEach((value, key) => {
+        console.log(key, value);
+      });
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -542,6 +566,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!venueInput || !dateInput || !timeInput) {
       alert("Venue form not ready yet.");
+      return false;
+    }
+
+    if (dateInput.value < new Date().toISOString().split("T")[0]) {
+      alert("Date cannot be in the past.");
       return false;
     }
 

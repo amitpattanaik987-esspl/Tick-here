@@ -89,12 +89,6 @@ class EventController extends Controller
     //Creates an event with multiple venues(admin)
     public function create()
     {
-        // Decode JSON string from form-data
-        $decodedVenues = json_decode(request()->input('venues'), true);
-
-        // Merge decoded venues into request for validation
-        request()->merge(['venues' => $decodedVenues]);
-
         // Validate request
         try {
             $data = request()->validate([
@@ -104,9 +98,9 @@ class EventController extends Controller
                 'duration' => 'required',
                 'category_id' => 'required|integer|exists:event_categories,id',
                 'venues' => 'required|array',
-                'venues.*.venue' => 'required|exists:venues,id',
-                'venues.*.date' => 'required|date',
-                'venues.*.time' => 'required|date_format:H:i',
+                'venues.*.location_id' => 'required_with:venues|exists:locations,id',
+                'venues.*.venue_id' => 'required_with:venues|exists:venues,id',
+                'venues.*.start_datetime' => 'required_with:venues|date',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -125,19 +119,13 @@ class EventController extends Controller
             'admin_id' => auth('admin')->id(),
         ]);
 
-        // Loop through each venue entry and fetch location_id from DB
-        foreach ($data['venues'] as $venueInput) {
-            $venueModel = Venue::find($venueInput['venue']);
-
-            if (!$venueModel) {
-                continue; // skip if venue not found (although validation already checked)
-            }
-
+        // Loop through each venue entry and insert into DB
+        foreach ($data['venues'] as $venue) {
             EventVenue::create([
                 'event_id' => $event->id,
-                'venue_id' => $venueModel->id,
-                'location_id' => $venueModel->location_id,
-                'start_datetime' => $venueInput['date'] . ' ' . $venueInput['time'] . ':00',
+                'venue_id' => $venue['venue_id'],
+                'location_id' => $venue['location_id'],
+                'start_datetime' => $venue['start_datetime'] . ':00',
             ]);
         }
 
@@ -188,7 +176,6 @@ class EventController extends Controller
     //update an event (admin)
     public function update(Request $request, Event $event)
     {
-
         if (!$event) {
             return response()->json([
                 'success' => false,
