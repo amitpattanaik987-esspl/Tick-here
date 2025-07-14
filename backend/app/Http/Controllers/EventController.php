@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Log;
 
 class EventController extends Controller
 {
@@ -19,7 +20,7 @@ class EventController extends Controller
     public function index(Request $request)
     {
         $sortBy = $request->get('sort_by', 'id'); // default to 'id'
-        $sortOrder = $request->get('sort_order', 'asc');
+        $sortOrder = $request->get('sort_order', 'desc');
         $search = $request->get('search');
 
         $statusFilter = null;
@@ -88,12 +89,6 @@ class EventController extends Controller
     //Creates an event with multiple venues(admin)
     public function create()
     {
-        // Decode JSON string from form-data
-        $decodedVenues = json_decode(request()->input('venues'), true);
-
-        // Merge decoded venues into request for validation
-        request()->merge(['venues' => $decodedVenues]);
-
         // Validate request
         try {
             $data = request()->validate([
@@ -103,9 +98,9 @@ class EventController extends Controller
                 'duration' => 'required',
                 'category_id' => 'required|integer|exists:event_categories,id',
                 'venues' => 'required|array',
-                'venues.*.venue' => 'required|exists:venues,id',
-                'venues.*.date' => 'required|date',
-                'venues.*.time' => 'required|date_format:H:i',
+                'venues.*.location_id' => 'required_with:venues|exists:locations,id',
+                'venues.*.venue_id' => 'required_with:venues|exists:venues,id',
+                'venues.*.start_datetime' => 'required_with:venues|date',
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -124,19 +119,13 @@ class EventController extends Controller
             'admin_id' => auth('admin')->id(),
         ]);
 
-        // Loop through each venue entry and fetch location_id from DB
-        foreach ($data['venues'] as $venueInput) {
-            $venueModel = Venue::find($venueInput['venue']);
-
-            if (!$venueModel) {
-                continue; // skip if venue not found (although validation already checked)
-            }
-
+        // Loop through each venue entry and insert into DB
+        foreach ($data['venues'] as $venue) {
             EventVenue::create([
                 'event_id' => $event->id,
-                'venue_id' => $venueModel->id,
-                'location_id' => $venueModel->location_id,
-                'start_datetime' => $venueInput['date'] . ' ' . $venueInput['time'] . ':00',
+                'venue_id' => $venue['venue_id'],
+                'location_id' => $venue['location_id'],
+                'start_datetime' => $venue['start_datetime'] . ':00',
             ]);
         }
 
@@ -168,7 +157,7 @@ class EventController extends Controller
     public function cancel(Event $event)
     {
         // Ensure only Active or Inactive events are cancellable
-        $hasVenues = $event->eventVenues()->exists();
+        $hasVenues = $event->eventVenue()->exists();
         if (!$hasVenues) {
             return response()->json([
                 'success' => false,
@@ -176,7 +165,7 @@ class EventController extends Controller
             ], 400);
         }
 
-        $event->eventVenues()->delete();
+        $event->eventVenue()->delete();
 
         return response()->json([
             'success' => true,
@@ -187,13 +176,14 @@ class EventController extends Controller
     //update an event (admin)
     public function update(Request $request, Event $event)
     {
-
         if (!$event) {
             return response()->json([
                 'success' => false,
                 'message' => 'Event not found.'
             ], 404);
         }
+
+        Log::info($request->all());
 
         // Determine edit mode
         $editMode = $request->input('__edit_mode', 'full');
@@ -252,7 +242,7 @@ class EventController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Event updated successfully.',
-            'data' => $event->load(['eventVenues.venue.location'])
+            'data' => $event->load(['eventVenue.venue.location'])
         ]);
     }
 

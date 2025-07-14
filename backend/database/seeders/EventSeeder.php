@@ -11,6 +11,7 @@ use App\Models\Venue;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 class EventSeeder extends Seeder
 {
@@ -22,21 +23,14 @@ class EventSeeder extends Seeder
 
     public function run()
     {
-        $admin = Admin::first(); // the first one admin
+        $admins = Admin::all();
         $categories = EventCategory::all();
         $locations = Location::all();
         $venues = Venue::all();
 
+        $faker = Faker::create();
         $eventCount = 0;
         $maxEvents = 104; // for testing purpose now
-        $categoryEventMap = [];
-
-
-
-        // Spread 104 events across categories
-        foreach ($categories as $category) {
-            $categoryEventMap[$category->id] = rand(1, 6);
-        }
 
         foreach ($locations as $location) {
             $locationVenues = $venues->where('location_id', $location->id)->take(rand(2, 4)); // select 2 to 4 venues per location
@@ -49,34 +43,32 @@ class EventSeeder extends Seeder
                         break 3; // break out of all 3 loops if 104 events details are already ready to create
 
                     $category = $categories->random(); // select a random category
-
-                    // Skip if category is already full
-                    if ($categoryEventMap[$category->id] <= 0) {
-                        continue;
-                    }
+                    $admin = $admins->random(); // select a random admin
 
                     // creates all the random details for an event (testing purpose)
-                    $title = Str::title(Str::random(10)) . " Live";
-                    $description = "Exciting event happening at {$venue->venue_name} in {$location->city}.";
+                    $title = match (strtolower($category->name)) {
+                        'comedy' => $faker->sentence(3) . ' Comedy Night',
+                        'kids' => 'Fun for Kids: ' . $faker->words(2, true),
+                        'music' => $faker->name . ' Live in Concert',
+                        'workshops' => 'Workshop: ' . ucfirst($faker->words(3, true)),
+                        'performance' => 'Stage Performance: ' . ucfirst($faker->word),
+                        'sports' => ucfirst($faker->word) . ' Championship',
+                        default => 'Special Event: ' . ucfirst($faker->words(2, true)),
+                    };
+
+                    $description = match ($category->name) {
+                        'Comedy' => "Laugh your heart out at {$venue->venue_name}.",
+                        'Kids' => "A joyful event for children at {$venue->venue_name}.",
+                        'Music' => "Join the rhythm in {$location->city}.",
+                        'Workshops' => "Sharpen your skills in our expert-led workshop.",
+                        'Performance' => "Experience the best performances in {$location->city}.",
+                        'Sports' => "Cheer for your favorite team at {$venue->venue_name}.",
+                        default => "Don’t miss this event at {$venue->venue_name}!",
+                    };
+
                     $duration = Carbon::createFromTime(rand(1, 3), rand(0, 59))->format('H:i:s');
 
-
-                    // set thumbnail based on category (testing purpose)
-                    if ($category->name == "Comedy") {
-                        $thumbnail = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtLLuFehdI59tZZ96puFS0UIzDQGOWu6EYfA&s";
-                    } elseif ($category->name == "Kids") {
-                        $thumbnail = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1PWoTB8O3kGuDqVQoy96-4cT4WdwdyawpZw&s";
-                    } elseif ($category->name == "Music") {
-                        $thumbnail = "https://img.freepik.com/free-psd/a4-rock-music-festival-poster-template_220664-3861.jpg?semt=ais_hybrid&w=740";
-                    } elseif ($category->name == "Workshops") {
-                        $thumbnail = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/multipurpose-workshop-course-flyer-design-template-804e41ea60a49745ef060af050a9f326_screen.jpg?ts=1636993491";
-                    } elseif ($category->name == "Performance") {
-                        $thumbnail = "https://d1csarkz8obe9u.cloudfront.net/posterpreviews/dance-class-flyer-template-90adacee440bf5418eeef5aa2b232007_screen.jpg?ts=1636966335";
-                    } elseif ($category->name == "Sports") {
-                        $thumbnail = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnfdV2p7OIUWZrh-ekHLrNE54YsVeKL6nN_g&s";
-                    } else {
-                        $thumbnail = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNdi6Gavxh_hhmb3SY4wDfn-mvdtPkvMvKKA&s";
-                    }
+                    $thumbnail = 'thumbnails/' . Str::slug($category->name) . '.jpg';
 
                     $event = Event::create([
                         'title' => $title,
@@ -94,7 +86,6 @@ class EventSeeder extends Seeder
                         'start_datetime' => Carbon::now()->addDays(rand(1, 60))->addHours(rand(1, 12)),
                     ]);
 
-                    $categoryEventMap[$category->id]--;
                     $eventCount++;
                 }
             }

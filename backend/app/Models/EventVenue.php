@@ -9,6 +9,13 @@ class EventVenue extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'event_id',
+        'venue_id',
+        'start_datetime',
+        'location_id',
+    ];
+
 
     protected $with = ['venue'];
 
