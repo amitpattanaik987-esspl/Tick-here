@@ -161,4 +161,6 @@ Route::middleware(['auth:sanctum', 'admin', 'verified'])->group(function () {
     Route::post('/admin/categories', [EventCategoryController::class, 'create']);
     Route::delete('/admin/categories/{category}', [EventCategoryController::class, 'delete']);
     Route::put('/admin/categories/{category}', [EventCategoryController::class, 'update']);
+    Route::get('/admin/events-search', [EventController::class, 'linearSearch']);
+    Route::get('/admin/events-all', [EventController::class, 'allEvents']);
 });
