@@ -8,10 +8,10 @@ use App\Models\Location;
 use App\Models\Venue;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Log;
 
 class EventController extends Controller
 {
@@ -35,8 +35,8 @@ class EventController extends Controller
             $sortBy = 'id';
         }
 
-        \Log::info('Search term: ' . $search);
-        \Log::info('Status filter: ' . ($statusFilter ?? 'none'));
+        Log::info('Search term: ' . $search);
+        Log::info('Status filter: ' . ($statusFilter ?? 'none'));
 
 
         $events = Event::with(['category', 'admin', 'eventVenue'])->when($search, function ($query, $search) {

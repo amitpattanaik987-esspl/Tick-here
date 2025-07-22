@@ -4,7 +4,11 @@ import { loadContactModal } from "../components/contact-modal/contactModal.js";
 import { loadLocationModal } from "../components/location-modal/locationModal.js";
 import { renderTagCategories } from "../components/category/tagCategorySection.js";
 import { loadBookedTicketCard } from "../components/ticket-card/ticketCard.js";
-import { initLoader, showLoader, hideLoader } from "../components/loader/loader.js";
+import {
+  initLoader,
+  showLoader,
+  hideLoader,
+} from "../components/loader/loader.js";
 
 // Main async function to handle flow
 async function main(): Promise<void> {
@@ -44,7 +48,7 @@ async function main(): Promise<void> {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("auth-token")}`,
+        Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
       },
       body: JSON.stringify({ userid: userId }),
     });
@@ -58,14 +62,17 @@ async function main(): Promise<void> {
       for (const ticket of data.tickets) {
         const ticketId = ticket.ticket_id;
 
-        const eventRes = await fetch("http://127.0.0.1:8000/api/getEventByTicketId", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("auth-token")}`,
-          },
-          body: JSON.stringify({ ticket_id: ticketId }),
-        });
+        const eventRes = await fetch(
+          "http://127.0.0.1:8000/api/getEventByTicketId",
+          {
+            method: "POST",
+            headers: {
+              "content-type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+            },
+            body: JSON.stringify({ ticket_id: ticketId }),
+          }
+        );
 
         const eventData = await eventRes.json();
 
@@ -96,7 +103,7 @@ async function main(): Promise<void> {
             price: (ticket.price ?? 0).toString(),
             thumbnail: event.thumbnail.startsWith("http")
               ? event.thumbnail
-              : `http://127.0.0.1:8000/storage/thumbnails/${event.thumbnail}`,
+              : `http://127.0.0.1:8000/storage/${event.thumbnail}`,
             category: event.category.name,
             duration: event.duration,
           });
@@ -111,11 +118,20 @@ async function main(): Promise<void> {
 }
 
 // Utility: Date formatter
-function formatDate(datetime: string): { day: string; month: string; time: string } {
+function formatDate(datetime: string): {
+  day: string;
+  month: string;
+  time: string;
+} {
   const date = new Date(datetime);
   const day = date.getDate().toString().padStart(2, "0");
-  const month = date.toLocaleString("default", { month: "short" }).toUpperCase();
-  const time = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const month = date
+    .toLocaleString("default", { month: "short" })
+    .toUpperCase();
+  const time = date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
   return { day, month, time };
 }
 
