@@ -195,4 +195,78 @@ class EventController extends Controller
         return response()->json(['data' => $events]);
     }
 
+    // linear search 
+    public function linearSearch(Request $request)
+{
+     
+    $start = microtime(true); 
+    $searchTerm = strtolower($request->input('search'));
+
+    // Get all events with relationships
+    $events = Event::with(['category', 'eventVenue'])->get();
+
+    // Manual linear search (no Collection::filter())
+    $filteredEvents = [];
+    foreach ($events as $event) {
+        $title = strtolower($event->title);
+        $category = strtolower(optional($event->category)->name);
+
+       if (!empty($searchTerm) && 
+    (strpos($title, $searchTerm) !== false || strpos($category, $searchTerm) !== false))
+     {
+    $filteredEvents[] = $event;
+     }
+    }
+
+    $end = microtime(true); 
+    $executionTime = round($end - $start, 4); 
+
+    // Log execution time
+    Log::info("Search term: {$searchTerm}, Execution time: {$executionTime} seconds");
+    Log::info("Running linear search with: " . $request->input('search'));
+
+    // Manual pagination
+    $page = request()->input('page', 1);
+    $perPage = 10;
+    $offset = ($page - 1) * $perPage;
+
+    $paged = array_slice($filteredEvents, $offset, $perPage);
+    $total = count($filteredEvents);
+
+    return response()->json([
+        'success' => true,
+        'payload' => [
+            'data' => array_values($paged),
+            'current_page' => (int) $page,
+            'last_page' => ceil($total / $perPage),
+            'per_page' => $perPage,
+            'total' => $total,
+            'path' => url('/api/admin/events'),
+            'first_page_url' => url('/api/admin/events?page=1'),
+            'last_page_url' => url('/api/admin/events?page=' . ceil($total / $perPage)),
+            'next_page_url' => $page < ceil($total / $perPage) ? url('/api/admin/events?page=' . ($page + 1)) : null,
+            'prev_page_url' => $page > 1 ? url('/api/admin/events?page=' . ($page - 1)) : null,
+        ]
+    ]);
+}
+
+    // fetch all the events for binary search
+    public function allEvents()
+{
+    try {
+        $events = Event::with(['category', 'admin', 'eventVenue'])->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $events,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to fetch events.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
 }
