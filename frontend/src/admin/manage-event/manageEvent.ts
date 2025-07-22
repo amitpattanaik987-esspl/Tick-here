@@ -134,7 +134,7 @@ function fetchEvents(url: string) {
       if (res.success && res.payload && res.payload.data) {
         const events: Event[] = res.payload.data;
 
-        // ✅ Do NOT overwrite allEvents (it should contain ALL records)
+        //  allEvents (it should contain ALL records)
         // Just render the current page data
         const container = $("#event-table-body");
         container.empty();
@@ -289,7 +289,7 @@ function binarySearchEvents(rawInput: string) {
 
   $("#pagination-controls").hide();
 }
-// binary search function starting here 
+// binary search function ending here 
 
 function updatePagination(payload: any) {
   currentPageUrl = payload.path + "?page=" + payload.current_page;
