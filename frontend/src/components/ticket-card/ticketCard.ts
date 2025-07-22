@@ -16,7 +16,8 @@ export async function loadBookedTicketCard(containerId: any, data: any) {
             .replace("SEATS", data.seats.join(", "))
             .replace("VENUE", data.venue)
             .replace("QTY", data.seats.length)
-            .replace("PRICE", data.price);
+            .replace("PRICE", data.price)
+            .replace("Comedy", data.category);
 
         const tempWrapper = document.createElement("div");
         tempWrapper.innerHTML = html;

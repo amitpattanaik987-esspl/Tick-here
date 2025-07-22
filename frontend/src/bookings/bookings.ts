@@ -24,11 +24,13 @@ async function main(): Promise<void> {
   showLoader();
 
   // Load UI components
-  loadNavbar();
-  loadFooter();
-  loadContactModal();
-  loadLocationModal();
-  renderTagCategories(".tag-category-grid");
+  document.addEventListener("DOMContentLoaded", async () => {
+    loadNavbar();
+    loadFooter();
+    loadContactModal();
+    loadLocationModal();
+    renderTagCategories(".tag-category-grid");
+  });
 
   // Get user ID
   const userDetails = localStorage.getItem("User_details");
@@ -58,6 +60,7 @@ async function main(): Promise<void> {
 
     if (data.success && Array.isArray(data.tickets)) {
       const now = new Date();
+
 
       for (const ticket of data.tickets) {
         const ticketId = ticket.ticket_id;
