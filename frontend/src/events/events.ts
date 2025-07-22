@@ -4,7 +4,11 @@ import { loadContactModal } from "../components/contact-modal/contactModal.js";
 import { loadLocationModal } from "../components/location-modal/locationModal.js";
 import { renderTagCategories } from "../components/category/tagCategorySection.js";
 import { createEventCard } from "../components/event-card/eventCard.js";
-import { initLoader, showLoader, hideLoader } from "../components/loader/loader.js";
+import {
+  initLoader,
+  showLoader,
+  hideLoader,
+} from "../components/loader/loader.js";
 initLoader();
 
 // Linear search function for events by title
@@ -93,6 +97,8 @@ export function loadEventsForEventsPage(
 
         if (status === "ongoing") {
           window.location.href = `details/?event=${eventId}`;
+        } else {
+          alert("This event booking has not yet started.");
         }
       });
 

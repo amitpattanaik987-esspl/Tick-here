@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class TicketSeeder extends Seeder
@@ -71,7 +72,7 @@ class TicketSeeder extends Seeder
                     $ticketCount++;
                 } catch (\Throwable $e) {
                     DB::rollBack();
-                    \Log::error('TicketSeeder error', ['message' => $e->getMessage()]);
+                    Log::error('TicketSeeder error', ['message' => $e->getMessage()]);
                 }
             }
         }

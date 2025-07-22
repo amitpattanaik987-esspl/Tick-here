@@ -77,11 +77,9 @@ export function setupLocationLogic(): void {
     </div>
   `;
 
-
     setTimeout(() => {
       $("#navbar-location-display").html(locationHtml); // if yes, show the selected location in the navbar
     }, 1000);
-
   }
 
   const searchInput = $("#location-modal input");
@@ -110,10 +108,9 @@ function loadLocations(): void {
 
       enriched.sort((a, b) => a.city.localeCompare(b.city));
 
-      locationArray.length = 0; // ✅ Clear the array first
+      locationArray.length = 0; // Clear the array first
       locationArray.push(...enriched);
 
-      console.log(locationArray); // Should show unique items only
       renderLocationGrid(locationArray);
     },
     error: function () {
