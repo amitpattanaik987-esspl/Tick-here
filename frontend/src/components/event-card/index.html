@@ -1,31 +1,18 @@
 <div
   class="event-card group h-[20rem] relative text-white rounded-xl overflow-hidden shadow-md transform transition-transform duration-500 hover:scale-105 hover:shadow-xl cursor-pointer"
-  data-event-id="{{EVENT_ID}}"
-  data-status="{{EVENT_STATUS}}"
->
-  <img
-    src="{{THUMBNAIL}}"
-    alt="{{TITLE}}"
-    class="w-full h-full absolute max-w-full max-h-full object-cover"
-  />
-  <div
-    class="absolute top-3 left-3 bg-[#9a47e3] text-white text-sm font-medium px-3 py-1 rounded-full"
-  >
+  data-event-id="{{EVENT_ID}}" data-status="{{EVENT_STATUS}}">
+  <img src="{{THUMBNAIL}}" alt="{{TITLE}}" class="w-full h-full absolute max-w-full max-h-full object-cover" />
+  <div class="absolute top-3 left-3 bg-[#9a47e3] text-white text-sm font-medium px-3 py-1 rounded-full">
     {{CATEGORY}}
   </div>
-  <div
-    class="absolute h-[50%] w-full top-[50%] bg-gradient-to-t from-black via-black/90 to-transparent"
-  ></div>
-  <div
-    class="absolute top-[14.872rem] left-[0.653rem] w-auto h-full px-2 grid grid-cols-3"
-  >
+  <div class="absolute h-[50%] w-full top-[50%] bg-gradient-to-t from-black via-black/90 to-transparent"></div>
+  <div class="absolute top-[14.872rem] left-[0.653rem] w-auto h-full px-2 grid grid-cols-3">
     <div class="col-span-2">
       <h3 class="text-base font-semibold">{{TITLE}}</h3>
       <p class="text-sm">Rs. {{PRICE}} onward</p>
     </div>
     <div
-      class="absolute top-[0rem] left-[10.331rem] text-[1.188rem] leading-[108.28%] font-semibold flex items-center w-full h-auto"
-    >
+      class="absolute top-[0rem] left-[10.331rem] text-[1.188rem] leading-[108.28%] font-semibold flex items-center w-full h-auto">
       <span class="[line-break:anywhere] w-full">
         <p class="m-0">{{DAY}}</p>
         <p class="m-0">{{MONTH}}</p>

@@ -26,7 +26,7 @@ export function loadEventsForLocation(): void {
     url,
     method: "GET",
     success: async function (res: any) {
-      const container = $(".event-card-grid");
+      const container = $(".home-event-card-grid");
       container.empty();
       hideLoader();
 
@@ -63,7 +63,10 @@ export function loadEventsForLocation(): void {
         );
       }
 
-      $(".event-card").on("click", function () {
+      $(".home-event-card-grid .event-card").on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         const eventId = $(this).data("event-id");
 
         const status = $(this).data("status");

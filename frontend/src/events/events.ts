@@ -83,7 +83,10 @@ export function loadEventsForEventsPage(
       }
 
       // navigates to the event details page
-      $(".event-card").on("click", function () {
+      $(".event-page-grid .event-card").on("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
         const eventId = $(this).data("event-id");
 
         const status = $(this).data("status");
