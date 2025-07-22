@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\EventVenue;
-use App\Models\Seat;
 use App\Models\Ticket;
 use App\Models\TicketSeat;
 use App\Models\User;
@@ -12,37 +11,36 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class TicketSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
     public function run()
     {
-
         $users = User::pluck('id')->toArray();
 
-        $eventVenues = EventVenue::with('venue.seats')->get();
+        $oneMonthFromNow = Carbon::now()->addMonth();
+
+        // Only load event_venues happening within 1 month
+        $eventVenues = EventVenue::with('venue.seats')
+            ->where('start_datetime', '<=', $oneMonthFromNow)
+            ->get();
 
         $ticketCount = 0;
 
-        // Loop through each event venue to book ticket for it
         foreach ($eventVenues as $eventVenue) {
             $venue = $eventVenue->venue;
             $seats = $venue->seats()->where('is_booked', false)->get();
 
             if ($seats->count() < 1)
-                continue; // Need minimum seats to book
+                continue;
 
-            $numTickets = rand(2, 4); // Book 2–4 tickets per venue
+            $numTickets = rand(2, 4);
 
             for ($i = 0; $i < $numTickets; $i++) {
                 $userId = Arr::random($users);
 
-                $seatsToBook = $seats->splice(0, rand(1, 3)); // Book 1–3 seats per ticket
+                $seatsToBook = $seats->splice(0, rand(1, 3));
                 if ($seatsToBook->isEmpty())
                     break;
 
@@ -80,4 +78,3 @@ class TicketSeeder extends Seeder
         echo "Seeded $ticketCount tickets.\n";
     }
 }
-
