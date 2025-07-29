@@ -1,15 +1,10 @@
-let adminLoginButton = document.getElementById(
-  "admin_sign_in"
-) as HTMLButtonElement;
+const adminLoginButton = document.getElementById("admin_sign_in") as HTMLButtonElement;
 
 adminLoginButton?.addEventListener("click", async function (e) {
   e.preventDefault();
 
-  const email = (
-    document.getElementById("email") as HTMLInputElement
-  )?.value.trim();
-  const password = (document.getElementById("password") as HTMLInputElement)
-    ?.value;
+  const email = (document.getElementById("email") as HTMLInputElement)?.value.trim();
+  const password = (document.getElementById("password") as HTMLInputElement)?.value;
 
   if (!email || !password) {
     alert("Please fill in both email and password.");
@@ -17,27 +12,41 @@ adminLoginButton?.addEventListener("click", async function (e) {
   }
 
   try {
-    await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
+    const res = await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json", // Important to get JSON back
+        Accept: "application/json",
       },
       body: JSON.stringify({ email, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("Login success:", data);
+    });
 
-        // Store the token in local storage
-        localStorage.setItem("admin_token", data.token);
-        window.location.href = "/admin/";
-      })
-      .catch((err) => {
-        console.error("Network or server error:", err);
-      });
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Validation or authentication error
+      if (data.errors) {
+        const messages = Object.values(data.errors).flat();
+        alert(messages.join("\n"));
+      } else if (data.message) {
+        alert(data.message);
+      } else {
+        alert("Login failed. Please check your credentials.");
+      }
+      return;
+    }
+
+    // Success
+    if (data.success && data.token) {
+      localStorage.setItem("admin_token", data.token);
+      alert("Login successful!");
+      window.location.href = "/admin";
+    } else {
+      alert("Unexpected response from server.");
+    }
+
   } catch (error) {
     console.error("Network or server error:", error);
-    alert("Something went wrong. Please try again.");
+    alert("A network error occurred. Please try again later.");
   }
 });

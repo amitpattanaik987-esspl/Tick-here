@@ -6,7 +6,10 @@ function loadEventStats() {
   const token = localStorage.getItem("admin_token");
   console.log("Token:", token);
 
-  if (!token) return;
+  if (token === 'undefined') {
+    window.location.href = "/admin/admin_login/";
+    return;
+  };
 
   $.ajax({
     url: "http://127.0.0.1:8000/api/admin/event-stats",
@@ -41,15 +44,14 @@ function renderCategoryCards(stats: any) {
       <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-[16px] text-left">
         <div class="flex justify-between items-center mb-2">
           <span class="text-lg font-semibold">${item.category}</span>
-          <span class="text-sm text-gray-600">${
-            item.this_week_events
-          } Active Events</span>
+          <span class="text-sm text-gray-600">${item.this_week_events
+      } Active Events</span>
         </div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-4xl font-bold">${item.total_events}</span>
           <span class="text-sm ${trendClass}">${Math.abs(
-      item.growth_percentage
-    )}% ${trendSymbol}</span>
+        item.growth_percentage
+      )}% ${trendSymbol}</span>
         </div>
         <p class="text-xs text-gray-500">Event Bookings</p>
       </div>
