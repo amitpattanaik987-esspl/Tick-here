@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\EventVenue;
 use App\Models\Location;
 use App\Models\Venue;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -121,6 +122,22 @@ class EventController extends Controller
 
         // Loop through each venue entry and insert into DB
         foreach ($data['venues'] as $venue) {
+            // Extract date only from the requested datetime
+            $date = Carbon::parse($venue['start_datetime'])->toDateString();
+
+            // Check if venue is already booked on the same date
+            $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
+                ->whereDate('start_datetime', $date)
+                ->exists();
+
+            if ($isBooked) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Venue ID ' . $venue['venue_id'] . ' is already booked on ' . $date,
+                ], 422);
+            }
+
+            // Save to DB only if not booked
             EventVenue::create([
                 'event_id' => $event->id,
                 'venue_id' => $venue['venue_id'],
@@ -128,6 +145,7 @@ class EventController extends Controller
                 'start_datetime' => $venue['start_datetime'] . ':00',
             ]);
         }
+
 
         return response()->json([
             'success' => true,
@@ -255,7 +273,8 @@ class EventController extends Controller
                 'event:id,title,thumbnail,duration,category_id',
                 'event.category:id,name',
                 'venue:id,venue_name',
-            ])
+            ])->where('start_datetime', '>=', now())
+            ->orderBy('start_datetime', 'asc')
             ->get();
 
         $events = [];
