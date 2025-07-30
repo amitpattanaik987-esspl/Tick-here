@@ -17,9 +17,13 @@ class ExpireTickets extends Command
     {
         $now = Carbon::now();
 
-        $expiredVenues = EventVenue::where('start_datetime', '<', $now)->pluck('id');
+        // $expiredVenues = EventVenue::where('start_datetime', '<', $now)->pluck('id');
+        $expiredVenueIds = EventVenue::select('event_venues.id')
+            ->join('events', 'events.id', '=', 'event_venues.event_id')
+            ->whereRaw("DATE_ADD(event_venues.start_datetime, INTERVAL TIME_TO_SEC(events.duration) SECOND) < ?", [$now])
+            ->pluck('id');
 
-        $tickets = Ticket::whereIn('event_venue_id', $expiredVenues)
+        $tickets = Ticket::whereIn('event_venue_id', $expiredVenueIds)
             ->where('status', 'booked')
             ->get();
 

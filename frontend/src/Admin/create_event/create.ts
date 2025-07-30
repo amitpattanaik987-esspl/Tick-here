@@ -562,8 +562,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const dateInput = document.getElementById("on-date") as HTMLInputElement;
     const timeInput = document.getElementById("time") as HTMLInputElement;
 
-    console.log(venueInput, dateInput, timeInput);
-
     if (!venueInput || !dateInput || !timeInput) {
       alert("Venue form not ready yet.");
       return false;
@@ -589,12 +587,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       date,
       time,
     });
-    console.log(savedVenues);
 
     clearVenueForm();
     renderSavedVenues();
     return true;
   }
+
 
   function clearVenueForm() {
     const venueInput = document.getElementById(
