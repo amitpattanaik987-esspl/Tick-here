@@ -1,4 +1,11 @@
+import {
+  hideLoader,
+  initLoader,
+  showLoader,
+} from "../../components/loader/loader.js";
 const adminLoginButton = document.getElementById("admin_sign_in") as HTMLButtonElement;
+
+initLoader();
 
 adminLoginButton?.addEventListener("click", async function (e) {
   e.preventDefault();
@@ -11,7 +18,7 @@ adminLoginButton?.addEventListener("click", async function (e) {
     return;
   }
 
-
+  showLoader();
   try {
     const res = await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
       method: "POST",
@@ -40,7 +47,6 @@ adminLoginButton?.addEventListener("click", async function (e) {
     // Success
     if (data.success && data.token) {
       localStorage.setItem("admin_token", data.token);
-      alert("Login successful!");
       window.location.href = "/admin";
     } else {
       alert("Unexpected response from server.");
@@ -49,5 +55,8 @@ adminLoginButton?.addEventListener("click", async function (e) {
   } catch (error) {
     console.error("Network or server error:", error);
     alert("A network error occurred. Please try again later.");
+  }
+  finally {
+    hideLoader();
   }
 });

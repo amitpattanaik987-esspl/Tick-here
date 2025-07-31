@@ -12,7 +12,6 @@ import {
 
 // Main async function to handle flow
 async function main(): Promise<void> {
-  // Redirect if not authenticated
   if (!localStorage.getItem("auth-token")) {
     alert("Please login first");
     window.location.href = "/login";

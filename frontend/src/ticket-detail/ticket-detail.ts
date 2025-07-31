@@ -22,6 +22,7 @@ let ticket: TicketData | null = null;
 try {
     if (!raw) throw new Error("Ticket not found in localStorage.");
     ticket = JSON.parse(raw) as TicketData;
+    localStorage.removeItem("selected_ticket");
 } catch (error) {
     alert("No ticket found");
     window.location.href = "/";

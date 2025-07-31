@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\VenueController;
@@ -162,4 +163,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/admin/venues/{venue}', [VenueController::class, 'delete']);
     Route::put('/admin/venues/{venue}', [VenueController::class, 'update']);
 
+    //contact email
+    Route::post('/contact', [ContactController::class, 'sendMail']);
 });
