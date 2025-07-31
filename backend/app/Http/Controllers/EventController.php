@@ -8,11 +8,14 @@ use App\Models\Location;
 use App\Models\Venue;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+
 
 class EventController extends Controller
 {
@@ -20,7 +23,7 @@ class EventController extends Controller
     //get all the events with sorting(admin)
     public function index(Request $request)
     {
-        $sortBy = $request->get('sort_by', 'id'); // default to 'id'
+        $sortBy = $request->get('sort_by');
         $sortOrder = $request->get('sort_order', 'desc');
         $search = $request->get('search');
 
@@ -30,48 +33,107 @@ class EventController extends Controller
             $search = null;
         }
 
-        $validSorts = ['id', 'title', 'created_by', 'duration']; // whitelist columns
-
+        $validSorts = ['id', 'title', 'created_by', 'duration'];
         if (!in_array($sortBy, $validSorts)) {
             $sortBy = 'id';
         }
 
-        Log::info('Search term: ' . $search);
-        Log::info('Status filter: ' . ($statusFilter ?? 'none'));
+        $query = Event::with(['category', 'admin', 'eventVenue']);
 
-
-        $events = Event::with(['category', 'admin', 'eventVenue'])->when($search, function ($query, $search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")->orWhere('duration', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    })
-                    ->orWhereHas('admin', function ($q3) use ($search) {
-                        $q3->where('name', 'like', "%{$search}%");
-                    });
-            });
-        })->when($statusFilter, function ($query, $statusFilter) {
+        if ($statusFilter) {
             $query->withComputedStatus($statusFilter);
-        })
-            ->orderBy($sortBy, $sortOrder)
-            ->paginate(10);
+        }
+
+        if ($search) {
+            $firstChar = substr($search, 0, 1);
+            $query->where(function ($q) use ($firstChar) {
+                $q->where('title', 'like', "{$firstChar}%")
+                    ->orWhere('description', 'like', "{$firstChar}%");
+            });
+        }
+
+        // Initial fetch (no pagination applied yet)
+        $events = $sortBy
+            ? $query->orderBy($sortBy, $sortOrder)->get()
+            : $query->get();
+
+        // Apply appropriate search filter
+        if ($search) {
+            $events = $sortBy
+                ? $this->binarySearch($events, strtolower($search), $sortBy)
+                : $this->linearSearch($events, strtolower($search));
+        }
+
+        // Manual pagination
+        $page = (int) $request->get('page', 1);
+        $perPage = 10;
+        $offset = ($page - 1) * $perPage;
+
+        $paginated = new LengthAwarePaginator(
+            $events->slice($offset, $perPage)->values(),
+            $events->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
 
         return response()->json([
             'success' => true,
-            'payload' => $events,
+            'payload' => $paginated,
         ]);
     }
 
-    //get an event
+    //linear search for events
+    private function linearSearch($collection, string $search)
+    {
+        return $collection->filter(function ($event) use ($search) {
+            return Str::contains(strtolower($event->title), $search) ||
+                Str::contains(strtolower($event->description), $search);
+        });
+    }
+
+    //binary search for events
+    private function binarySearch($collection, string $search, string $key)
+    {
+        $items = $collection->values();
+        $low = 0;
+        $high = $items->count() - 1;
+        $results = collect();
+
+        while ($low <= $high) {
+            $mid = (int)(($low + $high) / 2);
+            $value = strtolower($items[$mid][$key]);
+
+            if (Str::contains($value, $search)) {
+                $left = $mid;
+                while ($left >= 0 && Str::contains(strtolower($items[$left][$key]), $search)) {
+                    $results->push($items[$left]);
+                    $left--;
+                }
+
+                $right = $mid + 1;
+                while ($right < $items->count() && Str::contains(strtolower($items[$right][$key]), $search)) {
+                    $results->push($items[$right]);
+                    $right++;
+                }
+
+                break;
+            } elseif ($value < $search) {
+                $low = $mid + 1;
+            } else {
+                $high = $mid - 1;
+            }
+        }
+
+        return $results->unique('id')->values();
+    }
+
     public function getEvent(Event $event)
     {
         $event = Event::with([
             'category',
             'admin',
             'eventVenue.venue.location',
-            // Eager load ticket count per venue
             'eventVenue' => function ($query) {
                 $query->withCount('tickets as tickets_booked');
             }
@@ -90,7 +152,6 @@ class EventController extends Controller
     //Creates an event with multiple venues(admin)
     public function create()
     {
-        // Validate request
         try {
             $data = request()->validate([
                 'title' => 'required|string|max:255',
@@ -107,10 +168,8 @@ class EventController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         }
 
-        // Upload and store image
         $data['thumbnail'] = request()->file('thumbnail')->store('thumbnails', 'public');
 
-        // Create event
         $event = Event::create([
             'title' => $data['title'],
             'description' => $data['description'],
@@ -120,12 +179,9 @@ class EventController extends Controller
             'admin_id' => auth('admin')->id(),
         ]);
 
-        // Loop through each venue entry and insert into DB
         foreach ($data['venues'] as $venue) {
-            // Extract date only from the requested datetime
             $date = Carbon::parse($venue['start_datetime'])->toDateString();
 
-            // Check if venue is already booked on the same date
             $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
                 ->whereDate('start_datetime', $date)
                 ->exists();
@@ -137,7 +193,6 @@ class EventController extends Controller
                 ], 422);
             }
 
-            // Save to DB only if not booked
             EventVenue::create([
                 'event_id' => $event->id,
                 'venue_id' => $venue['venue_id'],

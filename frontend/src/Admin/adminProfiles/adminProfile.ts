@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const token = localStorage.getItem("admin_token");
   const adminId = localStorage.getItem("admin_info");
+
   if (!token) {
     alert("You are not authenticated.");
     return;
@@ -193,6 +194,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     addAdmin.addEventListener("click", () => {
       if (adminId !== "1") {
         alert("You are not authorized to add admin.");
+        return;
       }
       console.log("Add Admin clicked");
       modal.classList.remove("hidden");
