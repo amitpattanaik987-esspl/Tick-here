@@ -47,6 +47,7 @@ adminLoginButton?.addEventListener("click", async function (e) {
     // Success
     if (data.success && data.token) {
       localStorage.setItem("admin_token", data.token);
+      localStorage.setItem("admin_info", JSON.stringify(data.data.id));
       window.location.href = "/admin";
     } else {
       alert("Unexpected response from server.");
