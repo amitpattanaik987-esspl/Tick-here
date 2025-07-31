@@ -24,10 +24,16 @@ export async function loadBookedTicketCard(containerId: any, data: any) {
         const ticketElement = tempWrapper.firstElementChild;
 
         if (ticketElement) {
-            ticketElement.addEventListener("click", () => {
-                localStorage.setItem("selected_ticket", JSON.stringify(data));
-                window.location.href = `/ticket-detail`; // 👈 your new ticket page path
-            });
+            if (data.status?.toLowerCase() === "booked") {
+                ticketElement.classList.add("cursor-pointer", "hover:opacity-90");
+                ticketElement.addEventListener("click", () => {
+                    localStorage.setItem("selected_ticket", JSON.stringify(data));
+                    window.location.href = `/ticket-detail`;
+                });
+            } else {
+                ticketElement.classList.add("opacity-60", "cursor-not-allowed");
+            }
+
             container.appendChild(ticketElement);
         }
     } catch (err) {

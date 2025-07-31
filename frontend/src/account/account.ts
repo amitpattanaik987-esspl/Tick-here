@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         })
             .then((res) => res.json())
             .then((data) => {
+                console.log(data);
+
                 const user = data.user;
                 const nameInput = document.getElementById("name") as HTMLInputElement | null;
                 const emailInput = document.getElementById("email") as HTMLInputElement | null;
@@ -173,14 +175,16 @@ editSaveBtn.addEventListener("click", () => {
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${localStorage.getItem("auth-token")}`,
-
             },
             body: JSON.stringify(updatedUser),
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data.user);
+
+                localStorage.setItem("User_details", JSON.stringify(data.user));
+
                 alert(data.message || "Profile updated.");
-                window.location.reload();
 
                 // Back to readonly
                 nameInput.readOnly = true;
@@ -202,8 +206,7 @@ editSaveBtn.addEventListener("click", () => {
                 if (nameLabel) nameLabel.textContent = nameInput.value;
                 if (emailLabel) emailLabel.textContent = emailInput.value;
 
-                // Update localStorage username if it was changed
-                localStorage.setItem("username", updatedUser.new_username);
+                window.location.reload();
             })
             .catch(err => {
                 console.error("Error updating profile:", err);

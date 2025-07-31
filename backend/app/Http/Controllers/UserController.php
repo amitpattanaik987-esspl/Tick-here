@@ -131,7 +131,10 @@ class UserController extends Controller
         $user->username = $request->new_username;
         $user->save();
 
-        return response()->json(['message' => 'Profile updated successfully']);
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user,
+        ]);
     }
 
     public function changePassword(Request $request)

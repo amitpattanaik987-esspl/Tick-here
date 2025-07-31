@@ -61,56 +61,59 @@ async function main(): Promise<void> {
       const now = new Date();
 
 
-      for (const ticket of data.tickets) {
-        const ticketId = ticket.ticket_id;
+      await Promise.all(
+        data.tickets.map(async (ticket: any) => {
+          const ticketId = ticket.ticket_id;
 
-        const eventRes = await fetch(
-          "http://127.0.0.1:8000/api/getEventByTicketId",
-          {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
-            },
-            body: JSON.stringify({ ticket_id: ticketId }),
+          const eventRes = await fetch(
+            "http://127.0.0.1:8000/api/getEventByTicketId",
+            {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
+              },
+              body: JSON.stringify({ ticket_id: ticketId }),
+            }
+          );
+
+          const eventData = await eventRes.json();
+
+          if (eventData.success) {
+            const event = eventData.event;
+            const eventVenue = eventData.event_venue_details;
+            const eventDate = new Date(eventVenue.start_datetime);
+            const { day, month, time } = formatDate(eventVenue.start_datetime);
+
+            let targetSectionId = "";
+
+            if (ticket.status?.toLowerCase() === "cancelled") {
+              targetSectionId = "cancelled_ticket_section";
+            } else if (eventDate < now) {
+              targetSectionId = "ticket_history_section";
+            } else {
+              targetSectionId = "booked_ticket_section";
+            }
+
+            await loadBookedTicketCard(targetSectionId, {
+              id: ticketId,
+              date: day,
+              month: month,
+              start_time: time,
+              title: event.title,
+              seats: Array.isArray(ticket.seats) ? ticket.seats : [],
+              venue: eventVenue.venue?.venue_name || "N/A",
+              price: (ticket.price ?? 0).toString(),
+              thumbnail: event.thumbnail.startsWith("http")
+                ? event.thumbnail
+                : `http://127.0.0.1:8000/storage/${event.thumbnail}`,
+              category: event.category.name,
+              duration: event.duration,
+              status: ticket.status,
+            });
           }
-        );
-
-        const eventData = await eventRes.json();
-
-        if (eventData.success) {
-          const event = eventData.event;
-          const eventVenue = eventData.event_venue_details;
-          const eventDate = new Date(eventVenue.start_datetime);
-          const { day, month, time } = formatDate(eventVenue.start_datetime);
-
-          let targetSectionId = "";
-
-          if (ticket.status?.toLowerCase() === "cancelled") {
-            targetSectionId = "cancelled_ticket_section";
-          } else if (eventDate < now) {
-            targetSectionId = "ticket_history_section";
-          } else {
-            targetSectionId = "booked_ticket_section";
-          }
-
-          loadBookedTicketCard(targetSectionId, {
-            id: ticketId,
-            date: day,
-            month: month,
-            start_time: time,
-            title: event.title,
-            seats: Array.isArray(ticket.seats) ? ticket.seats : [],
-            venue: eventVenue.venue?.venue_name || "N/A",
-            price: (ticket.price ?? 0).toString(),
-            thumbnail: event.thumbnail.startsWith("http")
-              ? event.thumbnail
-              : `http://127.0.0.1:8000/storage/${event.thumbnail}`,
-            category: event.category.name,
-            duration: event.duration,
-          });
-        }
-      }
+        })
+      );
     }
   } catch (error) {
     console.error("Error fetching tickets:", error);

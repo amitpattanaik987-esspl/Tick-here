@@ -201,6 +201,7 @@ class EventController extends Controller
             ]);
         }
 
+
         return response()->json([
             'success' => true,
             'message' => 'Event created successfully.',
@@ -327,7 +328,8 @@ class EventController extends Controller
                 'event:id,title,thumbnail,duration,category_id',
                 'event.category:id,name',
                 'venue:id,venue_name',
-            ])
+            ])->where('start_datetime', '>=', now())
+            ->orderBy('start_datetime', 'asc')
             ->get();
 
         $events = [];

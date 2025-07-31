@@ -323,6 +323,9 @@
   .left-\[10\.331rem\] {
     left: 10.331rem;
   }
+  .left-\[10rem\] {
+    left: 10rem;
+  }
   .left-\[66\.563rem\] {
     left: 66.563rem;
   }
@@ -1534,8 +1537,8 @@
   .p-\[16px\] {
     padding: 16px;
   }
-  .p-\[20px\] {
-    padding: 20px;
+  .p-\[30px\] {
+    padding: 30px;
   }
   .px-2 {
     padding-inline: calc(var(--spacing) * 2);
@@ -1970,6 +1973,9 @@
   .opacity-50 {
     opacity: 50%;
   }
+  .opacity-60 {
+    opacity: 60%;
+  }
   .opacity-75 {
     opacity: 75%;
   }
@@ -2180,6 +2186,13 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-white);
+      }
+    }
+  }
+  .hover\:opacity-90 {
+    &:hover {
+      @media (hover: hover) {
+        opacity: 90%;
       }
     }
   }
