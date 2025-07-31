@@ -128,8 +128,8 @@ export function loadNavbar(): void {
             Accept: "application/json",
           },
           success: function (response) {
-            // Clear the token and redirect
             localStorage.removeItem("admin_token");
+            localStorage.removeItem("admin_info");
             window.location.href = "/admin/admin_login/";
           },
           error: function (xhr) {
