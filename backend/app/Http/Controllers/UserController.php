@@ -157,4 +157,16 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Password updated successfully']);
     }
+
+    public function subscribe(Request $request)
+    {
+        $user_email = $request->input('email');
+        $user = User::where('email', $user_email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        $user->is_subscribed = true;
+        $user->save();
+        return response()->json(['message' => 'Subscription successful']);
+    }
 }

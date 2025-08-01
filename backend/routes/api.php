@@ -121,6 +121,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/gettickets', [TicketController::class, 'getTicketsByUser']);
     Route::post('/getEventByTicketId', [TicketController::class, 'getEventByTicketId']);
     Route::post('/cancel-ticket', [TicketController::class, 'cancelticket']);
+    Route::post('/subscribe', [UserController::class, 'subscribe']);
 });
 
 /**
