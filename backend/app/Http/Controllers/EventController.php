@@ -52,7 +52,14 @@ class EventController extends Controller
             $firstChar = substr($search, 0, 1);
             $query->where(function ($q) use ($firstChar) {
                 $q->where('title', 'like', "%{$firstChar}%")
-                    ->orWhere('description', 'like', "%{$firstChar}%");
+                    ->orWhere('id', 'like', "%{$firstChar}%")
+                    ->orWhere('description', 'like', "%{$firstChar}%")->orWhere('duration', 'like', "%{$firstChar}%")
+                    ->orWhereHas('category', function ($q2) use ($firstChar) {
+                        $q2->where('name', 'like', "%{$firstChar}%");
+                    })
+                    ->orWhereHas('admin', function ($q3) use ($firstChar) {
+                        $q3->where('name', 'like', "%{$firstChar}%");
+                    });
             });
         }
 
@@ -92,7 +99,11 @@ class EventController extends Controller
 
         return $collection->filter(function ($event) use ($search) {
             return Str::contains(strtolower($event->title), $search) ||
-                Str::contains(strtolower($event->description), $search);
+                Str::contains(strtolower($event->id), $search) ||
+                Str::contains(strtolower($event->duration), $search) ||
+                Str::contains(strtolower($event->description), $search) ||
+                Str::contains(strtolower(optional($event->category)->name), $search) ||
+                Str::contains(strtolower(optional($event->admin)->name), $search);
         });
     }
 
@@ -105,7 +116,7 @@ class EventController extends Controller
         $results = collect();
 
         while ($low <= $high) {
-            $mid = (int)(($low + $high) / 2);
+            $mid = (int) (($low + $high) / 2);
             $value = strtolower(data_get($items[$mid], $key, ''));
 
             if (Str::contains($value, $search)) {
