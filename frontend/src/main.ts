@@ -127,6 +127,58 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   });
 
+  // Newsletter form handling
+  const subscribeButton = document.getElementById(
+    "submitNewsletterBtn"
+  ) as HTMLButtonElement;
+
+  if (subscribeButton) {
+    subscribeButton.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const email = $("#newsletter-email").val() as string;
+      const originalText = subscribeButton.innerHTML;
+
+      if (!email) {
+        alert("Please enter an email address.");
+        return;
+      }
+
+      console.log(subscribeButton);
+
+      // Disable button and change text
+      subscribeButton.disabled = true;
+      subscribeButton.innerHTML = `<b
+                class="w-[8.813rem] relative text-white text-center px-2 text-lg"
+                ><i class="fa-solid fa-circle-notch fa-spin mr-2"></i>Subscribing...</b>`;
+
+      $.ajax({
+        url: "http://127.0.0.1:8000/api/subscribe/",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        data: JSON.stringify({ email }),
+        success: function (response) {
+          alert(response.message);
+          $("#newsletter-email").val("");
+        },
+        error: function (xhr) {
+          const message = xhr.responseJSON?.message || "Something went wrong!";
+          alert(message);
+        },
+        complete: function () {
+          // Re-enable button and restore text
+          subscribeButton.disabled = false;
+          subscribeButton.innerHTML = originalText;
+        },
+      });
+    });
+  } else {
+    console.warn("Newsletter button not found in DOM");
+  }
+
   //contact modal
   const contactButtons = document.querySelectorAll(".contact-button");
   const modal = document.getElementById("contact-modal") as HTMLDivElement;
