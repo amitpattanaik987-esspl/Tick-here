@@ -1,6 +1,12 @@
+import { loadContactModal } from "../components/contact-modal/contactModal.js";
+import { loadLocationModal } from "../components/location-modal/locationModal.js";
 import { loadNavbar } from "../components/navbar/navbar.js";
 
-loadNavbar();
+document.addEventListener("DOMContentLoaded", async () => {
+    loadNavbar();
+    loadLocationModal();
+    loadContactModal();
+});
 
 interface TicketData {
     id: number;
