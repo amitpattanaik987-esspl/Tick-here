@@ -31,16 +31,13 @@ Route::post('/auth/admin/login', [AdminController::class, 'login']);
 
 // Public Data
 Route::get('/events/{event}', [EventController::class, 'getEvent']); // Get event details
-
 Route::get('/locations', [LocationController::class, 'show']); // Get all locations
 Route::get('/events/locations/{location}', [EventController::class, 'getEventsByLocation']); // all Events for a location
 Route::get('/categories', [EventCategoryController::class, 'index']);
-
+Route::post('/subscribe', [UserController::class, 'subscribe']);
 
 // Seats data
 Route::get('/venues/{id}/seats', [VenueController::class, 'seats']);
-
-
 
 
 // Verify email
@@ -121,7 +118,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/gettickets', [TicketController::class, 'getTicketsByUser']);
     Route::post('/getEventByTicketId', [TicketController::class, 'getEventByTicketId']);
     Route::post('/cancel-ticket', [TicketController::class, 'cancelticket']);
-    Route::post('/subscribe', [UserController::class, 'subscribe']);
 });
 
 /**

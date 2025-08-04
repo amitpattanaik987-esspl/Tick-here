@@ -118,7 +118,6 @@ if (event_Id) {
       );
       if (!userLocation || !userLocation.city) {
         alert("Please select a location before proceeding.");
-        window.location.href = "/";
         hideLoader();
         return;
       }
@@ -143,7 +142,10 @@ if (event_Id) {
       document.getElementById(
         "event_category"
       )!.textContent = `${event.category.name} Show`;
-      document.getElementById("event-price")!.textContent = "400.00";
+      const firstVenuePrice = filteredVenues[0].venue.seat_price;
+      document.getElementById(
+        "event-price"
+      )!.textContent = `${firstVenuePrice}`;
 
       const venue_div = document.getElementById("Venues_div");
       const date_div = document.getElementById("date_div");
@@ -159,6 +161,10 @@ if (event_Id) {
             .querySelectorAll("#Venues_div .selected")
             .forEach((el) => el.classList.remove("selected"));
           venue.classList.add("selected");
+
+          const price = venueData.venue.seat_price;
+          document.getElementById("event-price")!.textContent = `${price}`;
+
           fetchAndRenderSeats(venueData.venue.id);
         });
         venue_div?.appendChild(venue);

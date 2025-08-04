@@ -19,11 +19,19 @@ class Venue extends Model
         return $this->hasMany(EventVenue::class);
     }
 
-    // for getting price of a seat for an event (/events/locations/{location})
     public function seats()
     {
         return $this->hasMany(Seat::class);
     }
+
+    // for getting price of a seat for an event (/events/locations/{location})
+    public function getSeatPriceAttribute()
+    {
+        return Seat::where('venue_id', $this->id)->value('price');
+    }
+
+    protected $appends = ['seat_price'];
+
     protected static function booted()
     {
         static::created(function ($venue) {
