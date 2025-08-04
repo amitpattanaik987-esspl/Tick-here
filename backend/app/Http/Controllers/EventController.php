@@ -23,19 +23,23 @@ class EventController extends Controller
     //get all the events with sorting(admin)
     public function index(Request $request)
     {
-        $sortBy = $request->get('sort_by');
+        $sortKey = $request->get('sort_by');
         $sortOrder = $request->get('sort_order', 'desc');
         $search = $request->get('search');
+
+        $sortMap = [
+            'sl' => 'id',
+            'title' => 'title',
+            'admin' => 'created_by',
+            'duration' => 'duration',
+        ];
+
+        $sortBy = $sortMap[$sortKey] ?? 'id';
 
         $statusFilter = null;
         if (in_array(strtolower($search), ['completed', 'active', 'inactive', 'cancelled'])) {
             $statusFilter = strtolower($search);
             $search = null;
-        }
-
-        $validSorts = ['id', 'title', 'created_by', 'duration'];
-        if (!in_array($sortBy, $validSorts)) {
-            $sortBy = 'id';
         }
 
         $query = Event::with(['category', 'admin', 'eventVenue']);
@@ -47,24 +51,21 @@ class EventController extends Controller
         if ($search) {
             $firstChar = substr($search, 0, 1);
             $query->where(function ($q) use ($firstChar) {
-                $q->where('title', 'like', "{$firstChar}%")
-                    ->orWhere('description', 'like', "{$firstChar}%");
+                $q->where('title', 'like', "%{$firstChar}%")
+                    ->orWhere('description', 'like', "%{$firstChar}%");
             });
         }
 
-        // Initial fetch (no pagination applied yet)
-        $events = $sortBy
-            ? $query->orderBy($sortBy, $sortOrder)->get()
-            : $query->get();
+        $events = $query->orderBy($sortBy, $sortOrder)->get();
 
-        // Apply appropriate search filter
         if ($search) {
-            $events = $sortBy
-                ? $this->binarySearch($events, strtolower($search), $sortBy)
-                : $this->linearSearch($events, strtolower($search));
+            if (in_array($sortKey, ['title', 'admin'])) {
+                $events = $this->binarySearch($events, strtolower($search), $sortBy);
+            } else {
+                $events = $this->linearSearch($events, strtolower($search));
+            }
         }
 
-        // Manual pagination
         $page = (int) $request->get('page', 1);
         $perPage = 10;
         $offset = ($page - 1) * $perPage;
@@ -86,6 +87,9 @@ class EventController extends Controller
     //linear search for events
     private function linearSearch($collection, string $search)
     {
+
+        Log::info("Linear search");
+
         return $collection->filter(function ($event) use ($search) {
             return Str::contains(strtolower($event->title), $search) ||
                 Str::contains(strtolower($event->description), $search);
@@ -95,24 +99,26 @@ class EventController extends Controller
     //binary search for events
     private function binarySearch($collection, string $search, string $key)
     {
-        $items = $collection->values();
+        $items = $collection->sortBy($key)->values();
         $low = 0;
         $high = $items->count() - 1;
         $results = collect();
 
         while ($low <= $high) {
             $mid = (int)(($low + $high) / 2);
-            $value = strtolower($items[$mid][$key]);
+            $value = strtolower(data_get($items[$mid], $key, ''));
 
             if (Str::contains($value, $search)) {
+                // Search left side
                 $left = $mid;
-                while ($left >= 0 && Str::contains(strtolower($items[$left][$key]), $search)) {
+                while ($left >= 0 && Str::contains(strtolower(data_get($items[$left], $key)), $search)) {
                     $results->push($items[$left]);
                     $left--;
                 }
 
+                // Search right side
                 $right = $mid + 1;
-                while ($right < $items->count() && Str::contains(strtolower($items[$right][$key]), $search)) {
+                while ($right < $items->count() && Str::contains(strtolower(data_get($items[$right], $key)), $search)) {
                     $results->push($items[$right]);
                     $right++;
                 }
@@ -127,6 +133,7 @@ class EventController extends Controller
 
         return $results->unique('id')->values();
     }
+
 
     public function getEvent(Event $event)
     {
