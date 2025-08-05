@@ -3,15 +3,18 @@ import {
   initLoader,
   showLoader,
 } from "../../components/loader/loader.js";
+
 const adminLoginButton = document.getElementById("admin_sign_in") as HTMLButtonElement;
+const emailInput = document.getElementById("email") as HTMLInputElement;
+const passwordInput = document.getElementById("password") as HTMLInputElement;
 
 initLoader();
 
-adminLoginButton?.addEventListener("click", async function (e) {
-  e.preventDefault();
+async function handleAdminLogin(e?: Event) {
+  e?.preventDefault();
 
-  const email = (document.getElementById("email") as HTMLInputElement)?.value.trim();
-  const password = (document.getElementById("password") as HTMLInputElement)?.value;
+  const email = emailInput?.value.trim();
+  const password = passwordInput?.value;
 
   if (!email || !password) {
     alert("Please fill in both email and password.");
@@ -19,6 +22,7 @@ adminLoginButton?.addEventListener("click", async function (e) {
   }
 
   showLoader();
+
   try {
     const res = await fetch("http://127.0.0.1:8000/api/auth/admin/login", {
       method: "POST",
@@ -32,7 +36,6 @@ adminLoginButton?.addEventListener("click", async function (e) {
     const data = await res.json();
 
     if (!res.ok) {
-      // Validation or authentication error
       if (data.errors) {
         const messages = Object.values(data.errors).flat();
         alert(messages.join("\n"));
@@ -44,7 +47,6 @@ adminLoginButton?.addEventListener("click", async function (e) {
       return;
     }
 
-    // Success
     if (data.success && data.token) {
       localStorage.setItem("admin_token", data.token);
       localStorage.setItem("admin_info", JSON.stringify(data.data.id));
@@ -56,8 +58,17 @@ adminLoginButton?.addEventListener("click", async function (e) {
   } catch (error) {
     console.error("Network or server error:", error);
     alert("A network error occurred. Please try again later.");
-  }
-  finally {
+  } finally {
     hideLoader();
   }
+}
+
+adminLoginButton?.addEventListener("click", handleAdminLogin);
+
+[emailInput, passwordInput].forEach((input) => {
+  input?.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      handleAdminLogin(e);
+    }
+  });
 });

@@ -69,6 +69,7 @@ export function loadEventsForEventsPage(
       const oneMonthLater = new Date();
       oneMonthLater.setMonth(now.getMonth() + 1);
 
+
       for (const event of filteredEvents) {
         const startDate = new Date(event.start_datetime);
 

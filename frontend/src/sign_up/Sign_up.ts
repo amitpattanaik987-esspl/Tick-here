@@ -4,39 +4,32 @@ import {
   hideLoader,
 } from "../components/loader/loader.js";
 
-const sign_up_button = document.getElementById("sign_up") as HTMLButtonElement;
-
 initLoader();
 
-sign_up_button?.addEventListener("click", async function (e) {
-  e.preventDefault();
+const sign_up_button = document.getElementById("sign_up") as HTMLButtonElement;
+const nameInput = document.getElementById("name") as HTMLInputElement;
+const emailInput = document.getElementById("email") as HTMLInputElement;
+const passwordInput = document.getElementById("password") as HTMLInputElement;
 
-  const name = (
-    document.getElementById("name") as HTMLInputElement
-  )?.value.trim();
-  const email = (
-    document.getElementById("email") as HTMLInputElement
-  )?.value.trim();
-  const password = (document.getElementById("password") as HTMLInputElement)
-    ?.value;
+const validateEmail = (email: string) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
+
+async function handleUserSignup(e?: Event) {
+  e?.preventDefault();
+
+  const name = nameInput?.value.trim();
+  const email = emailInput?.value.trim();
+  const password = passwordInput?.value;
 
   if (!name || !email || !password) {
     alert("Please fill in all fields.");
     return;
   }
-
-  console.log("request");
-  console.log(name);
-  console.log(email);
-  console.log(password);
-
-  const validateEmail = (email: string) => {
-    return String(email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-  };
 
   if (!validateEmail(email)) {
     alert("Not a valid Email");
@@ -59,7 +52,6 @@ sign_up_button?.addEventListener("click", async function (e) {
     });
 
     const result = await response.json();
-
     console.log(result);
 
     if (!response.ok) {
@@ -72,6 +64,17 @@ sign_up_button?.addEventListener("click", async function (e) {
   } catch (error) {
     console.error("Signup error:", error);
     alert("Something went wrong. Please try again later.");
+  } finally {
+    hideLoader();
   }
-  hideLoader();
+}
+
+sign_up_button?.addEventListener("click", handleUserSignup);
+
+[nameInput, emailInput, passwordInput].forEach((input) => {
+  input?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      handleUserSignup(e);
+    }
+  });
 });

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendNewEventNewsletter;
 use App\Models\Event;
 use App\Models\EventVenue;
 use App\Models\Location;
+use App\Models\User;
 use App\Models\Venue;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -186,44 +188,70 @@ class EventController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         }
 
-        $data['thumbnail'] = request()->file('thumbnail')->store('thumbnails', 'public');
+        // Start transaction
+        DB::beginTransaction();
 
-        $event = Event::create([
-            'title' => $data['title'],
-            'description' => $data['description'],
-            'thumbnail' => $data['thumbnail'],
-            'duration' => $data['duration'],
-            'category_id' => $data['category_id'],
-            'admin_id' => auth('admin')->id(),
-        ]);
+        try {
+            $data['thumbnail'] = request()->file('thumbnail')->store('thumbnails', 'public');
 
-        foreach ($data['venues'] as $venue) {
-            $date = Carbon::parse($venue['start_datetime'])->toDateString();
+            $event = Event::create([
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'thumbnail' => $data['thumbnail'],
+                'duration' => $data['duration'],
+                'category_id' => $data['category_id'],
+                'admin_id' => auth('admin')->id(),
+            ]);
 
-            $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
-                ->whereDate('start_datetime', $date)
-                ->exists();
+            foreach ($data['venues'] as $venue) {
+                $date = Carbon::parse($venue['start_datetime'])->toDateString();
 
-            if ($isBooked) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Venue ID ' . $venue['venue_id'] . ' is already booked on ' . $date,
-                ], 422);
+                $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
+                    ->whereDate('start_datetime', $date)
+                    ->exists();
+
+                if ($isBooked) {
+                    // Rollback and return early if venue is booked
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This Venue is already booked on ' . $date,
+                    ], 422);
+                }
+
+                EventVenue::create([
+                    'event_id' => $event->id,
+                    'venue_id' => $venue['venue_id'],
+                    'location_id' => $venue['location_id'],
+                    'start_datetime' => $venue['start_datetime'] . ':00',
+                ]);
             }
 
-            EventVenue::create([
-                'event_id' => $event->id,
-                'venue_id' => $venue['venue_id'],
-                'location_id' => $venue['location_id'],
-                'start_datetime' => $venue['start_datetime'] . ':00',
-            ]);
+            // Commit transaction before dispatching job (so event + venues are saved)
+            DB::commit();
+
+            // Dispatch newsletter after commit (safe)
+            User::where('is_subscribed', true)
+                ->select('id')
+                ->chunk(1, function ($users) use ($event) {
+                    $userIds = $users->pluck('id')->toArray();
+                    $event->load(['eventVenue.location']);
+                    SendNewEventNewsletter::dispatch($event, $userIds);
+                });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Event created successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            // Rollback on any failure
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create event.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Event created successfully.',
-        ], 201);
     }
 
     //deletes an Event (admin)
@@ -276,6 +304,8 @@ class EventController extends Controller
 
         Log::info($request->all());
 
+        DB::beginTransaction();
+
         // Determine edit mode
         $editMode = $request->input('__edit_mode', 'full');
 
@@ -321,6 +351,20 @@ class EventController extends Controller
             EventVenue::where('event_id', $event->id)->delete();
 
             foreach ($validated['venues'] as $venue) {
+                $date = Carbon::parse($venue['start_datetime'])->toDateString();
+
+                $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
+                    ->whereDate('start_datetime', $date)
+                    ->exists();
+
+                if ($isBooked) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This Venue is already booked on ' . $date,
+                    ], 422);
+                }
+
                 EventVenue::create([
                     'event_id' => $event->id,
                     'location_id' => $venue['location_id'],
@@ -330,6 +374,7 @@ class EventController extends Controller
             }
         }
 
+        DB::commit();
         return response()->json([
             'success' => true,
             'message' => 'Event updated successfully.',
@@ -340,37 +385,40 @@ class EventController extends Controller
     // get events by a particular location
     public function getEventsByLocation(Location $location)
     {
-        // Step 1: Get all event_venue IDs for the location
-        $eventVenues = $location->eventVenues()
+        $events = Event::whereHas('eventVenue', function ($query) use ($location) {
+            $query->where('location_id', $location->id)
+                ->where('start_datetime', '>=', now());
+        })
             ->with([
-                'event:id,title,thumbnail,duration,category_id',
-                'event.category:id,name',
-                'venue:id,venue_name',
-            ])->where('start_datetime', '>=', now())
-            ->orderBy('start_datetime', 'asc')
+                'category:id,name',
+                'eventVenue' => function ($query) use ($location) {
+                    $query->where('location_id', $location->id)
+                        ->where('start_datetime', '>=', now())
+                        ->orderBy('start_datetime', 'asc')
+                        ->with('venue:id,venue_name');
+                }
+            ])
+            ->orderBy('title')
             ->get();
 
-        $events = [];
+        $formattedEvents = $events->map(function ($event) {
+            $firstVenue = $event->eventVenue->first();
 
-        foreach ($eventVenues as $ev) {
-            $event = $ev->event;
-
-            // Step 2: Query minimum seat price only (instead of loading all seats into memory)
-            $seatPrice = DB::table('seats')
-                ->where('venue_id', $ev->venue->id)
-                ->value('price');
-
-            $events[] = [
+            return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'thumbnail' => $event->thumbnail,
                 'duration' => $event->duration,
                 'category' => $event->category->name ?? null,
-                'start_datetime' => $ev->start_datetime,
-                'lowest_price' => $seatPrice,
+                'start_datetime' => $firstVenue->start_datetime,
+                'lowest_price' => DB::table('seats')
+                    ->where('venue_id', $firstVenue->venue_id)
+                    ->min('price'),
             ];
-        }
+        });
 
-        return response()->json(['data' => $events]);
+        return response()->json([
+            'data' => $formattedEvents
+        ]);
     }
 }

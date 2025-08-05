@@ -151,50 +151,93 @@ if (event_Id) {
       const date_div = document.getElementById("date_div");
       const show_time_div = document.getElementById("show_time_div");
 
-      filteredVenues.forEach((venueData: any) => {
+      const venueMap = new Map<number, any[]>();
+
+      filteredVenues.forEach((ev: any) => {
+        if (!venueMap.has(ev.venue_id)) {
+          venueMap.set(ev.venue_id, []);
+        }
+        venueMap.get(ev.venue_id)!.push(ev);
+      });
+
+      venueMap.forEach((venueGroup, venueId) => {
+        const venueData = venueGroup[0];
         const venue = document.createElement("p");
         venue.className =
           "bg-[#EAE2FF] rounded-[10px] px-[30px] py-[10px] w-[377px] text-center border-[1px] cursor-pointer";
         venue.textContent = venueData.venue.venue_name;
+
         venue.addEventListener("click", function () {
-          document
-            .querySelectorAll("#Venues_div .selected")
-            .forEach((el) => el.classList.remove("selected"));
+          document.querySelectorAll("#Venues_div .selected").forEach((el) =>
+            el.classList.remove("selected")
+          );
           venue.classList.add("selected");
 
-          const price = venueData.venue.seat_price;
-          document.getElementById("event-price")!.textContent = `${price}`;
+          document.getElementById("event-price")!.textContent =
+            venueData.venue.seat_price;
+
+          date_div!.innerHTML = "";
+          show_time_div!.innerHTML = "";
+
+          const groupedByDate: { [date: string]: any[] } = {};
+          venueGroup.forEach((item) => {
+            const dateStr = extractDateLabel(item.start_datetime);
+            if (!groupedByDate[dateStr]) groupedByDate[dateStr] = [];
+            groupedByDate[dateStr].push(item);
+          });
+
+          // Render dates
+          Object.entries(groupedByDate).forEach(([dateLabel, times]) => {
+            const dateEl = document.createElement("p");
+            dateEl.className =
+              "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[200px] text-center border-[1px] cursor-pointer";
+            dateEl.textContent = dateLabel;
+
+            dateEl.addEventListener("click", function () {
+              document
+                .querySelectorAll("#date_div .selected")
+                .forEach((el) => el.classList.remove("selected"));
+              dateEl.classList.add("selected");
+
+              // Clear and render show times for selected date
+              show_time_div!.innerHTML = "";
+              times.forEach((timeItem) => {
+                const timeEl = document.createElement("p");
+                timeEl.className =
+                  "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[320px] text-center border-[1px] cursor-pointer";
+                timeEl.textContent = extractTime(timeItem.start_datetime);
+
+                timeEl.addEventListener("click", () => {
+                  document
+                    .querySelectorAll("#show_time_div .selected")
+                    .forEach((el) => el.classList.remove("selected"));
+                  timeEl.classList.add("selected");
+                });
+
+                show_time_div?.appendChild(timeEl);
+              });
+
+              // Auto-select the first show time
+              (show_time_div?.firstElementChild as HTMLElement)?.classList.add("selected");
+            });
+
+            date_div?.appendChild(dateEl);
+          });
+
+          // Auto-select the first date
+          const firstDate = date_div?.firstElementChild as HTMLElement;
+          firstDate?.click(); // triggers the date click to populate showtimes
 
           fetchAndRenderSeats(venueData.venue.id);
         });
+
         venue_div?.appendChild(venue);
-
-        // Date
-        const date = document.createElement("p");
-        date.className =
-          "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[200px] text-center border-[1px] cursor-pointer";
-        date.textContent = extractDateLabel(venueData.start_datetime);
-        date.addEventListener("click", function () {
-          document
-            .querySelectorAll("#date_div .selected")
-            .forEach((el) => el.classList.remove("selected"));
-          date.classList.add("selected");
-        });
-        date_div?.appendChild(date);
-
-        // Time
-        const time = document.createElement("p");
-        time.className =
-          "bg-[#EAE2FF] rounded-[10px] px-[34px] py-[10px] w-[320px] text-center border-[1px] cursor-pointer";
-        time.textContent = extractTime(venueData.start_datetime);
-        time.addEventListener("click", function () {
-          document
-            .querySelectorAll("#show_time_div .selected")
-            .forEach((el) => el.classList.remove("selected"));
-          time.classList.add("selected");
-        });
-        show_time_div?.appendChild(time);
       });
+
+
+      // Select the first venue automatically
+      (venue_div?.firstElementChild as HTMLElement)?.click();
+
 
       (venue_div?.firstElementChild as HTMLElement)?.classList.add("selected");
       (date_div?.firstElementChild as HTMLElement)?.classList.add("selected");

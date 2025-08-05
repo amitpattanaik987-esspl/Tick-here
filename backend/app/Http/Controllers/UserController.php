@@ -163,7 +163,7 @@ class UserController extends Controller
         $user_email = $request->input('email');
         $user = User::where('email', $user_email)->first();
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(['message' => ' Please Create an Account to continue .'], 404);
         }
         $user->is_subscribed = true;
         $user->save();

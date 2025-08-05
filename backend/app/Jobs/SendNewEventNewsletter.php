@@ -16,16 +16,18 @@ class SendNewEventNewsletter implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $event;
+    public $event;
+    public $userIds;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(Event $event)
+    public function __construct(Event $event, array $userIds)
     {
         $this->event = $event;
+        $this->userIds = $userIds;
     }
 
     /**
@@ -35,13 +37,10 @@ class SendNewEventNewsletter implements ShouldQueue
      */
     public function handle(): void
     {
-        User::where('is_subscribed', true)
-            ->chunk(50, function ($users) {
-                foreach ($users as $user) {
-                    Mail::to($user->email)->queue(
-                        new SubscriptionMail($this->event, $user)
-                    );
-                }
-            });
+        $users = User::whereIn('id', $this->userIds)->get();
+
+        foreach ($users as $user) {
+            Mail::to($user->email)->queue(new SubscriptionMail($this->event, $user));
+        }
     }
 }

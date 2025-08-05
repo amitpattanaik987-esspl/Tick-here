@@ -18,7 +18,7 @@ class VenueController extends Controller
             'seats' => function ($query) {
                 $query->orderBy('id', 'asc');
             }
-        ])->orderBy('id', 'asc')->paginate(10);
+        ])->orderBy('venue_name', 'asc')->paginate(10);
 
         // Transform paginated data to include only first seat's price
         $venues->getCollection()->transform(function ($venue) {
