@@ -1,11 +1,16 @@
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
+import {
+  hideLoader,
+  initLoader,
+  showLoader,
+} from "../../components/loader/loader.js";
 
 interface Venue {
   id: number;
   venue_name: string;
   location_id: number;
   max_seats: number;
-  price: number;
+  seat_price: number;
   location: {
     city: string;
   };
@@ -14,11 +19,25 @@ interface Venue {
 let currentPageUrl = "http://127.0.0.1:8000/api/admin/venues";
 
 function fetchVenues(url: string) {
+  showLoader();
   const token = localStorage.getItem("admin_token");
   if (!token) return;
 
+  const queryParams = new URLSearchParams();
+
+  const searchValue = ($("#search-input").val() as string)?.trim();
+
+  // Add search param if present
+  if (searchValue) {
+    queryParams.append("search", searchValue);
+  }
+
+  const fullUrl = `${url}${
+    url.includes("?") ? "&" : "?"
+  }${queryParams.toString()}`;
+
   $.ajax({
-    url: url,
+    url: fullUrl,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -36,15 +55,16 @@ function fetchVenues(url: string) {
           <div class="venue-name w-[15rem] p-3 justify-center">${venue.venue_name}</div>
           <div class="venue-location w-[18rem] p-3 justify-center" data-location-id="${venue.location_id}">${venue.location.city}</div>
           <div class="venue-seats w-[10rem] p-3 justify-center">${venue.max_seats}</div>
-          <div class="venue-cost w-[10rem] p-3 justify-center">${venue.price}</div>
+          <div class="venue-cost w-[10rem] p-3 justify-center">${venue.seat_price}</div>
           <div class="w-[12rem] p-3 flex gap-2 action-buttons justify-center">
-            <button class="editVenueBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn">Edit</button>
-            <button class="deleteVenueBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>
+            <button class="editVenueBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn hover:cursor-pointer">Edit</button>
+            <button class="deleteVenueBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete- hover:cursor-pointer">Delete</button>
           </div>
         </div>`);
       });
 
       updatePagination(res.data);
+      hideLoader();
     },
     error: function (xhr) {
       const errors = xhr.responseJSON?.errors;
@@ -53,6 +73,7 @@ function fetchVenues(url: string) {
           ? Object.values(errors).flat().join("\n")
           : "Failed to fetch venues."
       );
+      hideLoader();
     },
   });
 }
@@ -124,6 +145,7 @@ function updatePagination(payload: any) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initLoader();
   loadNavbar();
 
   fetchVenues(currentPageUrl);
@@ -154,10 +176,17 @@ document.addEventListener("DOMContentLoaded", () => {
   function bindFormEvents() {
     $("#cancelVenueCreate").on("click", function () {
       $("#venue-form-container").addClass("hidden");
+      $("#addVenueBtn")
+        .prop("disabled", false)
+        .removeClass("opacity-50 cursor-not-allowed")
+        .addClass(
+          "hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
+        );
       resetForm();
     });
 
     $("#createVenueBtn").on("click", function () {
+      showLoader();
       const token = localStorage.getItem("admin_token");
       if (!token) return;
 
@@ -184,6 +213,13 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Venue updated successfully!");
             resetForm();
             $("#venue-form-container").addClass("hidden");
+            $("#addVenueBtn")
+              .prop("disabled", false)
+              .removeClass("opacity-50 cursor-not-allowed")
+              .addClass(
+                "hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
+              );
+            hideLoader();
             fetchVenues(currentPageUrl);
           },
           error: function (xhr) {
@@ -193,6 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? Object.values(errors).flat().join("\n")
                 : "Update failed."
             );
+            hideLoader();
           },
         });
       } else {
@@ -209,6 +246,13 @@ document.addEventListener("DOMContentLoaded", () => {
           data: venueData,
           success: function (res) {
             alert("Venue created successfully!");
+            $("#addVenueBtn")
+              .prop("disabled", false)
+              .removeClass("opacity-50 cursor-not-allowed")
+              .addClass(
+                "hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
+              );
+            hideLoader();
             resetForm();
             $("#venue-form-container").addClass("hidden");
             fetchVenues(currentPageUrl);
@@ -220,6 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ? Object.values(errors).flat().join("\n")
                 : "Creation failed."
             );
+            hideLoader();
           },
         });
       }
@@ -238,11 +283,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Add New Venue button clicked
   $("#addVenueBtn").on("click", function () {
+    $(this)
+      .prop("disabled", true)
+      .addClass("opacity-50 cursor-not-allowed")
+      .removeClass(
+        "hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
+      );
     loadVenueForm(() => {
       resetForm();
       $("#createVenueBtn").text("Create");
       $("#venue-form-container").removeClass("hidden");
     });
+  });
+
+  $("#search-input").on("keydown", (event) => {
+    if (event.key === "Enter") {
+      fetchVenues("http://127.0.0.1:8000/api/admin/venues");
+    }
   });
 
   // Handle Edit button click (example event delegation)
@@ -274,6 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Handle Delete button click
   $("#venue-table-body").on("click", ".deleteVenueBtn", function () {
+    showLoader();
     const token = localStorage.getItem("admin_token");
     if (!token) return;
 
@@ -292,13 +350,16 @@ document.addEventListener("DOMContentLoaded", () => {
           if (xhr.status === 204) {
             alert("Venue deleted.");
             fetchVenues(currentPageUrl); // Reload updated venue list
+            hideLoader();
           } else {
             alert("Unexpected response.");
+            hideLoader();
           }
         },
         error: function (xhr) {
           alert("Delete failed.");
           console.error(xhr.responseJSON || xhr.responseText);
+          hideLoader();
         },
       });
     }

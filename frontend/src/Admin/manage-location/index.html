@@ -35,7 +35,6 @@
 
     <main>
       <div class="flex flex-col items-center justify-center px-8 py-6">
-
         <div
           id="location-form-container"
           class="hidden flex justify-center mb-6"
@@ -44,155 +43,162 @@
         </div>
 
         <!-- Page Title and Add Button -->
-        <div class="w-[56.6rem] flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Manage Location</h2>
-          <button
+        <div class="flex flex-col items-center justify-center px-8 py-6">
+          <div class="w-full text-2xl font-bold mb-6">Manage Location</div>
+          <div class="w-[56.6rem] flex justify-between items-center mb-4">
+            <button
+              id="addLocationBtn"
+              class="rounded-[10px] border-[#8d77b7] border-solid border-[1px] box-border h-[2.25rem] flex flex-row items-center justify-start py-[1rem] px-[2rem] hover:bg-gradient-to-r hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
+            >
+              Add New Location
+            </button>
 
-            id="addLocationBtn"
+            <div
+              class="w-[16.313rem] rounded-[10px] bg-white border border-[#090317] border-solid box-border h-[36px] flex flex-row items-center justify-start py-[2px] px-[0.69rem] gap-[0.687rem] text-left text-dimgray font-mulish shadow-md"
+            >
+              <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
+              <input
+                id="search-input"
+                type="text"
+                placeholder="Search Location"
+                class="flex-1 h-full outline-none border-none text-gray-700 placeholder-gray-500"
+              />
+            </div>
+          </div>
 
-            class="rounded-[10px] border-[#8d77b7] border-solid border-[1px] box-border h-[2.25rem] flex flex-row items-center justify-start py-[1rem] px-[2rem] hover:bg-gradient-to-r hover:from-[#46006e] hover:to-[#0a0417] hover:text-white hover:cursor-pointer"
-          >
-            Add New Location
-          </button>
-        </div>
-
-        <div
-
-          class="relative rounded-md bg-white border-[#e5e5e5] border-solid border-[2px] box-border flex flex-col items-start justify-start py-[0.062rem] gap-[0.625rem] text-left text-[0.875rem] text-[#171717] font-poppins"
-
-        >
           <div
-            class="w-[56.5rem] relative bg-[#fafafa] border-[#e5e5e5] border-solid border-b-[1px] box-border h-[3.563rem] text-[0.75rem] text-[#737373]"
+            class="relative rounded-md bg-white border-[#e5e5e5] border-solid border-[2px] box-border flex flex-col items-start justify-start py-[0.062rem] gap-[0.625rem] text-left text-[0.875rem] text-[#171717] font-poppins"
           >
-
-            <div class="flex w-full items-center h-full">
-              <div class="w-[7rem] p-3 text-[#737373] font-bold text-sm">
-                Sl No.
-              </div>
-              <div class="w-[15rem] p-3 text-[#737373] font-bold text-sm">
-                Country
-              </div>
-              <div class="w-[18rem] p-3 text-[#737373] font-bold text-sm">
-                State
-              </div>
-              <div class="w-[10rem] p-3 text-[#737373] font-bold text-sm">
-                City
-              </div>
-              <div class="w-[12rem] p-3 text-[#737373] font-bold text-sm">
-                Action
+            <div
+              class="w-[56.5rem] relative bg-[#fafafa] border-[#e5e5e5] border-solid border-b-[1px] box-border h-[3.563rem] text-[0.75rem] text-[#737373]"
+            >
+              <div class="flex w-full items-center h-full">
+                <div class="w-[7rem] p-3 text-[#737373] font-bold text-sm">
+                  Sl No.
+                </div>
+                <div class="w-[15rem] p-3 text-[#737373] font-bold text-sm">
+                  Country
+                </div>
+                <div class="w-[18rem] p-3 text-[#737373] font-bold text-sm">
+                  State
+                </div>
+                <div class="w-[10rem] p-3 text-[#737373] font-bold text-sm">
+                  City
+                </div>
+                <div class="w-[12rem] p-3 text-[#737373] font-bold text-sm">
+                  Action
+                </div>
               </div>
             </div>
-          </div>
-          <div id="location-table-body" class="w-full flex flex-col">
-            <div
-              class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
+            <div id="location-table-body" class="w-full flex flex-col">
+              <div
+                class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
+              >
+                <div class="w-[7rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[15rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[18rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[10rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
 
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                <div class="w-[12rem] p-3 flex gap-2">
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                </div>
               </div>
-            </div>
-            <div
-              class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
+              <div
+                class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
+              >
+                <div class="w-[7rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[15rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[18rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
 
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
+                <div class="w-[10rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[12rem] p-3 flex gap-2">
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                </div>
               </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
+              <div
+                class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
+              >
+                <div class="w-[7rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[15rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[18rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[10rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
 
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                <div class="w-[12rem] p-3 flex gap-2">
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                </div>
               </div>
-            </div>
-            <div
-              class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
+              <div
+                class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
+              >
+                <div class="w-[7rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[15rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[18rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
 
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
+                <div class="w-[10rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[12rem] p-3 flex gap-2">
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                </div>
               </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
+              <div
+                class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white animate-pulse"
+              >
+                <div class="w-[7rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[15rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[18rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
+                <div class="w-[10rem] p-3">
+                  <div class="h-10 bg-gray-200 rounded"></div>
+                </div>
 
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-
+                <div class="w-[12rem] p-3 flex gap-2">
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                  <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
 
         <div id="pagination-controls" class="flex gap-4 mt-4">
           <button
@@ -231,7 +237,6 @@
     <script
       type="module"
       src="../../dist/admin/manage-location/manageLocation.js"
-
     ></script>
   </body>
 </html>

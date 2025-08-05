@@ -9,9 +9,19 @@ use Illuminate\Http\Request;
 class LocationController extends Controller
 {
     //get all the locations(admin)
-    public function index()
+    public function index(Request $request)
     {
-        $location = Location::orderBy('city', 'asc')->paginate(10);
+        $search = $request->get('search');
+
+        $location = Location::query()->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('country', 'like', "%{$search}%")
+                    ->orWhere('state', 'like', "%{$search}%")
+                    ->orWhere('city', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
+            });
+        })->orderBy('id', 'asc')->paginate(10);
+
         return response()->json([
             'success' => true,
             'message' => "location fetched",

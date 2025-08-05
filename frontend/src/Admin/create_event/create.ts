@@ -593,7 +593,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     return true;
   }
 
-
   function clearVenueForm() {
     const venueInput = document.getElementById(
       "venue"

@@ -11,21 +11,22 @@ use Illuminate\Validation\ValidationException;
 class VenueController extends Controller
 {
     //get all the venues (admin)
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->get('search');
+
         $venues = Venue::with([
             'location',
-            'seats' => function ($query) {
-                $query->orderBy('id', 'asc');
-            }
-        ])->orderBy('venue_name', 'asc')->paginate(10);
-
-        // Transform paginated data to include only first seat's price
-        $venues->getCollection()->transform(function ($venue) {
-            $venue->price = optional($venue->seats->first())->price;
-            unset($venue->seats); // optional: remove seats array if not needed
-            return $venue;
-        });
+        ])->when($search, function ($query, $search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('venue_name', 'like', "%{$search}%")->orWhereHas('location', function ($q) use ($search) {
+                    $q->where('city', 'like', "%{$search}%");
+                })
+                    ->orWhere('max_seats', 'like', "%{$search}%")
+                    ->orWhere('seat_price', 'like', "%{$search}%")
+                    ->orWhere('id', 'like', "%{$search}%");
+            });
+        })->orderBy('id', 'asc')->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -33,7 +34,6 @@ class VenueController extends Controller
             'data' => $venues
         ]);
     }
-
 
     //create a venue (admin)
     public function create()

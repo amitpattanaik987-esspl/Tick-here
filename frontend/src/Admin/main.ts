@@ -1,16 +1,14 @@
-import { loadNavbar } from "../Admin/components/admin_navbar/navbar.js";
+import { loadNavbar } from "./components/admin_navbar/navbar.js";
 declare var ApexCharts: any;
-
 
 function loadEventStats() {
   const token = localStorage.getItem("admin_token");
   console.log("Token:", token);
 
-  if (token === 'undefined') {
+  if (token === "undefined") {
     window.location.href = "/admin/admin_login/";
     return;
-  };
-
+  }
 
   $.ajax({
     url: "http://127.0.0.1:8000/api/admin/event-stats",
@@ -45,14 +43,15 @@ function renderCategoryCards(stats: any) {
       <div class="w-full max-w-[300px] bg-white rounded-lg shadow p-[16px] text-left">
         <div class="flex justify-between items-center mb-2">
           <span class="text-lg font-semibold">${item.category}</span>
-          <span class="text-sm text-gray-600">${item.this_week_events
-      } Active Events</span>
+          <span class="text-sm text-gray-600">${
+            item.this_week_events
+          } Active Events</span>
         </div>
         <div class="flex justify-between items-center mb-1">
           <span class="text-4xl font-bold">${item.total_events}</span>
           <span class="text-sm ${trendClass}">${Math.abs(
-        item.growth_percentage
-      )}% ${trendSymbol}</span>
+      item.growth_percentage
+    )}% ${trendSymbol}</span>
         </div>
         <p class="text-xs text-gray-500">Event Bookings</p>
       </div>
@@ -90,7 +89,6 @@ function renderCategoryChart(data: any[]) {
   const categories = data.map((item) => item.category);
   const ticketCounts = data.map((item) => item.tickets_sold);
 
-
   const options = {
     chart: {
       type: "bar",
@@ -108,7 +106,6 @@ function renderCategoryChart(data: any[]) {
         columnWidth: "30%",
         distributed: true,
         dataLabels: {
-
           position: "middle",
         },
       },
@@ -135,14 +132,12 @@ function renderCategoryChart(data: any[]) {
     fill: {
       type: "solid",
       colors: [
-
         "#bcb1d5",
         "#8f7db9",
         "#685596",
         "#483672",
         "#271551",
         "#0c0420",
-
       ],
     },
     tooltip: {
@@ -157,12 +152,10 @@ function renderCategoryChart(data: any[]) {
         fontSize: "12px",
 
         colors: ["#45006E"],
-
       },
     },
     series: [
       {
-
         name: "Tickets Sold",
         data: ticketCounts,
       },
@@ -173,7 +166,6 @@ function renderCategoryChart(data: any[]) {
         style: {
           fontSize: "12px",
           colors: "#6B7280",
-
         },
       },
       axisTicks: { show: false },
@@ -182,12 +174,32 @@ function renderCategoryChart(data: any[]) {
     yaxis: {
       show: true,
     },
-
   };
 
   const chart = new ApexCharts(document.querySelector("#myChart"), options);
   chart.render();
+}
 
+function getWeekRangeString(date: Date = new Date()): string {
+  const current = new Date(date);
+  const day = current.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+
+  // Calculate Monday of current week
+  const diffToMonday = current.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(current.setDate(diffToMonday));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const formatOptions: Intl.DateTimeFormatOptions = {
+    month: "short",
+    day: "numeric",
+  };
+
+  const start = monday.toLocaleDateString("en-US", formatOptions);
+  const end = sunday.toLocaleDateString("en-US", formatOptions);
+  const year = sunday.getFullYear();
+
+  return `(${start} – ${end}), ${year}`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -219,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-
   // manage event page logic
   const manageEventButton = document.getElementById("manageEventButton");
   if (manageEventButton) {
@@ -228,4 +239,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // show the weak range
+  const weekRangeSpan = document.getElementById("week-range");
+  if (weekRangeSpan) {
+    weekRangeSpan.textContent = getWeekRangeString();
+  }
 });
