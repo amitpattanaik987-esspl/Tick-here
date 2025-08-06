@@ -4,8 +4,64 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e6f947c1195a591ed5fdf77857337a9",
+    "content-hash": "f31d20c3f4021cde135af58c8823a87b",
     "packages": [
+        {
+            "name": "asm89/stack-cors",
+            "version": "v2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/asm89/stack-cors.git",
+                "reference": "acf3142e6c5eafa378dc8ef3c069ab4558993f70"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/asm89/stack-cors/zipball/acf3142e6c5eafa378dc8ef3c069ab4558993f70",
+                "reference": "acf3142e6c5eafa378dc8ef3c069ab4558993f70",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0",
+                "symfony/http-foundation": "^5.3|^6|^7",
+                "symfony/http-kernel": "^5.3|^6|^7"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Asm89\\Stack\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander",
+                    "email": "iam.asm89@gmail.com"
+                }
+            ],
+            "description": "Cross-origin resource sharing library and stack middleware",
+            "homepage": "https://github.com/asm89/stack-cors",
+            "keywords": [
+                "cors",
+                "stack"
+            ],
+            "support": {
+                "issues": "https://github.com/asm89/stack-cors/issues",
+                "source": "https://github.com/asm89/stack-cors/tree/v2.3.0"
+            },
+            "time": "2025-03-13T08:50:04+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.9.3",
@@ -508,34 +564,26 @@
                 "shasum": ""
             },
             "require": {
-                "fruitcake/php-cors": "^1.2",
-                "illuminate/contracts": "^6|^7|^8|^9",
-                "illuminate/support": "^6|^7|^8|^9",
-                "php": "^7.4|^8.0"
-            },
-            "require-dev": {
                 "asm89/stack-cors": "^2",
                 "illuminate/contracts": "^5.6|^6.0|^7.0|^8.0",
                 "illuminate/support": "^5.6|^6.0|^7.0|^8.0",
                 "php": ">=7.1",
                 "symfony/http-foundation": "^4.0|^5.0",
                 "symfony/http-kernel": "^4.0|^5.0"
-           
+            },
+            "require-dev": {
                 "laravel/framework": "^5.5|^6.0|^7.0|^8.0",
                 "orchestra/dusk-updater": "^1.2",
                 "orchestra/testbench": "^3.5|^4.0|^5.0|^6.0",
                 "orchestra/testbench-dusk": "^5.1",
                 "phpro/grumphp": "^0.16|^0.17",
                 "phpunit/phpunit": "^6.0|^7.0|^8.0",
-
                 "squizlabs/php_codesniffer": "^3.5"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-
-                    "dev-master": "3.0-dev"
-
+                    "dev-master": "2.0-dev"
                 },
                 "laravel": {
                     "providers": [
@@ -571,10 +619,7 @@
             ],
             "support": {
                 "issues": "https://github.com/fruitcake/laravel-cors/issues",
-                "source": "https://github.com/fruitcake/laravel-cors/tree/v3.0.0"
-
                 "source": "https://github.com/fruitcake/laravel-cors/tree/master"
-
             },
             "funding": [
                 {
@@ -1847,16 +1892,16 @@
         },
         {
             "name": "opis/closure",
-            "version": "3.6.3",
+            "version": "3.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/closure.git",
-                "reference": "3d81e4309d2a927abbe66df935f4bb60082805ad"
+                "reference": "b1a22a6be71c1263f3ca6e68f00b3fd4d394abc4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/closure/zipball/3d81e4309d2a927abbe66df935f4bb60082805ad",
-                "reference": "3d81e4309d2a927abbe66df935f4bb60082805ad",
+                "url": "https://api.github.com/repos/opis/closure/zipball/b1a22a6be71c1263f3ca6e68f00b3fd4d394abc4",
+                "reference": "b1a22a6be71c1263f3ca6e68f00b3fd4d394abc4",
                 "shasum": ""
             },
             "require": {
@@ -1906,9 +1951,9 @@
             ],
             "support": {
                 "issues": "https://github.com/opis/closure/issues",
-                "source": "https://github.com/opis/closure/tree/3.6.3"
+                "source": "https://github.com/opis/closure/tree/3.7.0"
             },
-            "time": "2022-01-27T09:35:39+00:00"
+            "time": "2025-07-08T20:30:08+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -2695,16 +2740,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v17.3.0",
+            "version": "v17.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "cfe8244f7e5f910b7fdb5c2cf77428c0acbb9f7c"
+                "reference": "313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/cfe8244f7e5f910b7fdb5c2cf77428c0acbb9f7c",
-                "reference": "cfe8244f7e5f910b7fdb5c2cf77428c0acbb9f7c",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b",
+                "reference": "313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b",
                 "shasum": ""
             },
             "require": {
@@ -2748,9 +2793,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v17.3.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v17.5.0"
             },
-            "time": "2025-05-28T18:59:29+00:00"
+            "time": "2025-07-30T17:16:57+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -5742,16 +5787,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.13.1",
+            "version": "1.13.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c"
+                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/1720ddd719e16cf0db4eb1c6eca108031636d46c",
-                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/07d290f0c47959fd5eed98c95ee5602db07e0b6a",
+                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a",
                 "shasum": ""
             },
             "require": {
@@ -5790,7 +5835,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.1"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.4"
             },
             "funding": [
                 {
@@ -5798,7 +5843,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-04-29T12:36:36+00:00"
+            "time": "2025-08-01T08:46:24+00:00"
         },
         {
             "name": "nunomaduro/collision",

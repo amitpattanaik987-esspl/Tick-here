@@ -11,35 +11,43 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     //For Authentication of a user
-    public function login()
+    public function login(Request $request)
     {
         try {
-            $data = request()->validate([
+            $data = $request->validate([
                 'email' => 'required|email',
                 'password' => 'required|min:8'
             ]);
         } catch (ValidationException $e) {
-            $res = [
-                "message" => "Username or Password is incorrect!",
-                "code" => 422
-            ];
-            return response()->json($res);
+            return response()->json([
+                "success" => false,
+                "message" => "Invalid email or password format",
+                "errors" => $e->errors()
+            ], 422);
         }
 
         $user = User::where('email', $data['email'])->first();
 
-        auth()->login($user);
-
-        if (!$user || ! Hash::check($data['password'], $user->password)) {
-            throw ValidationException::withMessages(['email' => ['Invalid credentials']]);
-        } else {
+        if (!$user || !Hash::check($data['password'], $user->password)) {
             return response()->json([
-                'success' => true,
-                'message' => 'Authentication Successful',
-                'data' => $user,
-                'token' => $user->createToken('user-token')->plainTextToken
-            ], 200);
+                'success' => false,
+                'message' => 'Invalid credentials',
+            ], 401);
         }
+
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please verify your email before logging in.',
+            ], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Authentication Successful',
+            'data' => $user,
+            'token' => $user->createToken('user-token')->plainTextToken
+        ], 200);
     }
 
     //For Registering a new User

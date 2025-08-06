@@ -49,7 +49,6 @@ async function handleUserLogin(e?: Event) {
     if (!response.ok) {
       const error = await response.json();
       alert(`Login failed: ${error.message || "Unknown error"}`);
-      console.log(error);
       return;
     }
 

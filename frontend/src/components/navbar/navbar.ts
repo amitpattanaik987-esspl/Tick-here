@@ -21,6 +21,13 @@ export function loadNavbar(): void {
           "login_logout_toggle"
         );
 
+        const accountButton = document.getElementById("account_button");
+        if (!localStorage.getItem("auth-token")) {
+          if (accountButton) {
+            accountButton.style.display = "none";
+          }
+        }
+
         const token = localStorage.getItem("auth-token");
 
         if (token && login_logout_toggle) {

@@ -1,165 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eventix</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"
-    />
-    <link rel="stylesheet" href="./assets/styles/global.css" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap"
-    />
-    <link href="./assets/styles/output.css" rel="stylesheet" />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eventix</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="./assets/styles/global.css" />
 
-  <body class="bg-gray-100 text-gray-900">
-    <!-- Include Navbar -->
-    <div id="navbar"></div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" />
+  <link href="./assets/styles/output.css" rel="stylesheet" />
+</head>
 
-    <!-- Page Content -->
-    <main class="bg-ghostwhite">
-      <!-- Hero Section -->
-      <section class="w-full h-[350px] px-6 md:px-10 box-border mt-6">
-        <div class="swiper w-full h-full relative overflow-hidden">
-          <div class="swiper-wrapper h-full">
-            <div class="swiper-slide h-full">
-              <img
-                src="./assets/images/hero1.jpg"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="swiper-slide h-full">
-              <img
-                src="./assets/images/hero2.jpg"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="swiper-slide h-full">
-              <img
-                src="./assets/images/hero3.jpg"
-                class="w-full h-full object-cover"
-              />
-            </div>
-            <div class="swiper-slide h-full">
-              <img
-                src="./assets/images/hero4.jpg"
-                class="w-full h-full object-cover"
-              />
-            </div>
+<body class="bg-gray-100 text-gray-900">
+  <!-- Include Navbar -->
+  <div id="navbar"></div>
+
+  <!-- Page Content -->
+  <main class="bg-ghostwhite">
+    <!-- Hero Section -->
+    <section class="w-full h-[350px] px-6 md:px-10 box-border mt-6">
+      <div class="swiper w-full h-full relative overflow-hidden">
+        <div class="swiper-wrapper h-full">
+          <div class="swiper-slide h-full">
+            <img src="./assets/images/hero1.jpg" class="w-full h-full object-cover" />
           </div>
-
-          <!-- Navigation Buttons -->
-          <div class="swiper-button-next text-white"></div>
-          <div class="swiper-button-prev text-white"></div>
-          <div class="swiper-pagination"></div>
+          <div class="swiper-slide h-full">
+            <img src="./assets/images/hero2.jpg" class="w-full h-full object-cover" />
+          </div>
+          <div class="swiper-slide h-full">
+            <img src="./assets/images/hero3.jpg" class="w-full h-full object-cover" />
+          </div>
+          <div class="swiper-slide h-full">
+            <img src="./assets/images/hero4.jpg" class="w-full h-full object-cover" />
+          </div>
         </div>
-      </section>
 
-      <!-- Browse by Category -->
-      <section class="px-6 md:px-40 py-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-6">Browse By Category</h2>
-        <div
-          class="home-category-grid grid grid-cols-2 md:grid-cols-6 gap-16"
-        ></div>
-      </section>
+        <!-- Navigation Buttons -->
+        <div class="swiper-button-next text-white"></div>
+        <div class="swiper-button-prev text-white"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </section>
 
-      <!-- Events Near You -->
-      <section class="px-6 md:px-40 pb-10">
-        <div class="flex justify-between items-center mb-6">
-          <h2
-            class="w-[23.438rem] relative text-xl tracking-[0.04em] leading-[3rem] font-bold font-inter text-gray text-left inline-block"
-          >
-            Events Near You
-          </h2>
-          <button
-            class="relative text-[1.25rem] font-afacad text-darkslateblue text-left inline-block h-[1.125rem] cursor-pointer"
-            id="all-events"
-          >
-            See More >
+    <!-- Browse by Category -->
+    <section class="px-6 md:px-40 py-6">
+      <h2 class="text-xl font-bold text-gray-800 mb-6">Browse By Category</h2>
+      <div class="home-category-grid grid grid-cols-2 md:grid-cols-6 gap-16"></div>
+    </section>
+
+    <!-- Events Near You -->
+    <section class="px-6 md:px-40 pb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h2
+          class="w-[23.438rem] relative text-xl tracking-[0.04em] leading-[3rem] font-bold font-inter text-gray text-left inline-block">
+          Events Near You
+        </h2>
+        <button
+          class="relative text-[1.25rem] font-afacad text-darkslateblue text-left inline-block h-[1.125rem] cursor-pointer"
+          id="all-events">
+          See More >
+        </button>
+      </div>
+      <!-- Event Card -->
+      <div class="home-event-card-grid grid grid-cols-2 md:grid-cols-4 gap-16"></div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="bg-[#e9ddfb] mt-22 py-10 px-6 md:px-20 flex flex-col md:flex-row items-center gap-6 h-[15rem]">
+      <img src="./assets/images/CTA.png" alt="CTA" class="w-60 md:w-160" />
+      <div class="flex flex-col items-start">
+        <b class="w-[26.075rem] relative text-[2.125rem] inline-block font-dm-sans text-black text-left">Subscribe Our
+          NewsTeller</b>
+        <p class="w-[23.875rem] relative text-[1.125rem] font-dm-sans text-gray text-left inline-block">
+          Stay up to date with our latest news and events.
+        </p>
+
+        <div id="newsletter-form"
+          class="bg-white border border-[#090317] border-solid box-border h-[3.75rem] flex flex-row items-center justify-start pl-[1.687rem] gap-[0.687rem] text-left mt-5 shadow-[0px_10px_50px_rgba(61,_55,_241,_0.25)] rounded-[50px]">
+          <input type="email" id="newsletter-email" placeholder="Your email address"
+            class="flex-1 h-full outline-none border-none text-gray-700 placeholder-gray-500 w-[15.5rem]" required />
+          <button id="submitNewsletterBtn" type="button" class="relative rounded-[50px] bg-[#462f7d] h-[3.75rem]">
+            <b
+              class="w-[8.813rem] relative text-[1.3rem] inline-block text-white text-center cursor-pointer">Subscribe</b>
           </button>
         </div>
-        <!-- Event Card -->
-        <div
-          class="home-event-card-grid grid grid-cols-2 md:grid-cols-4 gap-16"
-        ></div>
-      </section>
+        <p class="text-center self-center w-full text-gray-500 mt-2 text-sm">
+          Your email is safe with us. We don’t spam.
+        </p>
+      </div>
+    </section>
+  </main>
 
-      <!-- Call to Action -->
-      <section
-        class="bg-[#e9ddfb] mt-22 py-10 px-6 md:px-20 flex flex-col md:flex-row items-center gap-6 h-[15rem]"
-      >
-        <img src="./assets/images/CTA.png" alt="CTA" class="w-60 md:w-160" />
-        <div class="flex flex-col items-start">
-          <b
-            class="w-[26.075rem] relative text-[2.125rem] inline-block font-dm-sans text-black text-left"
-            >Newsletter</b
-          >
-          <p
-            class="w-[23.875rem] relative text-[1.125rem] font-dm-sans text-gray text-left inline-block"
-          >
-            Stay up to date with our latest news and events.
-          </p>
+  <!-- Include Footer -->
+  <div id="footer"></div>
 
-          <div
-            id="newsletter-form"
-            class="bg-white border border-[#090317] border-solid box-border h-[3.75rem] flex flex-row items-center justify-start pl-[1.687rem] gap-[0.687rem] text-left mt-5 shadow-[0px_10px_50px_rgba(61,_55,_241,_0.25)] rounded-[50px]"
-          >
-            <input
-              type="email"
-              id="newsletter-email"
-              placeholder="Your email address"
-              class="flex-1 h-full outline-none border-none text-gray-700 placeholder-gray-500 w-[15.5rem]"
-              required
-            />
-            <button
-              id="submitNewsletterBtn"
-              type="button"
-              class="relative rounded-[50px] bg-[#462f7d] h-[3.75rem]"
-            >
-              <b
-                class="w-[8.813rem] relative text-[1.3rem] inline-block text-white text-center cursor-pointer"
-                >Subscribe</b
-              >
-            </button>
-          </div>
-          <p class="text-center self-center w-full text-gray-500 mt-2 text-sm">
-            Your email is safe with us. We don’t spam.
-          </p>
-        </div>
-      </section>
-    </main>
+  <!-- Include Contact Modal -->
+  <div id="contact-modal-container"></div>
 
-    <!-- Include Footer -->
-    <div id="footer"></div>
+  <!-- Include Location Modal -->
+  <div id="location-modal-container"></div>
 
-    <!-- Include Contact Modal -->
-    <div id="contact-modal-container"></div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="module" src="./dist/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+</body>
 
-    <!-- Include Location Modal -->
-    <div id="location-modal-container"></div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="module" src="./dist/main.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  </body>
 </html>

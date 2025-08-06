@@ -57,9 +57,12 @@ async function main(): Promise<void> {
     const data = await res.json();
     console.log("Tickets:", data);
 
-    if (data.success && Array.isArray(data.tickets)) {
+    if (data.success && Array.isArray(data.tickets) && data.tickets.length > 0) {
       const now = new Date();
 
+      let bookedCount = 0;
+      let cancelledCount = 0;
+      let historyCount = 0;
 
       await Promise.all(
         data.tickets.map(async (ticket: any) => {
@@ -89,10 +92,13 @@ async function main(): Promise<void> {
 
             if (ticket.status?.toLowerCase() === "cancelled") {
               targetSectionId = "cancelled_ticket_section";
+              cancelledCount++;
             } else if (eventDate < now) {
               targetSectionId = "ticket_history_section";
+              historyCount++;
             } else {
               targetSectionId = "booked_ticket_section";
+              bookedCount++;
             }
 
             await loadBookedTicketCard(targetSectionId, {
@@ -114,7 +120,25 @@ async function main(): Promise<void> {
           }
         })
       );
+
+      // Show messages if any section has 0 tickets
+      if (bookedCount === 0) {
+        document.getElementById("booked_empty_msg")?.classList.remove("hidden");
+      }
+      if (cancelledCount === 0) {
+        document.getElementById("cancelled_empty_msg")?.classList.remove("hidden");
+      }
+      if (historyCount === 0) {
+        document.getElementById("history_empty_msg")?.classList.remove("hidden");
+      }
+
+    } else {
+      // Show empty messages if no tickets at all
+      document.getElementById("booked_empty_msg")?.classList.remove("hidden");
+      document.getElementById("cancelled_empty_msg")?.classList.remove("hidden");
+      document.getElementById("history_empty_msg")?.classList.remove("hidden");
     }
+
   } catch (error) {
     console.error("Error fetching tickets:", error);
   } finally {
