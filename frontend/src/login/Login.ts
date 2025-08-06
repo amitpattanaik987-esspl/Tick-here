@@ -1,10 +1,18 @@
-import { initLoader, showLoader, hideLoader } from "../components/loader/loader.js";
+import {
+  initLoader,
+  showLoader,
+  hideLoader,
+} from "../components/loader/loader.js";
 
 initLoader();
 
 const button = document.getElementById("sign_in") as HTMLButtonElement;
 const emailInput = document.getElementById("email") as HTMLInputElement;
 const passwordInput = document.getElementById("password") as HTMLInputElement;
+
+if (localStorage.getItem("auth-token")) {
+  window.location.href = "/";
+}
 
 const validateEmail = (email: string) => {
   return String(email)
@@ -19,19 +27,34 @@ async function handleUserLogin(e?: Event) {
 
   const email = emailInput?.value.trim();
   const password = passwordInput?.value;
+  const error = document.getElementById("loginError") as HTMLElement;
+  const success = document.getElementById("loginSuccess") as HTMLElement;
+
+  if (error) {
+    error.textContent = "";
+    error.classList.add("hidden");
+  }
+
+  if (success) {
+    success.textContent = "";
+    success.classList.add("hidden");
+  }
 
   if (!email || !password) {
-    alert("Please fill in both email and password.");
+    error.textContent = "Please fill in all fields.";
+    error.classList.remove("hidden");
     return;
   }
 
   if (!validateEmail(email)) {
-    alert("Invalid email");
+    error.textContent = "Not a valid Email";
+    error.classList.remove("hidden");
     return;
   }
 
   if (password.length < 8) {
-    alert("Minimum 8 digit password required");
+    error.textContent = "Minimum 8 digit password required";
+    error.classList.remove("hidden");
     return;
   }
 
@@ -47,22 +70,24 @@ async function handleUserLogin(e?: Event) {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      alert(`Login failed: ${error.message || "Unknown error"}`);
-      return;
+      const result = await response.json();
+      const errorMessages = Object.values(result.errors || {})
+        .flat()
+        .join("\n");
+      error.textContent = `Signup failed:\n${errorMessages || "Unknown error"}`;
+      error.classList.remove("hidden");
     }
 
     const result = await response.json();
-    console.log("Login success:", result);
 
-    localStorage.setItem('auth-token', result.token);
-    localStorage.setItem('User_details', JSON.stringify(result.data));
+    localStorage.setItem("auth-token", result.token);
+    localStorage.setItem("User_details", JSON.stringify(result.data));
 
-    window.location.href = '/';
-
-  } catch (error) {
-    console.error("Network or server error:", error);
-    alert("Something went wrong. Please try again.");
+    window.location.href = "/";
+  } catch (err) {
+    console.error("Network or server error:", err);
+    error.textContent = "Something went wrong. Please try again later.";
+    error.classList.remove("hidden");
   } finally {
     hideLoader();
   }
@@ -72,7 +97,7 @@ async function handleUserLogin(e?: Event) {
 button?.addEventListener("click", handleUserLogin);
 
 // ⌨️ Enter key support
-[emailInput, passwordInput].forEach(input => {
+[emailInput, passwordInput].forEach((input) => {
   input?.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       handleUserLogin(e);

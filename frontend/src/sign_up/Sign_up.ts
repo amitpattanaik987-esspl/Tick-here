@@ -11,6 +11,10 @@ const nameInput = document.getElementById("name") as HTMLInputElement;
 const emailInput = document.getElementById("email") as HTMLInputElement;
 const passwordInput = document.getElementById("password") as HTMLInputElement;
 
+if (localStorage.getItem("auth-token")) {
+  window.location.href = "/";
+}
+
 const validateEmail = (email: string) => {
   return String(email)
     .toLowerCase()
@@ -25,19 +29,39 @@ async function handleUserSignup(e?: Event) {
   const name = nameInput?.value.trim();
   const email = emailInput?.value.trim();
   const password = passwordInput?.value;
+  const error = document.getElementById("signupError") as HTMLElement;
+  const success = document.getElementById("signupSuccess") as HTMLElement;
+  const resendEmail = document.getElementById("resendEmail") as HTMLElement;
+
+  if (error) {
+    error.textContent = "";
+    error.classList.add("hidden");
+  }
+
+  if (success) {
+    success.textContent = "";
+    success.classList.add("hidden");
+  }
+
+  if (resendEmail) {
+    resendEmail.classList.add("hidden");
+  }
 
   if (!name || !email || !password) {
-    alert("Please fill in all fields.");
+    error.textContent = "Please fill in all fields.";
+    error.classList.remove("hidden");
     return;
   }
 
   if (!validateEmail(email)) {
-    alert("Not a valid Email");
+    error.textContent = "Not a valid Email";
+    error.classList.remove("hidden");
     return;
   }
 
   if (password.length < 8) {
-    alert("Minimum 8 digit password required");
+    error.textContent = "Minimum 8 digit password required";
+    error.classList.remove("hidden");
     return;
   }
 
@@ -55,15 +79,24 @@ async function handleUserSignup(e?: Event) {
     console.log(result);
 
     if (!response.ok) {
-      alert(`Signup failed: ${result.message || "Unknown error"}`);
+      const errorMessages =
+        Object.values(result.errors || {})
+          .flat()
+          .join("\n") ||
+        result.error ||
+        "";
+      error.textContent = `Signup failed:\n${errorMessages || "Unknown error"}`;
+      error.classList.remove("hidden");
     } else {
-      alert(
-        "Account created successfully! \nKindly check your mail for verification link!"
-      );
+      success.textContent =
+        "Account created successfully! \nKindly check your mail for verification link!";
+      success.classList.remove("hidden");
+      resendEmail.classList.remove("hidden");
     }
-  } catch (error) {
-    console.error("Signup error:", error);
-    alert("Something went wrong. Please try again later.");
+  } catch (err) {
+    console.error("Signup error:", err);
+    error.textContent = "Something went wrong. Please try again later.";
+    error.classList.remove("hidden");
   } finally {
     hideLoader();
   }

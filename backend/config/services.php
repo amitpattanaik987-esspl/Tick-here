@@ -30,4 +30,7 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'hunter' => [
+        'api_key' => env('HUNTER_API_KEY'),
+    ],
 ];
