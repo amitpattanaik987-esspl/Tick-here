@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\EmailValidationService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 
 class UserController extends Controller
 {
@@ -51,7 +54,7 @@ class UserController extends Controller
     }
 
     //For Registering a new User
-    public function store()
+    public function store(EmailValidationService $hunter)
     {
         try {
             $data = request()->validate([
@@ -63,31 +66,54 @@ class UserController extends Controller
             return response()->json(['errors' => $e->errors()], 422);
         }
 
-        $data['username'] = substr($data['email'], 0, strpos($data['email'], '@'));
+        $verification = $hunter->verify($data['email']);
 
+        if (!$verification || $verification['result'] === 'undeliverable') {
+            return response()->json(['error' => 'This email address cannot receive emails.'], 422);
+        }
+
+        $data['username'] = substr($data['email'], 0, strpos($data['email'], '@'));
         $data['password'] = Hash::make($data['password']);
 
         $user = User::create($data);
 
-        $user->sendEmailVerificationNotification(); //to send verification email
+        $user->sendEmailVerificationNotification();
 
         return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user,
-            'token' => $user->createToken('user-token')->plainTextToken
+            'message' => 'User created successfully. Please verify your email before logging in.'
         ], 201);
+    }
+
+    //For verifying email
+    public function verify(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            return response()->json(['message' => 'Invalid hash.'], 403);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect(env('FRONTEND_URL', 'http://localhost:8080') . '/verified');
+        }
+
+        $user->markEmailAsVerified();
+
+        event(new Verified($user));
+
+        return redirect(env('FRONTEND_URL', 'http://localhost:8080') . '/verified');
     }
 
     //For Resending verification email
     public function resendVerificationEmail(Request $request)
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return response()->json(['message' => 'Email already verified.'], 400);
+            return response()->json(['message' => 'Email already verified']);
         }
 
         $request->user()->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'Verification email resent.']);
+        return response()->json(['message' => 'Verification link sent!']);
     }
 
     //For logging out a user

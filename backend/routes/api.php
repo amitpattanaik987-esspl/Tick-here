@@ -24,7 +24,10 @@ use Illuminate\Support\Facades\Log;
 // User registration, verification & login
 Route::post('/users', [UserController::class, 'store']);
 Route::post('/auth/user/login', [UserController::class, 'login']);
-Route::post('/email/resend', [UserController::class, 'resendVerificationEmail'])->middleware('auth:sanctum');
+Route::get('/email/verify/{id}/{hash}', [UserController::class, 'verify'])
+    ->name('verification.verify')
+    ->middleware('signed');
+Route::post('/email/resend', [UserController::class, 'resendVerificationEmail'])->middleware(['throttle:6,1'])->name('verification.send');
 
 // Admin registration & login
 Route::post('/auth/admin/login', [AdminController::class, 'login']);
@@ -38,26 +41,6 @@ Route::post('/subscribe', [UserController::class, 'subscribe']);
 
 // Seats data
 Route::get('/venues/{id}/seats', [VenueController::class, 'seats']);
-
-
-// Verify email
-Route::get('/email/verify/{id}/{hash}', function (Request $request, $id, $hash) {
-    $user = User::findOrFail($id);
-
-    if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-        return response()->json(['message' => 'Invalid verification link'], 403);
-    }
-
-    if ($user->hasVerifiedEmail()) {
-        return redirect(env('FRONTEND_URL', 'http://localhost:8080') . '/verified');
-    }
-
-    $user->markEmailAsVerified();
-    event(new Verified($user));
-
-    return redirect(env('FRONTEND_URL', 'http://localhost:8080') . '/verified');
-})->middleware('signed')->name('verification.verify');
-
 
 /**
  * PROTECTED ROUTES
