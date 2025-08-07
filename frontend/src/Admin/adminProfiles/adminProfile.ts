@@ -145,44 +145,49 @@ document.addEventListener("DOMContentLoaded", async () => {
       isEditing = false;
       editBtn.textContent = "Edit Profile";
 
-      [fullNameInput, userNameInput, emailInput, phoneInput].forEach(
-        (input) => {
-          input.readOnly = true;
-          input.classList.remove("bg-white");
-          input.classList.add("bg-gray-100");
-        }
-      );
+      [fullNameInput, userNameInput, phoneInput].forEach((input) => {
+        input.readOnly = false;
+        input.classList.remove("bg-gray-100");
+        input.classList.add("bg-white");
+      });
+
+      // Keep email readonly
+      emailInput.readOnly = true;
+      emailInput.classList.add("bg-gray-100", "text-gray-400", "cursor-not-allowed");
+      emailInput.classList.remove("bg-white");
 
       // Send update request
 
       try {
-        const res = await fetch(
-          `http://127.0.0.1:8000/api/auth/admin/profile`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              full_name: fullNameInput.value.trim(),
-              username: userNameInput.value.trim(),
-              email: emailInput.value.trim(),
-              phone: phoneInput.value.trim(),
-            }),
-          }
-        );
+        const res = await fetch(`http://127.0.0.1:8000/api/auth/admin/profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            full_name: fullNameInput.value.trim(),
+            username: userNameInput.value.trim(),
+            email: emailInput.value.trim(),
+            phone: phoneInput.value.trim(),
+          }),
+        });
 
         const data = await res.json();
-        if (!res.ok || !data.success)
-          throw new Error(data.message || "Update failed");
+
+        if (!res.ok) {
+          const firstField = Object.keys(data.errors)[0];
+          const firstError = data.errors[firstField][0];
+          throw new Error(firstError || "Update failed");
+        }
 
         alert("Profile updated successfully.");
       } catch (err) {
         console.error("Update error:", err);
-        alert("Failed to update profile.");
+        alert(err.message || "Failed to update profile.");
       }
+
     }
   });
 

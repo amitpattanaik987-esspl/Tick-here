@@ -26,6 +26,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('tickets:expire')->everyThirtyMinutes();
+        $schedule->command('tickets:expire')->everySunday("00:00");
     }
 
     /**

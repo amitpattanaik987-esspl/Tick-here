@@ -15,18 +15,22 @@ class VenueController extends Controller
     {
         $search = $request->get('search');
 
-        $venues = Venue::with([
-            'location',
-        ])->when($search, function ($query, $search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('venue_name', 'like', "%{$search}%")->orWhereHas('location', function ($q) use ($search) {
-                    $q->where('city', 'like', "%{$search}%");
-                })
-                    ->orWhere('max_seats', 'like', "%{$search}%")
-                    ->orWhere('seat_price', 'like', "%{$search}%")
-                    ->orWhere('id', 'like', "%{$search}%");
-            });
-        })->orderBy('id', 'asc')->paginate(10);
+        $venues = Venue::with(['location', 'seats'])
+            ->when($search, function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('venue_name', 'like', "%{$search}%")
+                        ->orWhereHas('location', function ($q) use ($search) {
+                            $q->where('city', 'like', "%{$search}%");
+                        })
+                        ->orWhere('max_seats', 'like', "%{$search}%")
+                        ->orWhere('id', 'like', "%{$search}%")
+                        ->orWhereHas('seats', function ($q) use ($search) {
+                            $q->where('price', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('id', 'asc')
+            ->paginate(10);
 
         return response()->json([
             'success' => true,
@@ -34,6 +38,7 @@ class VenueController extends Controller
             'data' => $venues
         ]);
     }
+
 
     //create a venue (admin)
     public function create()

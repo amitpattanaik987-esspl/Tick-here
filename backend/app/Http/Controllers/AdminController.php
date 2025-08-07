@@ -10,7 +10,9 @@ use App\Models\Ticket;
 use Carbon\Carbon;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -117,17 +119,22 @@ class AdminController extends Controller
     {
         $admin = auth()->user();
 
-        $request->validate([
-            'full_name' => 'required|string|max:255',
-            'username' => 'required|string|unique:admins,username|max:255',
-            'email' => 'required|email|unique:admins,email,' . $admin->id,
-            'phone' => 'required|nullable|string|max:15',
+        Log::info('Admin ID:', ['id' => $admin->id]);
+        Log::info('Checking username existence:', [
+            'exists' => DB::table('admins')->where('username', $request->username)->where('id', '!=', $admin->id)->exists(),
         ]);
 
-        $admin->name = $request->full_name;
-        $admin->username = $request->username;
-        $admin->email = $request->email;
-        $admin->phone = $request->phone;
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'username' => ['required', 'string', 'max:255', Rule::unique('admins')->ignore($admin->id, 'id'),],
+            'email' => ['required', 'email', Rule::unique('admins')->ignore($admin->id, 'id'),],
+            'phone' => 'nullable|string|max:10',
+        ]);
+
+        $admin->name = $request->input('full_name');
+        $admin->username = $request->input('username');
+        $admin->email = $request->input('email');
+        $admin->phone = $request->input('phone');
         $admin->save();
 
         return response()->json([
@@ -136,6 +143,8 @@ class AdminController extends Controller
             'data' => $admin,
         ]);
     }
+
+
 
     public function delete($id)
     {
@@ -237,5 +246,4 @@ class AdminController extends Controller
             'data' => $admins
         ]);
     }
-
 }

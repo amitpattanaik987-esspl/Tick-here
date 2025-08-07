@@ -1,223 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Profile</title>
 
-    <!-- Fonts & Styles -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto&family=Inter:wght@600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="../../assets/styles/output.css" />
-  </head>
-  <body class="bg-white text-black">
-    <!-- Navbar -->
-    <div id="navbar"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Profile</title>
 
-    <!-- Header Section -->
-    <main class="bg-[#f8f8ff]" id="main-content">
-      <div class="px-44 py-8">
-        <section>
-          <div
-            class="w-full relative rounded-t-lg rounded-b-none [background:linear-gradient(218.36deg,_#46006e,_#0a0417)] h-[4.688rem]"
-          ></div>
-          <div
-            class="flex justify-between items-center px-8 bg-white shadow-md mb-6 h-24"
-          >
-            <div class="flex items-center gap-5">
-              <div class="relative -mt-12">
-                <img
-                  src="https://i.pravatar.cc/100"
-                  class="w-28 h-28 rounded-full border-4 border-gray-200"
-                  alt="Admin Photo"
-                />
-                <span
-                  class="absolute bottom-1 right-0 bg-gray-200 h-8 w-8 p-1 rounded-full flex items-center justify-center"
-                >
-                  <i class="fas fa-camera fa-lg"></i>
-                </span>
-              </div>
-              <div class="ml-8">
-                <h2 class="text-2xl font-bold" id="adminName">Jitu Churan</h2>
-                <p id="adminUsername" class="text-gray-600">@imjituchauhan</p>
-              </div>
-            </div>
-            <button
-              id="editProfileBtn"
-              class="border border-blue-800 px-4 py-2 rounded-md text-blue-800 font-semibold hover:[background:linear-gradient(218.36deg,_#46006e,_#0a0417)] hover:cursor-pointer hover:text-white transition duration-300 ease-in-out"
-            >
-              Edit Profile
-            </button>
-          </div>
-        </section>
+  <!-- Fonts & Styles -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Inter:wght@600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../assets/styles/output.css" />
+</head>
 
-        <!-- Grid Section -->
-        <div class="grid grid-cols-5 gap-5">
-          <!-- Active Admins -->
-          <div class="col-span-2 bg-white p-8 rounded-lg shadow">
-            <div class="flex justify-between">
-              <h3 class="text-xl font-semibold text-[#0f172a] mb-4">
-                Active Admins
-              </h3>
-              <i id="addAdmin" class="fa-regular fa-square-plus mt-4 fa-xl"></i>
-            </div>
-            <ul class="space-y-4" id="adminList">
-              <li>
-                <div class="flex animate-pulse items-center gap-4">
-                  <div class="size-12 rounded-full bg-gray-200"></div>
-                  <div class="h-4 w-32 rounded bg-gray-200"></div>
-                  <div class="flex gap-4 ml-14">
-                    <i class="fa-regular fa-pen-to-square"></i>
-                    <i class="fa-solid fa-user-xmark"></i>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+<body class="bg-white text-black">
+  <!-- Navbar -->
+  <div id="navbar"></div>
 
-          <!-- Personal Details -->
-          <div class="col-span-3 bg-white p-16 rounded-lg shadow">
-            <h3 class="text-2xl font-semibold text-[#0f172a] mb-4">
-              Personal Details
-            </h3>
-            <form class="space-y-4">
-              <div>
-                <label class="block mb-1 text-sm">Full Name</label>
-                <input
-                  id="adminFullName"
-                  type="text"
-                  readonly
-                  class="w-full p-2 bg-gray-100 border rounded"
-                />
-              </div>
-              <div>
-                <label class="block mb-1 text-sm">Username</label>
-                <input
-                  id="adminUserName"
-                  type="text"
-                  readonly
-                  class="w-full p-2 bg-gray-100 border rounded"
-                />
-              </div>
-              <div>
-                <label class="block mb-1 text-sm">Email</label>
-                <input
-                  id="adminEmail"
-                  type="email"
-                  readonly
-                  class="w-full p-2 bg-gray-100 border rounded"
-                />
-              </div>
-              <div>
-                <label class="block mb-1 text-sm">Phone Number</label>
-                <input
-                  id="adminPhone"
-                  type="text"
-                  readonly
-                  class="w-full p-2 bg-gray-100 border rounded"
-                />
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-
-      <!-- add admin modal -->
-      <div
-        id="addAdminModal"
-        class="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 hidden"
-      >
+  <!-- Header Section -->
+  <main class="bg-[#f8f8ff]" id="main-content">
+    <div class="px-44 py-8">
+      <section>
         <div
-          class="border border-purple-950 bg-white p-10 rounded shadow-lg relative w-1/3 max-h-[95vh] overflow-hidden"
-        >
-          <div class="flex justify-between">
-            <h3
-              id="addAdminModalTitle"
-              class="text-2xl font-semibold text-[#0f172a] mb-4"
-            >
-              Add New Admin
-            </h3>
-            <button
-              id="closeAdminModal"
-              class="absolute top-2 right-2 text-gray-600 hover:text-black text-lg"
-              title="Close"
-            >
-              ✕
-            </button>
+          class="w-full relative rounded-t-lg rounded-b-none [background:linear-gradient(218.36deg,_#46006e,_#0a0417)] h-[4.688rem]">
+        </div>
+        <div class="flex justify-between items-center px-8 bg-white shadow-md mb-6 h-24">
+          <div class="flex items-center gap-5">
+            <div class="relative -mt-12">
+              <img src="https://i.pravatar.cc/100" class="w-28 h-28 rounded-full border-4 border-gray-200"
+                alt="Admin Photo" />
+              <span
+                class="absolute bottom-1 right-0 bg-gray-200 h-8 w-8 p-1 rounded-full flex items-center justify-center">
+                <i class="fas fa-camera fa-lg"></i>
+              </span>
+            </div>
+            <div class="ml-8">
+              <h2 class="text-2xl font-bold" id="adminName">Jitu Churan</h2>
+              <p id="adminUsername" class="text-gray-600">@imjituchauhan</p>
+            </div>
           </div>
-          <form id="addAdminForm" class="space-y-4">
+          <button id="editProfileBtn"
+            class="border border-blue-800 px-4 py-2 rounded-md text-blue-800 font-semibold hover:[background:linear-gradient(218.36deg,_#46006e,_#0a0417)] hover:cursor-pointer hover:text-white transition duration-300 ease-in-out">
+            Edit Profile
+          </button>
+        </div>
+      </section>
+
+      <!-- Grid Section -->
+      <div class="grid grid-cols-5 gap-5">
+        <!-- Active Admins -->
+        <div class="col-span-2 bg-white p-8 rounded-lg shadow">
+          <div class="flex justify-between">
+            <h3 class="text-xl font-semibold text-[#0f172a] mb-4">
+              Active Admins
+            </h3>
+            <i id="addAdmin" class="fa-regular fa-square-plus mt-4 fa-xl"></i>
+          </div>
+          <ul class="space-y-4" id="adminList">
+            <li>
+              <div class="flex animate-pulse items-center gap-4">
+                <div class="size-12 rounded-full bg-gray-200"></div>
+                <div class="h-4 w-32 rounded bg-gray-200"></div>
+                <div class="flex gap-4 ml-14">
+                  <i class="fa-regular fa-pen-to-square"></i>
+                  <i class="fa-solid fa-user-xmark"></i>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Personal Details -->
+        <div class="col-span-3 bg-white p-16 rounded-lg shadow">
+          <h3 class="text-2xl font-semibold text-[#0f172a] mb-4">
+            Personal Details
+          </h3>
+          <form class="space-y-4">
             <div>
               <label class="block mb-1 text-sm">Full Name</label>
-              <input
-                id="newAdminName"
-                type="text"
-                class="w-full p-2 border rounded"
-              />
+              <input id="adminFullName" type="text" readonly class="w-full p-2 bg-gray-100 border rounded" />
             </div>
-            <div id="usernameDiv" class="hidden">
-              <label class="block mb-1 text-sm">userName</label>
-              <input
-                id="newAdminUserName"
-                type="text"
-                class="w-full p-2 border rounded"
-              />
+            <div>
+              <label class="block mb-1 text-sm">Username</label>
+              <input id="adminUserName" type="text" readonly class="w-full p-2 bg-gray-100 border rounded" />
             </div>
             <div>
               <label class="block mb-1 text-sm">Email</label>
-              <input
-                id="newAdminEmail"
-                type="email"
-                class="w-full p-2 border rounded"
-              />
+              <input id="adminEmail" type="email" readonly
+                class="w-full p-2 bg-gray-100 border rounded text-gray-400 cursor-not-allowed" />
             </div>
             <div>
-              <label class="block mb-1 text-sm">Phone number</label>
-              <input
-                id="newAdminPhone"
-                type="text"
-                class="w-full p-2 border rounded"
-              />
+              <label class="block mb-1 text-sm">Phone Number</label>
+              <input id="adminPhone" type="text" readonly class="w-full p-2 bg-gray-100 border rounded" />
             </div>
-            <div id="passwordDiv" class="hidden">
-              <label class="block mb-1 text-sm">Password</label>
-              <input
-                id="newAdminPassword"
-                type="password"
-                class="w-full p-2 border rounded"
-              />
-            </div>
-            <!-- Hidden field to store which admin is being edited -->
-            <input type="hidden" id="editingotherAdminId" />
           </form>
-          <div class="col-span-2 flex justify-center gap-6 mt-4">
-            <button
-              id="cancelBtn"
-              class="border border-[#191970] px-6 py-2 rounded-md"
-            >
-              Cancel
-            </button>
-            <button
-              id="submitFormBtn"
-              class="bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white px-6 py-2 rounded-md hover:cursor-pointer"
-            >
-              Create
-            </button>
-          </div>
         </div>
       </div>
-    </main>
+    </div>
 
-    <!-- Scripts -->
-    <script
-      type="module"
-      src="../../dist/Admin/adminProfiles/adminProfile.js"
-    ></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  </body>
+    <!-- add admin modal -->
+    <div id="addAdminModal"
+      class="fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+      <div class="border border-purple-950 bg-white p-10 rounded shadow-lg relative w-1/3 max-h-[95vh] overflow-hidden">
+        <div class="flex justify-between">
+          <h3 id="addAdminModalTitle" class="text-2xl font-semibold text-[#0f172a] mb-4">
+            Add New Admin
+          </h3>
+          <button id="closeAdminModal" class="absolute top-2 right-2 text-gray-600 hover:text-black text-lg"
+            title="Close">
+            ✕
+          </button>
+        </div>
+        <form id="addAdminForm" class="space-y-4">
+          <div>
+            <label class="block mb-1 text-sm">Full Name</label>
+            <input id="newAdminName" type="text" class="w-full p-2 border rounded" />
+          </div>
+          <div id="usernameDiv" class="hidden">
+            <label class="block mb-1 text-sm">userName</label>
+            <input id="newAdminUserName" type="text" class="w-full p-2 border rounded" />
+          </div>
+          <div>
+            <label class="block mb-1 text-sm">Email</label>
+            <input id="newAdminEmail" type="email" class="w-full p-2 border rounded" />
+          </div>
+          <div>
+            <label class="block mb-1 text-sm">Phone number</label>
+            <input id="newAdminPhone" type="text" class="w-full p-2 border rounded" />
+          </div>
+          <div id="passwordDiv" class="hidden">
+            <label class="block mb-1 text-sm">Password</label>
+            <input id="newAdminPassword" type="password" class="w-full p-2 border rounded" />
+          </div>
+          <!-- Hidden field to store which admin is being edited -->
+          <input type="hidden" id="editingotherAdminId" />
+        </form>
+        <div class="col-span-2 flex justify-center gap-6 mt-4">
+          <button id="cancelBtn" class="border border-[#191970] px-6 py-2 rounded-md">
+            Cancel
+          </button>
+          <button id="submitFormBtn"
+            class="bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white px-6 py-2 rounded-md hover:cursor-pointer">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="../../dist/Admin/adminProfiles/adminProfile.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</body>
+
 </html>
