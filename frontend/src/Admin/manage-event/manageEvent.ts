@@ -1,3 +1,8 @@
+import {
+  hideLoader,
+  initLoader,
+  showLoader,
+} from "../../components/loader/loader.js";
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
 
 interface Event {
@@ -33,19 +38,46 @@ interface Ticket {
   seats_booked: number;
 }
 
-// Track active event and venue (for collapse logic)
-let expandedEventId: number | null = null;
-let expandedVenueId: number | null = null;
-
 // Real stacks to keep history of interactions
-const eventStack: number[] = [];
-const venueStack: number[] = [];
+const uiStack: HTMLElement[] = [];
 
 let currentPageUrl = "http://127.0.0.1:8000/api/admin/events";
 
 // Cache for events and sorting state
 let sortBy: string | null = null;
 let sortOrder: "asc" | "desc" = "asc";
+
+function clearUIStack() {
+  while (uiStack.length > 0) {
+    const el = uiStack.pop();
+    el?.remove();
+  }
+}
+
+function peekStack() {
+  return uiStack[uiStack.length - 1];
+}
+
+function popIfTypeExists(type: string) {
+  const peek = peekStack();
+  if (peek && peek.classList.contains(`${type}-wrapper`)) {
+    peek.remove();
+    uiStack.pop();
+  }
+}
+
+function popIfTopMatchesElement(element: HTMLElement) {
+  const top = peekStack();
+  if (!top) return false;
+
+  // The top UI section was rendered *after* this row
+  if ($(element).next()[0] === top) {
+    uiStack.pop();
+    top.remove();
+    return true;
+  }
+  return false;
+}
 
 // Determine status from venues' start_datetime
 function calculateStatus(venues: Venue[]) {
@@ -77,24 +109,24 @@ function renderEventRow(event: Event, index: number, status: string): string {
   return `
     <div data-event-id="${
       event.id
-    }" data-status="${status}" class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white event-row hover:cursor-pointer">
+    }" data-status="${status}" class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white event-row hover:cursor-pointer">
       <div class="w-[6rem] p-3 justify-center">${event.id}</div>
       <div class="w-[10rem] p-3 justify-center">${event.title}</div>
       <div class="w-[19rem] p-3 justify-center">${event.description}</div>
       <div class="w-[8rem] p-3 justify-center">${event.duration}</div>
       <div class="w-[8rem] p-3 justify-center">${event.category.name}</div>
       <div class="w-[8rem] p-3 justify-center">${event.admin.name}</div>
-      <div class="w-[8rem] p-3 justify-center text-center">
+      <div class="w-[8rem] p-3 justify-center">
         <span class="px-3 py-1 rounded-full text-xs ${
           badgeClass[status]
         }">${status}</span></div>
-      <div class="w-[16rem] p-3 flex gap-2 action-buttons justify-center">
+      <div class="w-[12rem] p-3 flex gap-2 action-buttons justify-center">
         ${
           status === "Completed"
             ? `<span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">Details</span>`
             : status === "Cancelled"
-            ? `<button data-created-by="${event.admin_id}" class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn" > Delete </button>`
-            : `<button data-created-by="${event.admin_id}" class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn">Edit</button>
+            ? `<button data-created-by="${event.admin_id}" class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn hover:cursor-pointer" > Delete </button>`
+            : `<button data-created-by="${event.admin_id}" class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn hover:cursor-pointer">Edit</button>
         <button data-created-by="${event.admin_id}" class="deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>`
         }
       </div>
@@ -195,30 +227,16 @@ function updatePagination(payload: any) {
   $("#lastPage").data("url", payload.last_page_url);
 }
 
-// Remove all venue and ticket rows
-function removeVenueRows() {
-  $(".venue-wrapper").remove();
-  venueStack.length = 0; // clear venue history
-  expandedVenueId = null;
-}
-
-function removeTicketRows() {
-  $(".ticket-wrapper").remove();
-  venueStack.length = 0;
-  expandedVenueId = null;
-}
-
 // Render venue rows under selected event
 function renderVenues(eventRow: HTMLElement, eventId: number) {
-  // Remove existing (open) venue and ticket rows
-  removeVenueRows();
-  removeTicketRows();
+  clearUIStack(); // clear all: venues, tickets, users
 
   const token = localStorage.getItem("admin_token");
   if (!token) return;
+  showLoader();
 
   $.ajax({
-    url: `http://127.0.0.1:8000/api/admin/events/${eventId}/venues`, // Adjust to your actual route
+    url: `http://127.0.0.1:8000/api/admin/events/${eventId}/venues`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -227,7 +245,7 @@ function renderVenues(eventRow: HTMLElement, eventId: number) {
     success: function (res) {
       if (res.success && res.data) {
         const venueWrapper = $(`
-          <div class="w-[54.5rem] ml-4 mb-2 relative rounded-md bg-[#f9f9f9] border border-gray-300 flex flex-col items-start justify-start gap-2 text-left text-sm font-poppins venue-wrapper">
+          <div class="w-[63.5rem] ml-4 mb-2 relative rounded-md bg-[#f9f9f9] border border-gray-300 flex flex-col items-start justify-start gap-2 text-left text-sm font-poppins venue-wrapper">
             <div class="w-full bg-[#f0f0f0] border-b border-gray-200 h-12 text-xs text-[#737373]">
               <div class="flex w-full items-center h-full">
                 <div class="w-[15rem] p-3 font-bold">Venue</div>
@@ -257,26 +275,28 @@ function renderVenues(eventRow: HTMLElement, eventId: number) {
           venueWrapper.append(venueRow);
         });
 
-        $(venueWrapper).insertAfter($(eventRow));
-        eventStack.push(eventId);
-        expandedEventId = eventId;
+        $(eventRow).after(venueWrapper);
+        uiStack.push(venueWrapper[0]);
+        hideLoader();
       }
     },
     error: function (err) {
       console.error("Failed to fetch venues:", err);
+      hideLoader();
     },
   });
 }
 
 // Render ticket rows under selected venue
 function renderTickets(venueRow: HTMLElement, eventVenueId: number) {
-  removeTicketRows(); // Remove existing (open) ticket rows
+  popIfTypeExists("ticket"); // Remove if already a ticket wrapper
 
   const token = localStorage.getItem("admin_token");
   if (!token) return;
+  showLoader();
 
   $.ajax({
-    url: `http://127.0.0.1:8000/api/admin/events/${eventVenueId}/tickets`, // Adjust this to your Laravel route
+    url: `http://127.0.0.1:8000/api/admin/events/${eventVenueId}/tickets`,
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -285,7 +305,7 @@ function renderTickets(venueRow: HTMLElement, eventVenueId: number) {
     success: function (res) {
       if (res.success && res.data) {
         const ticketWrapper = $(`
-          <div class=" w-[52.5rem] ml-4 mb-2 relative rounded-md bg-[#f1f1f1] border border-gray-300 flex flex-col items-start justify-start gap-2 text-left text-sm font-poppins ticket-wrapper">
+          <div class=" w-[61.5rem] ml-4 mb-2 relative rounded-md bg-[#f1f1f1] border border-gray-300 flex flex-col items-start justify-start gap-2 text-left text-sm font-poppins ticket-wrapper">
             <div class="w-full bg-[#eeeeee] border-b border-gray-200 h-12 text-xs text-[#737373]">
               <div class="flex w-full items-center h-full">
                 <div class="w-[8rem] p-3 font-bold">Ticket Code</div>
@@ -314,17 +334,19 @@ function renderTickets(venueRow: HTMLElement, eventVenueId: number) {
         });
 
         $(venueRow).after(ticketWrapper);
-        venueStack.push(eventVenueId);
-        expandedVenueId = eventVenueId;
+        uiStack.push(ticketWrapper[0]);
+        hideLoader();
       }
     },
     error: function (err) {
       console.error("Failed to fetch tickets:", err);
+      hideLoader();
     },
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initLoader();
   loadNavbar();
 
   fetchEvents(currentPageUrl);
@@ -371,16 +393,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Toggle venue display
-    if (expandedEventId === eventId) {
-      removeVenueRows();
-      expandedEventId = null;
-      removeTicketRows();
-      expandedVenueId = null;
+    // If venue is already open under this event, close it
+    if (popIfTopMatchesElement(this)) {
       return;
     }
 
-    removeVenueRows();
     renderVenues(this, eventId);
   });
 
@@ -402,13 +419,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    if (expandedVenueId === venueId) {
-      removeTicketRows();
-      expandedVenueId = null;
-      return;
-    }
+    // Toggle if already expanded
+    if (popIfTopMatchesElement(this)) return;
 
-    removeTicketRows();
+    // Push new ticket table
     renderTickets(this, venueId);
   });
 

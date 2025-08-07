@@ -28,16 +28,10 @@ async function handleUserLogin(e?: Event) {
   const email = emailInput?.value.trim();
   const password = passwordInput?.value;
   const error = document.getElementById("loginError") as HTMLElement;
-  const success = document.getElementById("loginSuccess") as HTMLElement;
 
   if (error) {
     error.textContent = "";
     error.classList.add("hidden");
-  }
-
-  if (success) {
-    success.textContent = "";
-    success.classList.add("hidden");
   }
 
   if (!email || !password) {
@@ -69,16 +63,18 @@ async function handleUserLogin(e?: Event) {
       body: JSON.stringify({ email, password }),
     });
 
-    if (!response.ok) {
-      const result = await response.json();
-      const errorMessages = Object.values(result.errors || {})
-        .flat()
-        .join("\n");
-      error.textContent = `Signup failed:\n${errorMessages || "Unknown error"}`;
-      error.classList.remove("hidden");
-    }
-
     const result = await response.json();
+    console.log(result);
+
+    if (!response.ok) {
+      const errorMessages =
+        Object.values(result.errors || {})
+          .flat()
+          .join("\n") || result.message;
+      error.textContent = `Login failed:\n${errorMessages || "Unknown error"}`;
+      error.classList.remove("hidden");
+      return;
+    }
 
     localStorage.setItem("auth-token", result.token);
     localStorage.setItem("User_details", JSON.stringify(result.data));
