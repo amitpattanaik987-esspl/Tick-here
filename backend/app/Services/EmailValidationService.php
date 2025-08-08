@@ -6,14 +6,14 @@ use Illuminate\Support\Facades\Http;
 
 class EmailValidationService
 {
-    protected string $apiKey;
+    protected $apiKey;
 
     public function __construct()
     {
         $this->apiKey = config('services.hunter.api_key');
     }
 
-    public function verify(string $email): array|null
+    public function verify(string $email) // remove : array|null
     {
         $response = Http::get('https://api.hunter.io/v2/email-verifier', [
             'email' => $email,

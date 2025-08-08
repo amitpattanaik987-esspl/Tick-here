@@ -142,7 +142,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/admin/venues', [VenueController::class, 'index']);
     Route::delete('/admin/venues/{venue}', [VenueController::class, 'delete']);
     Route::put('/admin/venues/{venue}', [VenueController::class, 'update']);
-
-    //contact email
-    Route::post('/contact', [ContactController::class, 'sendMail']);
 });
+
+//contact email
+Route::post('/contact', [ContactController::class, 'sendMail']);

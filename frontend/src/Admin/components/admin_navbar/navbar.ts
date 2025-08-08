@@ -129,7 +129,7 @@ export function loadNavbar(): void {
           },
           success: function (response) {
             localStorage.removeItem("admin_token");
-            localStorage.removeItem("admin_info");
+            // localStorage.removeItem("admin_info");
             window.location.href = "/admin/admin_login/";
           },
           error: function (xhr) {

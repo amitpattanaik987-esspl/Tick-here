@@ -288,7 +288,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
 
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Request failed");
+        if (!res.ok) {
+          if (data.errors && Object.keys(data.errors).length > 0) {
+            const firstField = Object.keys(data.errors)[0];
+            const firstError = data.errors[firstField]?.[0];
+            throw new Error(firstError || "Request failed");
+          } else if (data.message) {
+            throw new Error(data.message);
+          } else {
+            throw new Error("Request failed");
+          }
+        }
+
+        //throw new Error(data.message || "Request failed"); //hello
 
         alert(
           editingId
@@ -296,15 +308,17 @@ document.addEventListener("DOMContentLoaded", async () => {
             : "Admin created successfully"
         );
 
+        (document.getElementById("addAdminForm") as HTMLFormElement)?.reset();
+        (document.getElementById("editingAdminId") as HTMLInputElement).value =
+          "";
+        submitBtn.textContent = "Create";
+
         // Reset modal
         (document.getElementById("addAdminModal") as HTMLElement).setAttribute(
           "hidden",
           ""
         );
-        (document.getElementById("addAdminForm") as HTMLFormElement)?.reset();
-        (document.getElementById("editingAdminId") as HTMLInputElement).value =
-          "";
-        submitBtn.textContent = "Create";
+
 
         // Refresh admin list
         loadActiveAdmins(localStorage.getItem("admin_info"));

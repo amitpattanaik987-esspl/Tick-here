@@ -54,12 +54,13 @@ export function loadContactModal(): void {
         };
 
         showLoader();
+
         try {
           const response = await fetch("http://127.0.0.1:8000/api/contact", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Accept": "application/json",
+              Accept: "application/json",
               Authorization: `Bearer ${localStorage.getItem("auth-token")}`,
             },
             body: JSON.stringify(data),
@@ -67,10 +68,19 @@ export function loadContactModal(): void {
 
           if (!response.ok) {
             const errorData = await response.json();
-            console.error("Server Error Response:", response.status, errorData);
-            alert(errorData?.message || "Something went wrong.");
+
+            // 🔽 Extract the first validation error message (if available)
+            if (errorData.errors) {
+              const firstErrorField = Object.keys(errorData.errors)[0];
+              const firstErrorMessage = errorData.errors[firstErrorField][0];
+              alert(firstErrorMessage);
+            } else {
+              alert(errorData?.message || "Something went wrong.");
+            }
+
+            hideLoader();
             return;
-          };
+          }
 
           const result = await response.json();
           alert("Message sent successfully! Our support will contact you soon.");
@@ -83,6 +93,7 @@ export function loadContactModal(): void {
           hideLoader();
         }
       });
+
     })
     .catch((error) => {
       console.error("Error loading contact modal:", error);

@@ -392,6 +392,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           !timeInput.value
         ) {
           alert("Please complete venue fields or close the venue form.");
+          hideLoader();
           return;
         }
 
@@ -450,7 +451,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       const found = allVenues.find((v) => v.id.toString() === venue.venue);
       const locationId = found?.location?.id;
 
-      // Ensure locationId is either a string or an empty string (never number | "")
       formData.append(
         `venues[${index}][location_id]`,
         locationId ? String(locationId) : ""
@@ -474,12 +474,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       formData.append("_method", isEditing ? "PUT" : "POST"); // Laravel's method spoofing
 
       if (isEditing && editData.__edit_mode === "partial") {
-        // Only send updatable fields
         formData.delete("venues"); // No venue updates
       }
 
       if (isEditing) {
-        formData.append("__edit_mode", editData.__edit_mode); // Either 'partial' or 'full'
+        formData.append("__edit_mode", editData.__edit_mode);
       }
 
       if (
@@ -487,12 +486,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         savedVenues.length === 0
       ) {
         alert("Please add at least one venue.");
+        hideLoader();
         return;
       }
-
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
 
       const response = await fetch(endpoint, {
         method: "POST",
@@ -505,23 +501,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (!response.ok) {
         const data = await response.json();
-        console.error(data);
-        alert(`Failed: ${data.message || "Unknown error"}`);
+        console.error("Error response:", data);
+
+        if (data.errors && typeof data.errors === "object") {
+          // Gather all error messages
+          const messages: string[] = [];
+          for (const field in data.errors) {
+            if (Array.isArray(data.errors[field])) {
+              messages.push(...data.errors[field]);
+            }
+          }
+
+          alert(messages.join("\n")); // Show all errors in alert box
+        } else if (data.message) {
+          alert(`Failed: ${data.message}`);
+        } else {
+          alert("Unknown error occurred.");
+        }
+
         return;
       }
 
       isEditing
         ? alert("Event updated successfully!")
         : alert("Event created successfully!");
+
       window.location.href = "/admin/manage-event/";
     } catch (err) {
-      console.error(err);
+      console.error("API Exception:", err);
       alert("API error, check console.");
     } finally {
       localStorage.removeItem("edit_event_data_backup");
       hideLoader();
     }
   });
+
 
   cancelBtn.addEventListener("click", () => {
     (document.getElementById("title") as HTMLInputElement).value = "";

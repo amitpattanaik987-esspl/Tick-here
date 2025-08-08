@@ -1,357 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Eventix</title>
 
-    <link rel="stylesheet" href="../../assets/styles/global.css" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eventix</title>
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap"
-    />
-    <link href="../../assets/styles/output.css" rel="stylesheet" />
-  </head>
+  <link rel="stylesheet" href="../../assets/styles/global.css" />
 
-  <body class="bg-[#f8f8ff]">
-    <!-- Navbar -->
-    <div id="navbar"></div>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" />
+  <link href="../../assets/styles/output.css" rel="stylesheet" />
+</head>
 
-    <main>
-      <div class="flex flex-col items-center justify-center py-6">
-        <div class="w-full text-2xl font-bold px-38 mb-6">Manage Events</div>
-        <!-- Page Title and Add Button -->
-        <div class="w-[65.5rem] flex justify-between items-center mb-4">
-          <button
-            id="addEventBtn"
-            class="border border-[#191970] rounded-lg hover:cursor-pointer hover:bg-gradient-to-r hover:from-[#46006e] hover:to-[#0a0417] hover:text-white"
-            style="width: 150px; height: 36px"
-          >
-            Add New Event
-          </button>
+<body class="bg-[#f8f8ff]">
+  <!-- Navbar -->
+  <div id="navbar"></div>
 
-          <div
-            class="w-[16.313rem] rounded-[10px] bg-white border border-[#090317] border-solid box-border h-[36px] flex flex-row items-center justify-start py-[2px] px-[0.69rem] gap-[0.687rem] text-left text-dimgray font-mulish shadow-md"
-          >
-            <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
-            <input
-              id="search-input"
-              type="text"
-              placeholder="Search Event"
-              class="flex-1 h-full outline-none border-none text-gray-700 placeholder-gray-500"
-            />
-          </div>
-        </div>
+  <main>
+    <div class="flex flex-col items-center justify-center py-6 px-[150px]">
+      <div class="w-full text-2xl font-bold mb-6">Manage Events</div>
+      <!-- Page Title and Add Button -->
+      <div class="w-full flex justify-between items-center mb-4">
+        <button id="addEventBtn"
+          class="border border-[#191970] rounded-lg hover:cursor-pointer hover:bg-gradient-to-r hover:from-[#46006e] hover:to-[#0a0417] hover:text-white"
+          style="width: 150px; height: 36px">
+          Add New Event
+        </button>
 
         <div
-          class="relative rounded-md bg-white border-[#e5e5e5] border-solid border-[2px] box-border flex flex-col items-start justify-start py-[0.062rem] gap-[0.625rem] text-left text-[0.875rem] text-[#171717] font-poppins"
-        >
-          <div
-            class="w-[65.5rem] relative bg-[#fafafa] border-[#e5e5e5] border-solid border-b-[1px] box-border h-[3.563rem] text-[0.75rem] text-[#737373]"
-          >
-            <div class="flex w-full items-center h-full">
-              <div
-                data-key="sl"
-                class="sortable-header hover:cursor-pointer w-[6rem] p-3 text-[#737373] font-bold text-sm flex gap-1"
-              >
-                Sl No.
-                <div class="flex flex-col leading-none mt-1">
-                  <i
-                    id="sort-sl-asc"
-                    class="sort-icon fa-solid fa-sort-up -mb-3.5"
-                  ></i>
-                  <i
-                    id="sort-sl-desc"
-                    class="sort-icon fa-solid fa-sort-down -mb-3.5"
-                  ></i>
-                </div>
-              </div>
-              <div
-                data-key="title"
-                class="sortable-header hover:cursor-pointer w-[10rem] p-3 text-[#737373] font-bold text-sm flex gap-1"
-              >
-                Event
-                <div class="flex flex-col leading-none mt-1">
-                  <i
-                    id="sort-title-asc"
-                    class="sort-icon fa-solid fa-sort-up -mb-3.5"
-                  ></i>
-                  <i
-                    id="sort-title-desc"
-                    class="sort-icon fa-solid fa-sort-down -mb-3.5"
-                  ></i>
-                </div>
-              </div>
-              <div class="w-[19rem] p-3 text-[#737373] font-bold text-sm">
-                Description
-              </div>
-              <div
-                data-key="duration"
-                class="sortable-header hover:cursor-pointer w-[8rem] p-3 text-[#737373] font-bold text-sm flex gap-1"
-              >
-                Duration
-                <div class="flex flex-col leading-none mt-1">
-                  <i
-                    id="sort-duration-asc"
-                    class="sort-icon fa-solid fa-sort-up -mb-3.5"
-                  ></i>
-                  <i
-                    id="sort-duration-desc"
-                    class="sort-icon fa-solid fa-sort-down -mb-3.5"
-                  ></i>
-                </div>
-              </div>
-              <div class="w-[8rem] p-3 text-[#737373] font-bold text-sm">
-                Category
-              </div>
-              <div
-                data-key="admin"
-                class="sortable-header hover:cursor-pointer w-[8rem] p-3 text-[#737373] font-bold text-sm flex gap-1"
-              >
-                Created By
-              </div>
-              <div class="w-[8rem] p-3 text-[#737373] font-bold text-sm">
-                Status
-              </div>
-              <div class="w-[12rem] p-3 text-[#737373] font-bold text-sm">
-                Action
-              </div>
-            </div>
-          </div>
-          <div id="event-table-body" class="w-full flex flex-col">
-            <div
-              class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-            <div
-              class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse"
-            >
-              <div class="w-[7rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[15rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[18rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[10rem] p-3">
-                <div class="h-10 bg-gray-200 rounded"></div>
-              </div>
-              <div class="w-[12rem] p-3 flex gap-2">
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-                <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="pagination-controls" class="flex gap-4 mt-4">
-          <button
-            id="firstPage"
-            class="hover:cursor-pointer bg-gray-200 px-4 py-1 rounded text-sm transition"
-          >
-            <i class="fa-solid fa-angles-left"></i>
-          </button>
-          <button
-            id="prevPage"
-            class="bg-gray-200 px-4 py-1 rounded text-sm transition"
-          >
-            <i class="fa-solid fa-angle-left"></i>
-          </button>
-          <span
-            id="currentPage"
-            class="text-sm font-medium flex items-center"
-          ></span>
-          <button
-            id="nextPage"
-            class="bg-gray-200 px-4 py-1 rounded text-sm transition"
-          >
-            <i class="fa-solid fa-angle-right"></i>
-          </button>
-          <button
-            id="lastPage"
-            class="hover:cursor-pointer bg-gray-200 px-4 py-1 rounded text-sm transition"
-          >
-            <i class="fa-solid fa-angles-right"></i>
-          </button>
+          class="w-[16.313rem] rounded-[10px] bg-white border border-[#090317] border-solid box-border h-[36px] flex flex-row items-center justify-start py-[2px] px-[0.69rem] gap-[0.687rem] text-left text-dimgray font-mulish shadow-md">
+          <i class="fa-solid fa-magnifying-glass text-gray-500"></i>
+          <input id="search-input" type="text" placeholder="Search Event"
+            class="flex-1 h-full outline-none border-none text-gray-700 placeholder-gray-500" />
         </div>
       </div>
 
-      <!--choice prompt for cancel/delete event-->
       <div
-        id="eventActionModal"
-        class="hidden fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center"
-      >
+        class="relative rounded-md bg-white border-[#e5e5e5] border-solid border-[2px] box-border flex flex-col items-start justify-start py-[0.062rem] gap-[0.625rem] text-left text-[0.875rem] text-[#171717] font-poppins">
         <div
-          class="bg-white p-6 rounded-lg shadow-lg text-center w-80 border border-purple-950"
-        >
-          <div class="flex justify-between">
-            <p class="mb-4 font-medium">
-              Do you want to Cancel or Delete this event?
-            </p>
-            <i class="fa-solid fa-xmark closeActionModal"></i>
+          class="w-[65.5rem] relative bg-[#fafafa] border-[#e5e5e5] border-solid border-b-[1px] box-border h-[3.563rem] text-[0.75rem] text-[#737373]">
+          <div class="flex w-full items-center h-full">
+            <div data-key="sl"
+              class="sortable-header hover:cursor-pointer w-[6rem] p-3 text-[#737373] font-bold text-sm flex gap-1">
+              Sl No.
+              <div class="flex flex-col leading-none mt-1">
+                <i id="sort-sl-asc" class="sort-icon fa-solid fa-sort-up -mb-3.5"></i>
+                <i id="sort-sl-desc" class="sort-icon fa-solid fa-sort-down -mb-3.5"></i>
+              </div>
+            </div>
+            <div data-key="title"
+              class="sortable-header hover:cursor-pointer w-[10rem] p-3 text-[#737373] font-bold text-sm flex gap-1">
+              Event
+              <div class="flex flex-col leading-none mt-1">
+                <i id="sort-title-asc" class="sort-icon fa-solid fa-sort-up -mb-3.5"></i>
+                <i id="sort-title-desc" class="sort-icon fa-solid fa-sort-down -mb-3.5"></i>
+              </div>
+            </div>
+            <div class="w-[19rem] p-3 text-[#737373] font-bold text-sm">
+              Description
+            </div>
+            <div data-key="duration"
+              class="sortable-header hover:cursor-pointer w-[8rem] p-3 text-[#737373] font-bold text-sm flex gap-1">
+              Duration
+              <div class="flex flex-col leading-none mt-1">
+                <i id="sort-duration-asc" class="sort-icon fa-solid fa-sort-up -mb-3.5"></i>
+                <i id="sort-duration-desc" class="sort-icon fa-solid fa-sort-down -mb-3.5"></i>
+              </div>
+            </div>
+            <div class="w-[8rem] p-3 text-[#737373] font-bold text-sm">
+              Category
+            </div>
+            <div data-key="admin"
+              class="sortable-header hover:cursor-pointer w-[8rem] p-3 text-[#737373] font-bold text-sm flex gap-1">
+              Created By
+            </div>
+            <div class="w-[8rem] p-3 text-[#737373] font-bold text-sm">
+              Status
+            </div>
+            <div class="w-[12rem] p-3 text-[#737373] font-bold text-sm">
+              Action
+            </div>
           </div>
-          <div class="flex justify-center gap-4">
-            <button
-              id="cancelChoiceBtn"
-              class="bg-yellow-500 px-4 py-2 text-white rounded font-semibold"
-            >
-              Cancel
-            </button>
-            <button
-              id="deleteChoiceBtn"
-              class="bg-red-600 px-4 py-2 text-white rounded font-semibold"
-            >
-              Delete
-            </button>
+        </div>
+        <div id="event-table-body" class="w-full flex flex-col">
+          <div class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse">
+            <div class="w-[7rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[15rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[18rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[12rem] p-3 flex gap-2">
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse">
+            <div class="w-[7rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[15rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[18rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[12rem] p-3 flex gap-2">
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse">
+            <div class="w-[7rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[15rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[18rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[12rem] p-3 flex gap-2">
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse">
+            <div class="w-[7rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[15rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[18rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[12rem] p-3 flex gap-2">
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+            </div>
+          </div>
+          <div class="flex items-center w-[65.5rem] border-t border-gray-200 bg-white animate-pulse">
+            <div class="w-[7rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[15rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[18rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[10rem] p-3">
+              <div class="h-10 bg-gray-200 rounded"></div>
+            </div>
+            <div class="w-[12rem] p-3 flex gap-2">
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+              <div class="w-16 h-[1.625rem] bg-gray-200 rounded"></div>
+            </div>
           </div>
         </div>
       </div>
-    </main>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <div id="pagination-controls" class="flex gap-4 mt-4">
+        <button id="firstPage" class="hover:cursor-pointer bg-gray-200 px-4 py-1 rounded text-sm transition">
+          <i class="fa-solid fa-angles-left"></i>
+        </button>
+        <button id="prevPage" class="bg-gray-200 px-4 py-1 rounded text-sm transition">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
+        <span id="currentPage" class="text-sm font-medium flex items-center"></span>
+        <button id="nextPage" class="bg-gray-200 px-4 py-1 rounded text-sm transition">
+          <i class="fa-solid fa-angle-right"></i>
+        </button>
+        <button id="lastPage" class="hover:cursor-pointer bg-gray-200 px-4 py-1 rounded text-sm transition">
+          <i class="fa-solid fa-angles-right"></i>
+        </button>
+      </div>
+    </div>
 
-    <script
-      type="module"
-      src="../../dist/admin/manage-event/manageEvent.js"
-    ></script>
-  </body>
+    <!--choice prompt for cancel/delete event-->
+    <div id="eventActionModal"
+      class="hidden fixed inset-0 bg-opacity-40 backdrop-blur-sm flex items-center justify-center">
+      <div class="bg-white p-6 rounded-lg shadow-lg text-center w-80 border border-purple-950">
+        <div class="flex justify-between">
+          <p class="mb-4 font-medium">
+            Do you want to Cancel or Delete this event?
+          </p>
+          <i class="fa-solid fa-xmark closeActionModal"></i>
+        </div>
+        <div class="flex justify-center gap-4">
+          <button id="cancelChoiceBtn" class="bg-yellow-500 px-4 py-2 text-white rounded font-semibold">
+            Cancel
+          </button>
+          <button id="deleteChoiceBtn" class="bg-red-600 px-4 py-2 text-white rounded font-semibold">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script type="module" src="../../dist/admin/manage-event/manageEvent.js"></script>
+</body>
+
 </html>

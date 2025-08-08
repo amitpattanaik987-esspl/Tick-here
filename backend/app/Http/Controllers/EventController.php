@@ -206,6 +206,14 @@ class EventController extends Controller
             foreach ($data['venues'] as $venue) {
                 $date = Carbon::parse($venue['start_datetime'])->toDateString();
 
+                if ($date <= now()->toDateString()) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Event date must be in the future.',
+                    ], 422);
+                }
+
                 $isBooked = EventVenue::where('venue_id', $venue['venue_id'])
                     ->whereDate('start_datetime', $date)
                     ->exists();
