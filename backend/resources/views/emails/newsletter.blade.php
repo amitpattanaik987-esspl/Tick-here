@@ -76,7 +76,7 @@
             ->filter(function($ev) {
             return $ev->location;
             })
-            ->pluck('location.name')
+            ->pluck('location.city')
             ->unique()
             ->values()
             ->implode(', ');
@@ -84,7 +84,7 @@
 
             <p><strong>Locations:</strong> {{ $locationNames ?: 'N/A' }}</p>
 
-            <a href="http://127.0.0.1:8080/events/details/?event={{ $event->id }}" class="cta-button">View Event</a>
+            <a href="http://127.0.0.1:8080/events/details/?event={{ $event->id }}" class="cta-button" style="color: white;">View Event</a>
         </div>
         <div class="footer">
             You're receiving this email because you subscribed to our newsletter.<br>

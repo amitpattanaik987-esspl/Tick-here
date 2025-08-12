@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendNewEventNewsletter implements ShouldQueue
@@ -40,7 +41,7 @@ class SendNewEventNewsletter implements ShouldQueue
         $users = User::whereIn('id', $this->userIds)->get();
 
         foreach ($users as $user) {
-            Mail::to($user->email)->queue(new SubscriptionMail($this->event, $user));
+            Mail::to($user->email)->send(new SubscriptionMail($this->event, $user));
         }
     }
 }

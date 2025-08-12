@@ -48,9 +48,9 @@ function fetchLocations(url: string) {
         tbody.append(`
         <div data-location-id="${location.id}" class="flex items-center w-[56.5rem] border-t border-gray-200 bg-white location-row">
           <div data-id="${location.id}" class="w-[7rem] p-3 justify-center">${location.id}</div>
-          <div class="country w-[15rem] p-3 justify-center">${location.country}</div>
+          <div class="city w-[15rem] p-3 justify-center">${location.city}</div>
           <div class="state w-[18rem] p-3 justify-center">${location.state}</div>
-          <div class="city w-[10rem] p-3 justify-center">${location.city}</div>
+          <div class="country w-[11rem] p-3 justify-center">${location.country}</div>
           <div class="w-[12rem] p-3 flex gap-2 action-buttons justify-center">
             <button class="editLocationBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn hover:cursor-pointer">Edit</button>
             <button class="deleteLocationBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn hover:cursor-pointer">Delete</button>

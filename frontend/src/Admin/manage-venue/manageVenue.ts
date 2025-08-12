@@ -190,6 +190,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const token = localStorage.getItem("admin_token");
       if (!token) return;
 
+      const costValue = $("#venue-cost").val() as number;
+      if (costValue < 100) {
+        $("#costError").text("Cost must be at least 100").removeClass("hidden");
+        $("#venue-cost").addClass("border-red-500");
+        $(".cost-symbol").removeClass("top-1/2").addClass("top-1/3");
+        hideLoader();
+        return;
+      }
+
       const venueData = {
         venue_name: $("#venue-name").val(),
         location_id: $("#venue-location").val(),
@@ -279,6 +288,9 @@ document.addEventListener("DOMContentLoaded", () => {
     $("#venue-location").val("").data("location-id", "");
     $("#venue-cost").val("");
     $("#venue-seats").val("");
+    $("#costError").text("").addClass("hidden");
+    $("#venue-cost").removeClass("border-red-500");
+    $(".cost-symbol").removeClass("top-1/3").addClass("top-1/2");
   }
 
   // Add New Venue button clicked

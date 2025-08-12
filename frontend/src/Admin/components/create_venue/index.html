@@ -1,47 +1,79 @@
 <main class="px-[278px] py-6">
   <section
-    class="w-full max-w-[850px] bg-white border border-gray-300 rounded-lg p-8 grid grid-cols-2 gap-x-6 gap-y-4 shadow">
+    class="w-full max-w-[850px] bg-white border border-gray-300 rounded-lg p-8 grid grid-cols-2 gap-x-6 gap-y-4 shadow"
+  >
     <!-- Venue Name -->
     <div class="col-span-1">
-      <label class="block text-sm font-medium mb-1" for="venue-name">Venue Name</label>
-      <input type="text" id="venue-name" placeholder="Enter Venue Name"
-        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500" />
+      <label class="block text-sm font-medium mb-1" for="venue-name"
+        >Venue Name</label
+      >
+      <input
+        type="text"
+        id="venue-name"
+        placeholder="Enter Venue Name"
+        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+      />
     </div>
 
     <!-- Location -->
     <div class="col-span-1">
-      <label class="block text-sm font-medium mb-1" for="venue-location">Location</label>
-      <select id="venue-location"
-        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+      <label class="block text-sm font-medium mb-1" for="venue-location"
+        >Location</label
+      >
+      <select
+        id="venue-location"
+        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+      >
         <option value="">Select Location</option>
       </select>
     </div>
 
     <!-- Cost -->
     <div class="col-span-1">
-      <label class="block text-sm font-medium mb-1" for="venue-cost">Cost</label>
+      <label class="block text-sm font-medium mb-1" for="venue-cost"
+        >Cost</label
+      >
       <div class="relative">
-        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₹</span>
-        <input type="number" id="venue-cost" min="0" placeholder="Enter Cost"
-          class="w-full pl-8 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500" />
+        <span
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 cost-symbol"
+          >₹</span
+        >
+        <input
+          type="number"
+          id="venue-cost"
+          placeholder="Enter Cost"
+          class="w-full pl-8 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+        />
+        <p id="costError" class="w-full text-red-500 text-sm mt-1 hidden"></p>
       </div>
     </div>
 
     <!-- Number of Seats -->
     <div class="col-span-1">
-      <label class="block text-sm font-medium mb-1" for="venue-seats">Number of Seats</label>
-      <input type="number" id="venue-seats" min="1" placeholder="Enter Number of Seats"
-        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500" />
+      <label class="block text-sm font-medium mb-1" for="venue-seats"
+        >Number of Seats</label
+      >
+      <input
+        type="number"
+        id="venue-seats"
+        min="1"
+        placeholder="Enter Number of Seats"
+        class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500"
+      />
     </div>
 
     <!-- Buttons -->
     <div class="col-span-2 flex justify-center gap-14 mt-6">
-      <button id="cancelVenueCreate"
-        class="border border-[#191970] text-gray-700 px-6 py-2 rounded-md hover:cursor-pointer">
+      <button
+        id="cancelVenueCreate"
+        class="border border-[#191970] text-gray-700 px-6 py-2 rounded-md hover:cursor-pointer"
+      >
         Cancel
       </button>
-      <button id="createVenueBtn"
-        class="bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white px-6 py-2 rounded-md hover:cursor-pointer">
+      <button
+        id="createVenueBtn"
+        class="bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white px-6 py-2 rounded-md hover:cursor-pointer"
+      >
         Create
       </button>
     </div>

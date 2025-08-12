@@ -3,12 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
-use App\Models\Event;
 use App\Models\EventCategory;
-use App\Models\EventVenue;
 use App\Models\Ticket;
 use Carbon\Carbon;
-use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +23,23 @@ class AdminController extends Controller
                 'name' => 'required | min:8',
                 'phone' => ['digits:10', Rule::unique('admins', 'phone')],
                 'email' => ['required', 'email', Rule::unique('admins', 'email')],
-                'password' => 'required|min:8'
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    function ($attribute, $value, $fail) {
+                        $hasUpper = preg_match('/[A-Z]/', $value);
+                        $hasLower = preg_match('/[a-z]/', $value);
+                        $hasNumber = preg_match('/[0-9]/', $value);
+                        $hasSymbol = preg_match('/[\W_]/', $value);
+
+                        $score = $hasUpper + $hasLower + $hasNumber + $hasSymbol;
+
+                        if ($score < 3) {
+                            $fail('The ' . $attribute . ' must contain any three: uppercase letter, lowercase letter, number, and special character.');
+                        }
+                    }
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -200,7 +213,7 @@ class AdminController extends Controller
                 'data' => $result
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Crash in getEventStats', [
+            Log::error('Crash in getEventStats', [
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),

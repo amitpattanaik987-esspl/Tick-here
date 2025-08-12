@@ -32,7 +32,8 @@ function fetchCategories() {
           option.textContent = category.name;
           option.dataset.id = category.id.toString();
 
-          option.addEventListener("click", () => {
+          option.addEventListener("click", (e) => {
+            e.stopPropagation();
             // Set hidden input value
             const hiddenInput = document.getElementById(
               "category"
@@ -93,18 +94,37 @@ async function fetchVenues(onFinish?: () => void) {
     }
   }
 
+  //Sort alphabetically by venue_name after collecting all data
+  collected.sort((a, b) => a.venue_name.localeCompare(b.venue_name));
+
   allVenues = collected;
   renderVenueOptions(allVenues);
 
-  if (onFinish) onFinish(); // call callback if passed
+  if (onFinish) onFinish();
   hideLoader();
 }
+
+let isOptionsOpen = false;
+
+const input = document.getElementById("venueSearchInput") as HTMLInputElement;
+const options = document.getElementById("venueOptions")!;
+
+// Show/hide on input click
+input.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (!isOptionsOpen) {
+    options.classList.remove("hidden");
+    isOptionsOpen = true;
+  } else {
+    options.classList.add("hidden");
+    isOptionsOpen = false;
+  }
+});
 
 function renderVenueOptions(
   venues: { id: number; venue_name: string; location: { city: string } }[]
 ) {
-  const optionsContainer = document.getElementById("venueOptions")!;
-  optionsContainer.innerHTML = "";
+  options.innerHTML = "";
 
   venues.forEach((venue) => {
     const option = document.createElement("div");
@@ -112,39 +132,32 @@ function renderVenueOptions(
       "flex justify-between p-2 hover:bg-gradient-to-r hover:from-[#46006e] to-[#0a0417] hover:text-white cursor-pointer";
     option.dataset.id = venue.id.toString();
 
-    // Create first div (e.g., venue name)
     const venueDiv = document.createElement("div");
     venueDiv.textContent = venue.venue_name;
 
-    // Create second div (e.g., location name)
     const cityDiv = document.createElement("div");
     cityDiv.textContent = venue.location.city;
     cityDiv.className = "text-sm text-gray-500";
 
-    // Append both divs to option
     option.appendChild(venueDiv);
     option.appendChild(cityDiv);
 
-    option.addEventListener("click", () => {
-      const input = document.getElementById(
-        "venueSearchInput"
-      ) as HTMLInputElement;
+    // When clicking an option → fill input + close container
+    option.addEventListener("click", (e) => {
+      e.stopPropagation();
       const hiddenInput = document.getElementById("venue") as HTMLInputElement;
       input.value = venue.venue_name;
       hiddenInput.value = venue.id.toString();
 
-      optionsContainer.classList.add("hidden");
+      options.classList.add("hidden");
+      isOptionsOpen = false;
     });
 
-    optionsContainer.appendChild(option);
+    options.appendChild(option);
   });
-
-  optionsContainer.classList.remove("hidden");
 }
 
 function setupVenueSearch() {
-  const input = document.getElementById("venueSearchInput") as HTMLInputElement;
-
   input.addEventListener("input", () => {
     const query = input.value.toLowerCase();
     const filtered = allVenues.filter(
@@ -161,10 +174,10 @@ function setupVenueSearch() {
 
   document.addEventListener("click", (e) => {
     const dropdown = document.getElementById("customVenueDropdown")!;
-    const options = document.getElementById("venueOptions")!;
     if (!dropdown.contains(e.target as Node)) {
       options.classList.add("hidden");
     }
+    isOptionsOpen = false;
   });
 }
 
@@ -536,7 +549,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-
   cancelBtn.addEventListener("click", () => {
     (document.getElementById("title") as HTMLInputElement).value = "";
     (document.getElementById("description") as HTMLTextAreaElement).value = "";
@@ -581,7 +593,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       return false;
     }
 
-    if (dateInput.value < new Date().toISOString().split("T")[0]) {
+    if (
+      dateInput.value &&
+      dateInput.value < new Date().toISOString().split("T")[0]
+    ) {
       alert("Date cannot be in the past.");
       return false;
     }
@@ -608,8 +623,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function clearVenueForm() {
-    const venueInput = document.getElementById(
+    const venueHidden = document.getElementById(
       "venue"
+    ) as HTMLInputElement | null;
+    const venueVisible = document.getElementById(
+      "venueSearchInput"
     ) as HTMLInputElement | null;
     const dateInput = document.getElementById(
       "on-date"
@@ -618,7 +636,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       "time"
     ) as HTMLInputElement | null;
 
-    if (venueInput) venueInput.value = "Select";
+    if (venueHidden) venueHidden.value = "";
+    if (venueVisible) {
+      venueVisible.value = "";
+      venueVisible.placeholder = "Search for a venue";
+    }
     if (dateInput) dateInput.value = "";
     if (timeInput) timeInput.value = "09:00";
   }
