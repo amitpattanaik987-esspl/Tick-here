@@ -32,7 +32,8 @@ class LocationController extends Controller
     // get all the locations (user)
     public function show()
     {
-        $location = Location::get();
+        // $location = Location::->get();
+        $location = Location::orderBy('city', 'asc')->get();
         return response()->json([
             'success' => true,
             'message' => "location fetched",
