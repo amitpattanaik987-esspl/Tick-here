@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Request;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 
 class UserController extends Controller
@@ -19,7 +18,7 @@ class UserController extends Controller
         try {
             $data = $request->validate([
                 'email' => 'required|email',
-                'password' => 'required|min:8'
+                'password' => 'required|min:8|'
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -60,7 +59,23 @@ class UserController extends Controller
             $data = request()->validate([
                 'name' => 'required',
                 'email' => ['required', 'email', Rule::unique('users', 'email')],
-                'password' => 'required|min:8'
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    function ($attribute, $value, $fail) {
+                        $hasUpper = preg_match('/[A-Z]/', $value);
+                        $hasLower = preg_match('/[a-z]/', $value);
+                        $hasNumber = preg_match('/[0-9]/', $value);
+                        $hasSymbol = preg_match('/[\W_]/', $value);
+
+                        $score = $hasUpper + $hasLower + $hasNumber + $hasSymbol;
+
+                        if ($score < 3) {
+                            $fail('The ' . $attribute . ' must contain any three: uppercase letter, lowercase letter, number, and special character.');
+                        }
+                    }
+                ],
             ]);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
@@ -176,7 +191,23 @@ class UserController extends Controller
         $request->validate([
             'username' => 'required|string',
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:6',
+            'new_password' => [
+                'required',
+                'string',
+                'min:8',
+                function ($attribute, $value, $fail) {
+                    $hasUpper = preg_match('/[A-Z]/', $value);
+                    $hasLower = preg_match('/[a-z]/', $value);
+                    $hasNumber = preg_match('/[0-9]/', $value);
+                    $hasSymbol = preg_match('/[\W_]/', $value);
+
+                    $score = $hasUpper + $hasLower + $hasNumber + $hasSymbol;
+
+                    if ($score < 3) {
+                        $fail('The ' . $attribute . ' must contain any three: uppercase letter, lowercase letter, number, and special character.');
+                    }
+                }
+            ],
             'confirm_password' => 'required|string|same:new_password',
         ]);
 

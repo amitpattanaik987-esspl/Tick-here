@@ -125,9 +125,9 @@ function renderEventRow(event: Event, index: number, status: string): string {
           status === "Completed"
             ? `<span class="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">Details</span>`
             : status === "Cancelled"
-            ? `<button data-created-by="${event.admin_id}" class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn hover:cursor-pointer" > Delete </button>`
+            ? `<button data-created-by="${event.admin_id}" class= "deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] hover:cursor-pointer" > Delete </button>`
             : `<button data-created-by="${event.admin_id}" class="editEventBtn bg-gradient-to-r from-[#46006e] to-[#0a0417] text-white h-[1.625rem] w-16  px-3 py-1 flex justify-center items-center rounded edit-btn hover:cursor-pointer">Edit</button>
-        <button data-created-by="${event.admin_id}" class="deleteEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] delete-btn">Delete</button>`
+        <button data-created-by="${event.admin_id}" class="cancelEventBtn border border-[#191970] text-xs text-[#404040] flex items-center px-3 py-1 rounded h-[1.625rem] hover:cursor-pointer">Cancel</button>`
         }
       </div>
     </div>`;
@@ -491,6 +491,64 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  $(document).on("click", ".cancelEventBtn", function (e) {
+    e.stopPropagation();
+
+    const token = localStorage.getItem("admin_token");
+    if (!token) {
+      alert("You are not authenticated.");
+      return;
+    }
+
+    const eventCreatedBy = $(this).data("created-by");
+
+    const loggedInAdmin = localStorage.getItem("admin_info");
+
+    if (eventCreatedBy.toString() !== loggedInAdmin) {
+      alert("You are not authorized to cancel this event.");
+      return;
+    }
+
+    const eventRow = $(this).closest(".event-row");
+    const eventId = Number(eventRow.data("event-id"));
+
+    // open choice modal
+    $("#eventActionModal").removeClass("hidden");
+
+    $(".delete-confirm").text("Are you sure want to cancel this event?");
+
+    $(".closeActionModal").on("click", function () {
+      $("#eventActionModal").addClass("hidden");
+    });
+
+    $("#yesChoiceBtn")
+      .off("click")
+      .on("click", function () {
+        showLoader();
+        // CANCEL OPTION: unlink venues
+        $.ajax({
+          url: `http://127.0.0.1:8000/api/admin/events/${eventId}/cancel`,
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          success: function (res) {
+            alert("Event has been cancelled.");
+            fetchEvents(currentPageUrl);
+            $("#eventActionModal").addClass("hidden");
+            hideLoader();
+          },
+          error: function (err) {
+            console.error("Cancellation error:", err);
+            alert("Failed to cancel event.");
+            $("#eventActionModal").addClass("hidden");
+            hideLoader();
+          },
+        });
+      });
+  });
+
   $(document).on("click", ".deleteEventBtn", function (e) {
     e.stopPropagation();
 
@@ -511,44 +569,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const eventRow = $(this).closest(".event-row");
     const eventId = Number(eventRow.data("event-id"));
-    const status = String(eventRow.data("status"));
 
-    if (status === "Completed") {
-      alert("Completed events cannot be deleted.");
-      return;
-    }
+    $("#eventActionModal").removeClass("hidden");
 
-    if (status !== "Cancelled") {
-      // open choice modal
-      $("#eventActionModal").removeClass("hidden");
+    $(".delete-confirm").text("Are you sure want to delete this event?");
 
-      $(".closeActionModal").on("click", function () {
-        $("#eventActionModal").addClass("hidden");
-      });
+    $(".closeActionModal").on("click", function () {
+      $("#eventActionModal").addClass("hidden");
+    });
 
-      $("#cancelChoiceBtn").on("click", function () {
-        // CANCEL OPTION: unlink venues
-        $.ajax({
-          url: `http://127.0.0.1:8000/api/admin/events/${eventId}/cancel`,
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-          success: function (res) {
-            alert("Event has been cancelled.");
-            fetchEvents(currentPageUrl);
-            $("#eventActionModal").addClass("hidden");
-          },
-          error: function (err) {
-            console.error("Cancellation error:", err);
-            alert("Failed to cancel event.");
-          },
-        });
-      });
-
-      $("#deleteChoiceBtn").on("click", function () {
-        // DELETE OPTION
+    // DELETE OPTION
+    $("#yesChoiceBtn")
+      .off("click")
+      .on("click", function () {
+        showLoader();
         $.ajax({
           url: `http://127.0.0.1:8000/api/admin/events/${eventId}`,
           method: "DELETE",
@@ -560,33 +594,15 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Event deleted successfully.");
             fetchEvents(currentPageUrl);
             $("#eventActionModal").addClass("hidden");
+            hideLoader();
           },
           error: function (xhr) {
             alert("Failed to delete event.");
             console.error(xhr.responseText);
+            $("#eventActionModal").addClass("hidden");
+            hideLoader();
           },
         });
       });
-    } else {
-      const confirmed = confirm("Are you sure you want to delete this event?");
-      if (!confirmed) return;
-      // DELETE OPTION
-      $.ajax({
-        url: `http://127.0.0.1:8000/api/admin/events/${eventId}`,
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        success: function (res) {
-          alert("Event deleted successfully.");
-          fetchEvents(currentPageUrl);
-        },
-        error: function (xhr) {
-          alert("Failed to delete event.");
-          console.error(xhr.responseText);
-        },
-      });
-    }
   });
 });

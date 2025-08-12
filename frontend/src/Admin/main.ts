@@ -53,7 +53,7 @@ function renderCategoryCards(stats: any) {
       item.growth_percentage
     )}% ${trendSymbol}</span>
         </div>
-        <p class="text-xs text-gray-500">Event Bookings</p>
+        <p class="text-xs text-gray-500">Event Hosted</p>
       </div>
     `);
 

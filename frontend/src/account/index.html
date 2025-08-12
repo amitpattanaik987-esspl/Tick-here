@@ -1,95 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="../assets/styles/output.css" rel="stylesheet" />
     <title>Account</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        .poppins-regular {
-            font-family: "Poppins", sans-serif;
-            font-weight: 400;
-        }
+      .poppins-regular {
+        font-family: "Poppins", sans-serif;
+        font-weight: 400;
+      }
     </style>
-</head>
+  </head>
 
-<body class="bg-[#F8F8FF]">
+  <body class="bg-[#F8F8FF]">
     <div id="navbar"></div>
     <div class="w-[41%] mx-auto py-[20px] px-[10px] bg-white">
-        <div>
-            <img src="../assets/images/Rectangle 6691.png" alt="">
-            <img src="../assets/images/userAvatar.png" alt=""
-                class="w-[160px] h-[160px] absolute top-[100px] left-[443px] rounded-full border-4 border-white ">
-            <div
-                class="w-[40px] h-[40px] absolute top-[205px] left-[561px] bg-[#D9D9D9] rounded-full flex justify-center items-center">
-                <img src="../assets/images/camera_img.png" alt="">
-            </div>
-            <div class="absolute top-[107px] left-[677px] flex flex-col gap-[10px] max-w-[300px]">
-                <p class="text-white flex-wrap" id="name_inner">User</p>
-                <p class="text-white flex-wrap" id="email_inner">Email</p>
-            </div>
-            <button id="editSaveBtn"
-                class="bg-gradient-to-r from-[#0A0418] to-[#45006E] absolute top-[225px] left-[790px] text-white py-[15px] px-[34px] rounded-[10px] cursor-pointer">
-                Edit
-            </button>
-
+      <div>
+        <img
+          src="../assets/images/Rectangle 6691.png"
+          alt=""
+          class="h-42 w-full"
+        />
+        <img
+          src="https://i.pravatar.cc/100"
+          class="w-28 h-28 rounded-full border-4 border-gray-200 top-[104px] left-[443px] absolute"
+          alt="Admin Photo"
+        />
+        <div
+          class="w-8 h-8 absolute top-[178px] left-[523px] bg-[#D9D9D9] rounded-full flex justify-center items-center"
+        >
+          <i class="fas fa-camera fa-lg"></i>
         </div>
-        <div class="py-[10px] flex flex-col gap-[10px]">
-            <div class="flex flex-col gap-[10px]">
-                <label for="name">Full Name</label>
-                <input id="name" type="text" readonly
-                    class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none ">
-            </div>
-            <div class="flex flex-col gap-[10px]">
-                <label for="email">Email</label>
-                <input id="email" type="email" readonly
-                    class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none">
-            </div>
-            <div class="flex flex-col gap-[10px]">
-                <label for="phone">Phone Number</label>
-                <input id="phone" type="text" readonly
-                    class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none">
-            </div>
-            <div class="flex flex-col gap-[10px]">
-                <label for="username">Username</label>
-                <input id="username" type="text" readonly
-                    class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none">
-            </div>
-            <a href="" class="underline text-blue-500">Change Password</a>
+        <div
+          class="absolute top-[100px] left-[677px] flex flex-col gap-[10px] max-w-[300px]"
+        >
+          <p class="text-white flex-wrap" id="name_inner">User</p>
+          <p class="text-white flex-wrap" id="email_inner">Email</p>
         </div>
+        <div class="flex">
+          <button
+            id="cancel"
+            class="bg-gradient-to-r from-[#0A0418] to-[#45006E] absolute top-[198px] left-[722px] text-white py-[11px] px-[30px] rounded-[10px] cursor-pointer hidden"
+          >
+            Cancel
+          </button>
+          <button
+            id="editSaveBtn"
+            class="bg-gradient-to-r from-[#0A0418] to-[#45006E] absolute top-[198px] left-[847px] text-white py-[11px] px-[30px] rounded-[10px] cursor-pointer"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
+      <div class="py-[10px] flex flex-col gap-[10px]">
+        <div class="flex flex-col gap-[10px]">
+          <label for="name">Full Name</label>
+          <input
+            id="name"
+            type="text"
+            readonly
+            class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none"
+          />
+        </div>
+        <div class="flex flex-col gap-[10px]">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            readonly
+            class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none"
+          />
+        </div>
+        <div class="flex flex-col gap-[10px]">
+          <label for="phone">Phone Number</label>
+          <input
+            id="phone"
+            type="text"
+            readonly
+            class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none"
+          />
+        </div>
+        <div class="flex flex-col gap-[10px]">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            readonly
+            class="bg-[#B0BAC366] py-[10px] px-[18px] rounded-[10px] outline-none"
+          />
+        </div>
+        <a href="" class="underline text-blue-500">Change Password</a>
+      </div>
     </div>
 
     <!-- Change Password Modal -->
-    <div id="passwordModal" class="fixed inset-0 hidden items-center justify-center z-40">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm z-40"></div>
+    <div
+      id="passwordModal"
+      class="fixed inset-0 hidden items-center justify-center z-40"
+    >
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm z-40"></div>
 
-        <!-- Modal Content -->
-        <div class="relative z-50 bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-lg">
-            <h2 class="text-lg font-semibold mb-4">Change Password</h2>
-            <form id="changePasswordForm" class="flex flex-col gap-4">
-                <input type="password" name="current_password" placeholder="Current Password" required
-                    class="border px-3 py-2 rounded-md" />
-                <input type="password" name="new_password" placeholder="New Password" required
-                    class="border px-3 py-2 rounded-md" />
-                <input type="password" name="confirm_password" placeholder="Confirm New Password" required
-                    class="border px-3 py-2 rounded-md" />
-                <div class="flex justify-end gap-2">
-                    <button type="button" id="cancelBtn" class="text-gray-500 cursor-pointer">Cancel</button>
-                    <button type="submit"
-                        class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer">Update</button>
-                </div>
-            </form>
-        </div>
+      <!-- Modal Content -->
+      <div
+        class="relative z-50 bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-lg"
+      >
+        <h2 class="text-lg font-semibold mb-4">Change Password</h2>
+        <form id="changePasswordForm" class="flex flex-col gap-4">
+          <input
+            type="password"
+            name="current_password"
+            placeholder="Current Password"
+            required
+            class="border px-3 py-2 rounded-md"
+          />
+          <input
+            type="password"
+            name="new_password"
+            placeholder="New Password"
+            required
+            class="border px-3 py-2 rounded-md"
+          />
+          <input
+            type="password"
+            name="confirm_password"
+            placeholder="Confirm New Password"
+            required
+            class="border px-3 py-2 rounded-md"
+          />
+          <div class="flex justify-end gap-2">
+            <button
+              type="button"
+              id="cancelBtn"
+              class="text-gray-500 cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+            >
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-
-
-</body>
-<script type="module" src="../dist/account/account.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
+  </body>
+  <script type="module" src="../dist/account/account.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </html>

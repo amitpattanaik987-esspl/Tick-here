@@ -1,4 +1,9 @@
 // Import your components (adjust paths as needed)
+import {
+  hideLoader,
+  initLoader,
+  showLoader,
+} from "../../components/loader/loader.js";
 import { loadNavbar } from "../components/admin_navbar/navbar.js";
 
 // Define TypeScript interfaces for expected API response types
@@ -12,6 +17,14 @@ interface AdminProfile {
 }
 
 let editMode = false;
+let profile: AdminProfile = {
+  id: 0,
+  name: "",
+  username: "",
+  fullName: "",
+  email: "",
+  phone: "",
+};
 
 async function loadActiveAdmins(currentAdminId: string | null) {
   const adminList = document.getElementById("adminList");
@@ -59,6 +72,7 @@ async function loadActiveAdmins(currentAdminId: string | null) {
 
 // Wait for the DOM to load
 document.addEventListener("DOMContentLoaded", async () => {
+  initLoader();
   // Load common UI components
   try {
     loadNavbar();
@@ -75,8 +89,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Get references to DOM elements
-  const nameEl = document.getElementById("adminName");
-  const usernameEl = document.getElementById("adminUsername");
+  const nameEl = document.getElementById("adminName") as HTMLInputElement;
+  const usernameEl = document.getElementById(
+    "adminUsername"
+  ) as HTMLInputElement;
   const fullNameInput = document.getElementById(
     "adminFullName"
   ) as HTMLInputElement;
@@ -102,7 +118,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const resJson = await profileResponse.json();
 
-    const profile: AdminProfile = resJson.admin;
+    profile = resJson.admin;
 
     localStorage.setItem("admin_info", profile.id.toString());
 
@@ -124,55 +140,84 @@ document.addEventListener("DOMContentLoaded", async () => {
   const editBtn = document.getElementById(
     "editProfileBtn"
   ) as HTMLButtonElement;
+  const close = document.getElementById("closeProfileBtn") as HTMLElement;
+  const personalDetails = document.getElementById(
+    "personalDetails"
+  ) as HTMLElement;
 
   let isEditing = false;
+
+  close.addEventListener("click", () => {
+    isEditing = false;
+    editBtn.textContent = "Edit Profile";
+    emailInput.classList.remove("text-gray-400", "cursor-not-allowed");
+    personalDetails.textContent = "Personal Details";
+    close.classList.add("hidden");
+
+    [fullNameInput, userNameInput, emailInput, phoneInput].forEach((input) => {
+      input.readOnly = true;
+      input.classList.remove("bg-gray-100");
+      input.classList.add("bg-white");
+    });
+
+    nameEl.textContent = profile.name;
+    usernameEl.textContent = profile.username;
+    fullNameInput.value = profile.name;
+    userNameInput.value = profile.username;
+    emailInput.value = profile.email;
+    phoneInput.value = profile.phone;
+  });
 
   editBtn.addEventListener("click", async () => {
     if (!isEditing) {
       // Switch to edit mode
       isEditing = true;
-      editBtn.textContent = "Save Profile";
-
-      [fullNameInput, userNameInput, emailInput, phoneInput].forEach(
-        (input) => {
-          input.readOnly = false;
-          input.classList.remove("bg-gray-100");
-          input.classList.add("bg-white");
-        }
-      );
-    } else {
-      // Switch to view mode and update
-      isEditing = false;
-      editBtn.textContent = "Edit Profile";
+      editBtn.textContent = "Save";
+      emailInput.classList.add("text-gray-400", "cursor-not-allowed");
+      personalDetails.textContent = "Edit Personal Details";
+      close.classList.remove("hidden");
 
       [fullNameInput, userNameInput, phoneInput].forEach((input) => {
         input.readOnly = false;
         input.classList.remove("bg-gray-100");
         input.classList.add("bg-white");
       });
+    } else {
+      // Switch to view mode and update
+      isEditing = false;
+      editBtn.textContent = "Edit Profile";
+      emailInput.classList.remove("text-gray-400", "cursor-not-allowed");
+      personalDetails.textContent = "Personal Details";
+      close.classList.add("hidden");
 
-      // Keep email readonly
-      emailInput.readOnly = true;
-      emailInput.classList.add("bg-gray-100", "text-gray-400", "cursor-not-allowed");
-      emailInput.classList.remove("bg-white");
+      [fullNameInput, userNameInput, emailInput, phoneInput].forEach(
+        (input) => {
+          input.readOnly = true;
+          input.classList.remove("bg-gray-100");
+          input.classList.add("bg-white");
+        }
+      );
 
       // Send update request
-
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/auth/admin/profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            full_name: fullNameInput.value.trim(),
-            username: userNameInput.value.trim(),
-            email: emailInput.value.trim(),
-            phone: phoneInput.value.trim(),
-          }),
-        });
+        showLoader();
+        const res = await fetch(
+          `http://127.0.0.1:8000/api/auth/admin/profile`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              full_name: fullNameInput.value.trim(),
+              username: userNameInput.value.trim(),
+              email: emailInput.value.trim(),
+              phone: phoneInput.value.trim(),
+            }),
+          }
+        );
 
         const data = await res.json();
 
@@ -180,14 +225,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           const firstField = Object.keys(data.errors)[0];
           const firstError = data.errors[firstField][0];
           throw new Error(firstError || "Update failed");
+          hideLoader();
+          return;
         }
 
         alert("Profile updated successfully.");
-      } catch (err) {
+        hideLoader();
+      } catch (err: any) {
         console.error("Update error:", err);
         alert(err.message || "Failed to update profile.");
+        return;
+        hideLoader();
       }
-
     }
   });
 
@@ -220,7 +269,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const titleEl = document.getElementById("addAdminModalTitle");
       if (titleEl) titleEl.textContent = "Add New Admin";
 
-      // Reset password field and username field visibility
+      // Reset password field, email field and username field visibility
+      document.getElementById("emailDiv")?.classList.remove("hidden");
       document.getElementById("passwordDiv")?.classList.remove("hidden");
       document.getElementById("usernameDiv")?.classList.add("hidden");
 
@@ -266,8 +316,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const token = localStorage.getItem("admin_token");
 
-      const payload: any = { name, username, email, phone };
+      const payload: any = { name, username, phone };
       if (!editingId && password) payload.password = password;
+      if (email) payload.email = email;
       console.log(payload);
 
       try {
@@ -376,6 +427,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("addAdminModal")?.classList.remove("hidden");
         document.getElementById("usernameDiv")?.classList.remove("hidden");
         document.getElementById("passwordDiv")?.classList.add("hidden");
+        document.getElementById("emailDiv")?.classList.add("hidden");
       }
     }
 

@@ -50,6 +50,4 @@ class SeatGenerator
         }
         return $alphabet;
     }
-
-
 }

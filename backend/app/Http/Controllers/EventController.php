@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendNewEventNewsletter;
 use App\Models\Event;
 use App\Models\EventVenue;
 use App\Models\Location;
-use App\Models\User;
-use App\Models\Venue;
+use App\Services\DispatchEmailJobService;
+use App\Services\SearchingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -16,7 +15,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 
 
 class EventController extends Controller
@@ -69,9 +67,9 @@ class EventController extends Controller
 
         if ($search) {
             if (in_array($sortKey, ['title', 'admin'])) {
-                $events = $this->binarySearch($events, strtolower($search), $sortBy);
+                $events = SearchingService::binarySearch($events, strtolower($search), $sortKey);
             } else {
-                $events = $this->linearSearch($events, strtolower($search));
+                $events = SearchingService::linearSearch($events, strtolower($search));
             }
         }
 
@@ -92,61 +90,6 @@ class EventController extends Controller
             'payload' => $paginated,
         ]);
     }
-
-    //linear search for events
-    private function linearSearch($collection, string $search)
-    {
-
-        Log::info("Linear search");
-
-        return $collection->filter(function ($event) use ($search) {
-            return Str::contains(strtolower($event->title), $search) ||
-                Str::contains(strtolower($event->id), $search) ||
-                Str::contains(strtolower($event->duration), $search) ||
-                Str::contains(strtolower($event->description), $search) ||
-                Str::contains(strtolower(optional($event->category)->name), $search) ||
-                Str::contains(strtolower(optional($event->admin)->name), $search);
-        });
-    }
-
-    //binary search for events
-    private function binarySearch($collection, string $search, string $key)
-    {
-        $items = $collection->sortBy($key)->values();
-        $low = 0;
-        $high = $items->count() - 1;
-        $results = collect();
-
-        while ($low <= $high) {
-            $mid = (int) (($low + $high) / 2);
-            $value = strtolower(data_get($items[$mid], $key, ''));
-
-            if (Str::contains($value, $search)) {
-                // Search left side
-                $left = $mid;
-                while ($left >= 0 && Str::contains(strtolower(data_get($items[$left], $key)), $search)) {
-                    $results->push($items[$left]);
-                    $left--;
-                }
-
-                // Search right side
-                $right = $mid + 1;
-                while ($right < $items->count() && Str::contains(strtolower(data_get($items[$right], $key)), $search)) {
-                    $results->push($items[$right]);
-                    $right++;
-                }
-
-                break;
-            } elseif ($value < $search) {
-                $low = $mid + 1;
-            } else {
-                $high = $mid - 1;
-            }
-        }
-
-        return $results->unique('id')->values();
-    }
-
 
     public function getEvent(Event $event)
     {
@@ -239,13 +182,7 @@ class EventController extends Controller
             DB::commit();
 
             // Dispatch newsletter after commit (safe)
-            User::where('is_subscribed', true)
-                ->select('id')
-                ->chunk(1, function ($users) use ($event) {
-                    $userIds = $users->pluck('id')->toArray();
-                    $event->load(['eventVenue.location']);
-                    SendNewEventNewsletter::dispatch($event, $userIds);
-                });
+            DispatchEmailJobService::push($event);
 
             return response()->json([
                 'success' => true,
