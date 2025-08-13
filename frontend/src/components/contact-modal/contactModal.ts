@@ -14,10 +14,14 @@ export function loadContactModal(): void {
       modalContainer.innerHTML = html;
 
       const modal = document.getElementById("contact-modal") as HTMLDivElement;
-      const closeModal = document.getElementById("close-modal") as HTMLButtonElement;
+      const closeModal = document.getElementById(
+        "close-modal"
+      ) as HTMLButtonElement;
       const contactButtons = document.querySelectorAll(".contact-button");
       const form = document.getElementById("contact-form") as HTMLFormElement;
-      const cancelBtn = document.getElementById("cancel-contact") as HTMLButtonElement;
+      const cancelBtn = document.getElementById(
+        "cancel-contact"
+      ) as HTMLButtonElement;
 
       contactButtons.forEach((button) => {
         button.addEventListener("click", () => {
@@ -37,7 +41,7 @@ export function loadContactModal(): void {
         if (e.target === modal) hideModal();
       });
 
-      // 🔽 Add this part to handle form submission
+      // Add this part to handle form submission
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -69,7 +73,7 @@ export function loadContactModal(): void {
           if (!response.ok) {
             const errorData = await response.json();
 
-            // 🔽 Extract the first validation error message (if available)
+            // Extract the first validation error message (if available)
             if (errorData.errors) {
               const firstErrorField = Object.keys(errorData.errors)[0];
               const firstErrorMessage = errorData.errors[firstErrorField][0];
@@ -83,7 +87,9 @@ export function loadContactModal(): void {
           }
 
           const result = await response.json();
-          alert("Message sent successfully! Our support will contact you soon.");
+          alert(
+            "Message sent successfully! Our support will contact you soon."
+          );
           form.reset();
           hideModal();
           hideLoader();
@@ -93,7 +99,6 @@ export function loadContactModal(): void {
           hideLoader();
         }
       });
-
     })
     .catch((error) => {
       console.error("Error loading contact modal:", error);
